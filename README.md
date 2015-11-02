@@ -1,8 +1,13 @@
 # poloapi
 
-A Python Poloniex.com API wrapper
+A Python Poloniex.com API wrapper - Tested on Python 2.7.6 & 3.4.3 
 
-Tested on Python 2.7.6 & 3.4.3. Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]. ApiKey and Secret are optional if used for just public commands. Improved error handling. Returns 'False' if the command supplied does not exist (this helps on Poloniex Bandwith because you can't accidently make invalid calls to the API server) .
+Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
+
+##Updates:
+-ApiKey and Secret are optional if used for just public commands.
+
+-Returns 'False' if the command supplied does not exist (this helps on Poloniex API bandwith) .
 
 ##Examples:
 Public Commands (APIKey and Secret optional):
