@@ -27,7 +27,7 @@ polo = poloniex.poloniex('yourApiKeyHere','yourSecretKeyHere123')
     
 # Get all your balances
 balance = polo.api('returnBalances')
-print("I have %d CGA!" % balance['CGA'])
+print("I have %s CGA!" % balance['CGA'])
     
 # Make new CGA deposit address
 newDepositAddress = polo.api('generateNewAddress',{'currency':'CGA'})
