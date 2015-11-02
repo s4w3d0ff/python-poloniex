@@ -28,7 +28,7 @@ print(ordersCGA)
 Private Commands (APIKey and Secret required):
 ```python
 import poloniex
-polo = poloniex.poloniex('yourApiKeyHere','yourSecretKeyHere123')
+polo = poloniex.Poloniex('yourApiKeyHere','yourSecretKeyHere123')
     
 # Get all your balances
 balance = polo.api('returnBalances')
