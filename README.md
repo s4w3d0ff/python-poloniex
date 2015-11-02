@@ -14,7 +14,7 @@ Public Commands (APIKey and Secret optional):
 
 ```python
 import poloniex
-polo = poloniex.poloniex()
+polo = poloniex.Poloniex()
     
 # get ticker
 ticker = polo.api('returnTicker')
