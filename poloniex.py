@@ -17,8 +17,8 @@ class Poloniex:
 	def __init__(self, APIKey=False, Secret=False):
 		self.APIKey = APIKey
 		self.Secret = Secret
-		timestamp_str = lambda timestamp=time.time(), format="%Y-%m-%d %H:%M:%S": datetime.fromtimestamp(timestamp).strftime(format)
-		str_timestamp = lambda datestr=timestamp_str() , format="%Y-%m-%d %H:%M:%S": int(time.mktime(time.strptime(datestr, format)))
+		self.timestamp_str = lambda timestamp=time.time(), format="%Y-%m-%d %H:%M:%S": datetime.fromtimestamp(timestamp).strftime(format)
+		self.str_timestamp = lambda datestr=timestamp_str() , format="%Y-%m-%d %H:%M:%S": int(time.mktime(time.strptime(datestr, format)))
 		
 	def api(self, command, args={}):
 		"""
