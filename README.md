@@ -1,4 +1,4 @@
-# poloapi
+# apipolo
 
 A Python Poloniex.com API wrapper - Tested on Python 2.7.6 & 3.4.3 
 
