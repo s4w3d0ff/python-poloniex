@@ -10,8 +10,8 @@ else:
 	from urllib import urlencode
 	from urllib2 import Request, urlopen
 # Possible Commands
-PUBLIC_COMMANDS = ['returnTicker','return24Volume','returnOrderBook','returnTradeHistory','returnChartData','returnCurrencies','returnLoanOrders']
-PRIVATE_COMMANDS = ['returnBalances','returnCompleteBalances','returnDepositAddresses','generateNewAddress','returnDepositsWithdrawals','returnOpenOrders','returnTradeHistory','returnAvailableAccountBalances','returnTradableBalances','returnOpenLoanOffers','returnActiveLoans','createLoanOffer','cancelLoanOffer','toggleAutoRenew','buy','sell','cancelOrder','moveOrder','withdraw','transferBalance']
+PUBLIC_COMMANDS = ['returnTicker','return24Volume','returnOrderBook','returnTradeHistory','returnChartData','returnCurrencies','returnLoanOrders'] 
+PRIVATE_COMMANDS = ['returnBalances','returnCompleteBalances','returnDepositAddresses','generateNewAddress','returnDepositsWithdrawals','returnOpenOrders','returnTradeHistory','buy','sell','cancelOrder','moveOrder','withdraw','returnAvailableAccountBalances','returnTradableBalances','transferBalance','returnMarginAccountSummary','marginBuy','marginSell','getMarginPosition','closeMarginPosition','createLoanOffer','cancelLoanOffer','returnOpenLoanOffers','returnActiveLoans','toggleAutoRenew']
 
 class Poloniex:
 	def __init__(self, APIKey=False, Secret=False):
