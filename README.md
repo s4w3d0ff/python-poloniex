@@ -1,16 +1,17 @@
 # apipolo
 
-A Python Poloniex.com API wrapper - Tested on Python 2.7.6 & 3.4.3 
+**A Python Poloniex.com API wrapper** - Tested on Python 2.7.6 & 3.4.3
 
 Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
 
-Note: For subcribing to a Push Websocket autobahn is required. `pip install autobahn`
-##Updates:
+**Note**: For subcribing to a Push Websocket _autobahn is required_. `pip install autobahn`
+
+###Updates:
 -ApiKey and Secret are optional if used for just public commands.
 
 -Returns 'False' if the command supplied does not exist (this helps on Poloniex API bandwith) .
 
-##Examples:
+###Examples:
 Public Commands (APIKey and Secret optional):
 
 ```python
