@@ -4,8 +4,6 @@
 
 Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
 
-**Note**: For subcribing to a Push Websocket _autobahn is required_. `pip install autobahn`
-
 ###Updates:
 -ApiKey and Secret are optional if used for just public commands.
 
@@ -44,4 +42,4 @@ print(newDepositAddress)
 print(polo.api('sell', {'currencyPair': 'BTC_CGA', "rate": 0.003 , "amount": balance['CGA'] }))
 ```
 
-(PUSH API is currently under development, if you would like to contribute in the development of this repository please fork and make a pull request.)
+(PUSH API is currently not supported, if you would like to contribute in the development of this repository please fork and make a pull request.)
