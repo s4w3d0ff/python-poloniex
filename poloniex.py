@@ -1,25 +1,62 @@
 import json
 import time
-import hmac,hashlib
+import hmac, hashlib
 import sys
+from datetime import datetime
+
 # Tested on Python 2.7.6 & 3.4.3
 if sys.version_info[0] == 3:
 	from urllib.request import Request, urlopen
 	from urllib.parse import urlencode
 else:
-	from urllib import urlencode
 	from urllib2 import Request, urlopen
+	from urllib import urlencode
+	
 # Possible Commands
-PUBLIC_COMMANDS = ['returnTicker','return24Volume','returnOrderBook','returnTradeHistory','returnChartData','returnCurrencies','returnLoanOrders'] 
-PRIVATE_COMMANDS = ['returnBalances','returnCompleteBalances','returnDepositAddresses','generateNewAddress','returnDepositsWithdrawals','returnOpenOrders','returnTradeHistory','buy','sell','cancelOrder','moveOrder','withdraw','returnAvailableAccountBalances','returnTradableBalances','transferBalance','returnMarginAccountSummary','marginBuy','marginSell','getMarginPosition','closeMarginPosition','createLoanOffer','cancelLoanOffer','returnOpenLoanOffers','returnActiveLoans','toggleAutoRenew']
+PUBLIC_COMMANDS = ['returnTicker', 'return24Volume', 'returnOrderBook', 'returnTradeHistory', 'returnChartData', 'returnCurrencies', 'returnLoanOrders'] 
+PRIVATE_COMMANDS = ['returnBalances', 'returnCompleteBalances', 'returnDepositAddresses', 'generateNewAddress', 'returnDepositsWithdrawals', 'returnOpenOrders', 'returnTradeHistory', 'returnAvailableAccountBalances', 'returnTradableBalances', 'returnOpenLoanOffers', 'returnActiveLoans', 'createLoanOffer', 'cancelLoanOffer', 'toggleAutoRenew', 'buy', 'sell', 'cancelOrder', 'moveOrder', 'withdraw', 'transferBalance']
 
 class Poloniex:
 	def __init__(self, APIKey=False, Secret=False):
 		self.APIKey = APIKey
 		self.Secret = Secret
+		# Oh My Lambda...
 		self.timestamp_str = lambda timestamp=time.time(), format="%Y-%m-%d %H:%M:%S": datetime.fromtimestamp(timestamp).strftime(format)
-		self.str_timestamp = lambda datestr=timestamp_str() , format="%Y-%m-%d %H:%M:%S": int(time.mktime(time.strptime(datestr, format)))
+		self.str_timestamp = lambda datestr=self.timestamp_str(), format="%Y-%m-%d %H:%M:%S": int(time.mktime(time.strptime(datestr, format)))
+		self.float_roundPercent = lambda floatN, decimalP=2: str(round(float(floatN)*100, decimalP))+"%"
+		#PUBLIC COMMANDS
+		self.marketTicker = lambda x=0: self.api('returnTicker')
+		self.marketVolume = lambda x=0: self.api('return24Volume')
+		self.marketStatus = lambda x=0: self.api('returnCurrencies')
+		self.marketLoans = lambda coin: self.api('returnLoanOrders',{'currency':coin})
+		self.marketOrders = lambda pair='all': self.api('returnOrderBook', {'currency':pair})
+		self.marketChart = lambda pair, period=day, start=time.time()-(month*2), end=time.time(): self.api('returnChartData', {'currency':pair, 'period':period, 'start':start, 'end':end})
+		#self.marketTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':pair})# NEEDS TO BE FIXED ON Poloniex
 		
+		#PRIVATE COMMANDS
+		#self.myTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':pair}) # NEEDS TO BE FIXED ON Poloniex
+		self.myAvailBalances = lambda x=0: self.api('returnAvailableAccountBalances')
+		self.myCompleteBalances = lambda x=0: self.api('returnCompleteBalances')
+		self.myDepositAddress = lambda x=0: self.api('returnDepositAddresses')
+		self.myOrders = lambda coin='all': self.api('returnOpenOrders',{'currency':coin})
+		self.myDepositsWithdraws = lambda x=0: self.api('returnDepositsWithdrawals')
+		self.myTradeableBalances = lambda x=0: self.api('returnTradableBalances')
+		self.myActiveLoans = lambda x=0: self.api('returnActiveLoans')
+		self.myOpenLoanOrders = lambda x=0 self.api('returnOpenLoanOffers')
+		## Trading functions ##
+		self.createLoanOrder = lambda coin, amount, rate: self.api('createLoanOffer', {'currency' :coin, 'amount':amount, 'duration':2, 'autoRenew':0, 'lendingRate':rate})
+		self.cancelLoanOrder = lambda orderId: self.api('cancelLoanOffer', {'orderNumber':orderId})
+		self.toggleAutoRenew = lambda orderId: self.api('toggleAutoRenew', {'orderNumber':orderId})
+		self.buy = lambda pair, rate, amount: self.api('buy', {'currencyPair':pair, 'rate':rate, 'amount':amount})
+		self.sell = lambda pair, rate, amount: self.api('sell', {'currencyPair':pair, 'rate':rate, 'amount':amount})
+		self.cancelOrder = lambda orderId: self.api('cancelOrder', {'orderNumber':orderId})
+		self.moveOrder = lambda orderId, rate, amount: self.api('moveOrder', {'orderNumber':orderId, 'rate':rate, 'amount':amount})
+		self.withdraw = lambda coin, amount, address: self.api('withdraw',{'currency':coin, 'amount':amount, 'address':address})
+		self.transferBalance = lambda coin, amount, from, to: self.api('transferBalance', {'currency':coin, 'amount':amount, 'fromAccount':from, 'toAccount':to})
+		
+	#####################
+	# Main Api Function #
+	#####################
 	def api(self, command, args={}):
 		"""
 		returns 'False' if invalid command or if no APIKey or Secret is specified (if command is "private")
