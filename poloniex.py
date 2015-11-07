@@ -42,7 +42,7 @@ class Poloniex:
 		self.myDepositsWithdraws = lambda x=0: self.api('returnDepositsWithdrawals')
 		self.myTradeableBalances = lambda x=0: self.api('returnTradableBalances')
 		self.myActiveLoans = lambda x=0: self.api('returnActiveLoans')
-		self.myOpenLoanOrders = lambda x=0 self.api('returnOpenLoanOffers')
+		self.myOpenLoanOrders = lambda x=0: self.api('returnOpenLoanOffers')
 		## Trading functions
 		self.createLoanOrder = lambda coin, amount, rate: self.api('createLoanOffer', {'currency' :coin, 'amount':amount, 'duration':2, 'autoRenew':0, 'lendingRate':rate})
 		self.cancelLoanOrder = lambda orderId: self.api('cancelLoanOffer', {'orderNumber':orderId})
