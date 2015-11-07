@@ -43,7 +43,7 @@ class Poloniex:
 		self.myTradeableBalances = lambda x=0: self.api('returnTradableBalances')
 		self.myActiveLoans = lambda x=0: self.api('returnActiveLoans')
 		self.myOpenLoanOrders = lambda x=0 self.api('returnOpenLoanOffers')
-		## Trading functions ##
+		## Trading functions
 		self.createLoanOrder = lambda coin, amount, rate: self.api('createLoanOffer', {'currency' :coin, 'amount':amount, 'duration':2, 'autoRenew':0, 'lendingRate':rate})
 		self.cancelLoanOrder = lambda orderId: self.api('cancelLoanOffer', {'orderNumber':orderId})
 		self.toggleAutoRenew = lambda orderId: self.api('toggleAutoRenew', {'orderNumber':orderId})
@@ -54,9 +54,7 @@ class Poloniex:
 		self.withdraw = lambda coin, amount, address: self.api('withdraw',{'currency':coin, 'amount':amount, 'address':address})
 		self.transferBalance = lambda coin, amount, from, to: self.api('transferBalance', {'currency':coin, 'amount':amount, 'fromAccount':from, 'toAccount':to})
 		
-	#####################
-	# Main Api Function #
-	#####################
+	# Main Api Function
 	def api(self, command, args={}):
 		"""
 		returns 'False' if invalid command or if no APIKey or Secret is specified (if command is "private")
