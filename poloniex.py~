@@ -39,7 +39,7 @@ class Poloniex:
 		self.marketLoans = lambda coin: self.api('returnLoanOrders',{'currency':coin})
 		self.marketOrders = lambda pair='all': self.api('returnOrderBook', {'currencyPair':pair})
 		self.marketChart = lambda pair, period=day, start=month*2, end=time.time(): self.api('returnChartData', {'currencyPair':pair, 'period':period, 'start':time.time()-start, 'end':end})
-		self.marketTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':pair}) # NEEDS TO BE FIXED ON Poloniex
+		self.marketTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':pair})# NEEDS TO BE FIXED ON Poloniex
 		
 		#PRIVATE COMMANDS
 		#self.myTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':pair})
