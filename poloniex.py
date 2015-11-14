@@ -27,18 +27,18 @@ class Poloniex:
 	def __init__(self, APIKey='', Secret=''):
 		self.APIKey = APIKey
 		self.Secret = Secret
-		# Oh My Lambda...
-		
+		# Conversions
 		self.timestamp_str = lambda timestamp=time.time(), format="%Y-%m-%d %H:%M:%S": datetime.fromtimestamp(timestamp).strftime(format)
 		self.str_timestamp = lambda datestr=self.timestamp_str(), format="%Y-%m-%d %H:%M:%S": int(time.mktime(time.strptime(datestr, format)))
 		self.float_roundPercent = lambda floatN, decimalP=2: str(round(float(floatN)*100, decimalP))+"%"
+		
 		#PUBLIC COMMANDS
 		self.marketTicker = lambda x=0: self.api('returnTicker')
 		self.marketVolume = lambda x=0: self.api('return24hVolume')
 		self.marketStatus = lambda x=0: self.api('returnCurrencies')
 		self.marketLoans = lambda coin: self.api('returnLoanOrders',{'currency':coin})
 		self.marketOrders = lambda pair='all': self.api('returnOrderBook', {'currencyPair':pair})
-		self.marketChart = lambda pair, period=day, start=month*2, end=time.time(): self.api('returnChartData', {'currencyPair':pair, 'period':period, 'start':time.time()-start, 'end':end})
+		self.marketChart = lambda pair, period=day, start=time.time()-(month*2), end=time.time(): self.api('returnChartData', {'currencyPair':pair, 'period':period, 'start':start, 'end':end})
 		self.marketTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':pair}) # NEEDS TO BE FIXED ON Poloniex
 		
 		#PRIVATE COMMANDS
