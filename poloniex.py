@@ -80,21 +80,17 @@ class Poloniex:
 			if len(self.APIKey) < 2 or len(self.Secret) < 2:
 				print("An APIKey and Secret is needed!")
 				return False
-			url = 'https://poloniex.com/tradingApi'
-			args['nonce'] = int(time.time()*42)
+			url, args['nonce'] = ['https://poloniex.com/tradingApi', int(time.time()*42)]
 			post_data = urlencode(args)
 			sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
 			headers = {'Sign': sign, 'Key': self.APIKey}
 			ret = urlopen(Request(url, post_data, headers))
 			return json.loads(ret.read().decode(encoding='UTF-8'))
-		
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
 			if not args:
 				ret = urlopen(Request(url + command))
-				load = json.loads(ret.read().decode(encoding='UTF-8'))
-				print(load)
-				return load
+				return json.loads(ret.read().decode(encoding='UTF-8'))
 			else:
 				ret = urlopen(Request(url + urlencode(args)))
 				return json.loads(ret.read().decode(encoding='UTF-8'))
