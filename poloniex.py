@@ -84,9 +84,12 @@ class Poloniex:
 				print("An APIKey and Secret is needed!")
 				return False
 			post_data = urlencode(args).encode('utf8')
-			sign = hmac.new(self.Secret, post_data, hashlib.sha512)
-			headers = {'Sign': sign, 'Key': self.APIKey}
-			r = requests.post(url, params=args, headers=headers)
+			sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
+			headers = {'Key': self.APIKey, 'Sign': sign}
+			r = requests.post(url, data=post_data, headers=headers, timeout=27)
+			#ret = urlopen(Request(url, post_data, headers))
+			#return json.loads(ret.read().decode(encoding='UTF-8'))
+			print(r.url)
 			return r.json()
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
