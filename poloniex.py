@@ -2,6 +2,7 @@ import json
 import time
 import hmac, hashlib
 import sys
+import requests
 from datetime import datetime
 
 # Tested on Python 2.7.6 & 3.4.3
@@ -76,18 +77,20 @@ class Poloniex:
 		returns 'False' if invalid command or if no APIKey or Secret is specified (if command is "private")
 		returns {"error":"<error message>"} if API error
 		"""
+		url, args['nonce'] = ['https://poloniex.com/tradingApi', int(time.time()*42)]
 		args['command'] = command
 		if command in PRIVATE_COMMANDS:
 			if len(self.APIKey) < 2 or len(self.Secret) < 2:
 				print("An APIKey and Secret is needed!")
 				return False
-			url, args['nonce'] = ['https://poloniex.com/tradingApi', int(time.time()*42)]
 			post_data = urlencode(args).encode('utf8')
 			sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
-			headers = {'Sign': sign, 'Key': self.APIKey}
-			ret = urlopen(Request(url, post_data, headers))
-			return json.loads(ret.read().decode(encoding='UTF-8'))
-		
+			headers = {'Key': self.APIKey, 'Sign': sign}
+			r = requests.post(url, params=post_data, headers=headers, timeout=27)
+			#ret = urlopen(Request(url, post_data, headers))
+			#return json.loads(ret.read().decode(encoding='UTF-8'))
+			print(r.url)
+			return r.json()
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
 			if not args:
