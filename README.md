@@ -5,9 +5,8 @@
 Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
 
 ###Updates:
--ApiKey and Secret are optional if used for just public commands.
-
--Returns `False` if the command supplied does not exist (this helps on Poloniex API bandwith) .
+- ApiKey and Secret are optional if used for just public commands.
+- Returns `False` if the command supplied does not exist (this helps on Poloniex API bandwith) .
 
 ###Examples:
 Public Commands (APIKey and Secret optional):
@@ -64,4 +63,4 @@ print(polo.api('sell', {'currencyPair': 'BTC_CGA', 'rate': 0.003 , 'amount': 10 
 print(polo.sell('BTC_CGA', 0.003, 10))
 ```
 
-(PUSH API is currently not supported, if you would like to contribute in the development of this repository please fork and make a pull request.)
+An example of a WAMP application using the websocket push API can be found here: https://github.com/s4w3d0ff/python-poloniex/blob/master/pushpolo.py
