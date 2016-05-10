@@ -12,7 +12,7 @@ class Subscribe2Trollbox(ApplicationSession):
 	def onJoin(self, details):
 		h = HTMLParser()
 		def onTroll(*args):
-		logging.info('%s:%s:: (%s)[%s] %s' % (args[0].upper(), str(args[1]), str(args[4]), args[2], h.unescape(args[3]) ))
+			logging.info('%s:%s:: (%s)[%s] %s' % (args[0].upper(), str(args[1]), str(args[4]), args[2], h.unescape(args[3]) ))
 		yield self.subscribe(onTroll, 'trollbox')
 
 if __name__ == "__main__":
