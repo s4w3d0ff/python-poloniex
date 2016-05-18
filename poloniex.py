@@ -1,7 +1,5 @@
-import json
-import time
+import sys, json, time, calendar
 import hmac, hashlib
-import sys
 from datetime import datetime
 
 # Tested on Python 2.7.6 & 3.4.3
@@ -29,8 +27,8 @@ class Poloniex:
 		self.YEAR = self.DAY*365
 		
 		# Conversions
-		self.timestamp_str = lambda timestamp=time.time(), format="%Y-%m-%d %H:%M:%S": datetime.fromtimestamp(timestamp).strftime(format)
-		self.str_timestamp = lambda datestr=self.timestamp_str(), format="%Y-%m-%d %H:%M:%S": int(time.mktime(time.strptime(datestr, format)))
+		self.timestamp_str = lambda timestamp=time.time(), fmat="%Y-%m-%d %H:%M:%S": datetime.fromtimestamp(timestamp).strftime(fmat)
+		self.str_timestamp = lambda datestr=self.timestamp_str(), fmat="%Y-%m-%d %H:%M:%S": calendar.timegm(time.strptime(datestr, fmat))
 		self.float_roundPercent = lambda floatN, decimalP=2: str(round(float(floatN)*100, decimalP))+"%"
 		
 		#PUBLIC COMMANDS
