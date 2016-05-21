@@ -1,6 +1,5 @@
 import sys, json, time, calendar
 import hmac, hashlib
-from datetime import datetime
 
 # Tested on Python 2.7.6 & 3.4.3
 if sys.version_info[0] == 3:
@@ -19,17 +18,13 @@ class Poloniex:
 		self.APIKey = APIKey
 		self.Secret = Secret.encode('utf8')
 		
-		self.MINUTE = 60
-		self.HOUR = self.MINUTE*60
-		self.DAY = self.HOUR*24
-		self.WEEK = self.DAY*7
-		self.MONTH = self.DAY*30
-		self.YEAR = self.DAY*365
+		self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = [60, 60*60, 60*60*24, 60*60*24*7, 60*60*24*30, 60*60*24*365]
 		
 		# Conversions
-		self.timestamp_str = lambda timestamp=time.time(), fmat="%Y-%m-%d %H:%M:%S": datetime.fromtimestamp(timestamp).strftime(fmat)
-		self.str_timestamp = lambda datestr=self.timestamp_str(), fmat="%Y-%m-%d %H:%M:%S": calendar.timegm(time.strptime(datestr, fmat))
-		self.float_roundPercent = lambda floatN, decimalP=2: str(round(float(floatN)*100, decimalP))+"%"
+		self.epoch2UTCstr = lambda timestamp=time.time(), fmat="%Y-%m-%d %H:%M:%S": time.strftime(fmat, time.gmtime(timestamp))
+		self.UTCstr2epoch = lambda datestr=self.epoch2UTCstr(), fmat="%Y-%m-%d %H:%M:%S": calendar.timegm(time.strptime(datestr, fmat))
+		self.epoch2localstr = lambda timestamp=time.time(), fmat="%Y-%m-%d %H:%M:%S": time.strftime(fmat, time.localtime(timestamp))
+		self.localstr2epoch = lambda datestr=self.epoch2localstr(), fmat="%Y-%m-%d %H:%M:%S": time.mktime(time.strptime(datestr, fmat))		self.float_roundPercent = lambda floatN, decimalP=2: str(round(float(floatN)*100, decimalP))+"%"
 		
 		#PUBLIC COMMANDS
 		self.marketTicker = lambda x=0: self.api('returnTicker')
