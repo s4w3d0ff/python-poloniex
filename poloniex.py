@@ -31,8 +31,8 @@ class Poloniex:
 		self.marketVolume = lambda x=0: self.api('return24hVolume')
 		self.marketStatus = lambda x=0: self.api('returnCurrencies')
 		self.marketLoans = lambda coin: self.api('returnLoanOrders',{'currency':coin})
-		self.marketOrders = lambda pair='all', depth=50: self.api('returnOrderBook', {'currencyPair':pair, 'depth':depth})
-		self.marketChart = lambda pair, period=self.DAY, start=0000000, end=time.time(): self.api('returnChartData', {'currencyPair':pair, 'period':period, 'start':start, 'end':end})
+		self.marketOrders = lambda pair='all', depth=20: self.api('returnOrderBook', {'currencyPair':pair, 'depth':depth})
+		self.marketChart = lambda pair, period=self.DAY, start=time.time()-self.YEAR, end=time.time(): self.api('returnChartData', {'currencyPair':pair, 'period':period, 'start':start, 'end':end})
 		#self.marketTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':pair})# NEEDS TO BE FIXED ON Poloniex
 		
 		#PRIVATE COMMANDS
