@@ -24,7 +24,8 @@ class Poloniex:
 		self.epoch2UTCstr = lambda timestamp=time.time(), fmat="%Y-%m-%d %H:%M:%S": time.strftime(fmat, time.gmtime(timestamp))
 		self.UTCstr2epoch = lambda datestr=self.epoch2UTCstr(), fmat="%Y-%m-%d %H:%M:%S": calendar.timegm(time.strptime(datestr, fmat))
 		self.epoch2localstr = lambda timestamp=time.time(), fmat="%Y-%m-%d %H:%M:%S": time.strftime(fmat, time.localtime(timestamp))
-		self.localstr2epoch = lambda datestr=self.epoch2localstr(), fmat="%Y-%m-%d %H:%M:%S": time.mktime(time.strptime(datestr, fmat))		self.float_roundPercent = lambda floatN, decimalP=2: str(round(float(floatN)*100, decimalP))+"%"
+		self.localstr2epoch = lambda datestr=self.epoch2localstr(), fmat="%Y-%m-%d %H:%M:%S": time.mktime(time.strptime(datestr, fmat))
+		self.float_roundPercent = lambda floatN, decimalP=2: str(round(float(floatN)*100, decimalP))+"%"
 		
 		#PUBLIC COMMANDS
 		self.marketTicker = lambda x=0: self.api('returnTicker')
