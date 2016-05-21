@@ -62,13 +62,14 @@ class Poloniex:
 		self.withdraw = lambda coin, amount, address: self.api('withdraw', {'currency':coin, 'amount':amount, 'address':address})
 		self.transferBalance = lambda coin, amount, fromac, toac: self.api('transferBalance', {'currency':coin, 'amount':amount, 'fromAccount':fromac, 'toAccount':toac})
 		
-	#####################
-	# Main Api Function #
-	#####################
 	def api(self, command, args={}):
-		"""
-		returns 'False' if invalid command or if no APIKey or Secret is specified (if command is "private")
-		returns {"error":"<error message>"} if API error
+		""" Main Api Function
+		
+		- checks to make sure <command> is a vailid commmand
+		- checks for APIKey and Secret if command is 'private'
+		- returns 'False' if invalid command or if no APIKey or Secret is specified (if command is 'private')
+		- sends url encoded string to API server, decodes json response and returns dict
+		- returns {"error":"<error message>"} if API error
 		"""
 		args['command'] = command
 		if command in PRIVATE_COMMANDS:
