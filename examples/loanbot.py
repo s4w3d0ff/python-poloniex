@@ -1,6 +1,22 @@
 import time
 from multiprocessing.dummy import Process as Thread
 from poloniex import Poloniex
+# Most attributes of the Loaner object can be changed "on the fly"
+# Useage:
+# >> import loanbot
+# >> bot = loanbot.Loaner('yourPOLOAPIkey','yourSuperAPISecret')
+# >> bot.start()
+# LOANER: started
+# LOANER: Checking for stale offers
+# LOANER: BTS order 84776305 has been open 4.360000 mins
+# LOANER: Checking for coins in account
+# LOANER: Checking for stale offers
+# LOANER: BTS order 84776305 has been open 6.550000 mins
+# LOANER: BTS loan offer canceled. [84776305]
+# LOANER: Checking for coins in account
+# LOANER: 2249.160702 BTS loan order placed.
+# LOANER: Checking for stale offers
+# LOANER: BTS order 84780014 has been open 2.170000 mins
 
 class Loaner():
 	""" Object for control of threaded Loaner loop"""
@@ -48,7 +64,7 @@ class Loaner():
 			
 			- orderList = JSON object received from poloniex (open loan orders)
 			- ageLimit = max age to allow an order to sit still before canceling (in seconds)""" 
-		print('LOANER: Canceling stale loans')
+		print('LOANER: Checking for stale offers')
 		for market in orderList:
 			for order in orderList[market]:
 				print('LOANER: %s order %s has been open %f mins' % (market, str(order['id']), round((time.time()-self.POLO.UTCstr2epoch(order['date']))/60, 2)))
@@ -63,7 +79,7 @@ class Loaner():
 			- balances = JSON object received from poloniex (available balances)
 			- offset = number of 'loanToshis' to offset from the top loan order (offset*0.000001)""" 
 		if 'lending' in balances:
-			print('LOANER: Creating loans')
+			print('LOANER: Checking for coins in account')
 			for market in balances['lending']:
 				if float(balances['lending'][market]) > self.MINAMOUNT:
 					result = self.POLO.createLoanOrder(market, float(balances['lending'][market]), float(self.POLO.marketLoans(market)['offers'][0]['rate'])+(offset*0.000001))
