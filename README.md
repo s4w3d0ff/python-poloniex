@@ -1,31 +1,28 @@
-# poloniex.py
-
-**A Python Poloniex.com API wrapper** - Tested on Python 2.7.6 & 3.4.3
-
+#**An API wrapper for Poloniex.com written in Python**
+#####poloniex.py - _Tested on Python 2.7.6 & 3.4.3_
 Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
 
-###Updates:
+###Features:
 - ApiKey and Secret are optional if used for just public commands.
-- Returns `False` if the command supplied does not exist (this helps on Poloniex API bandwith) .
+- Returns `False` if the command supplied does not exist (this helps on bandwith when testing) .
+- Api Commands have been 'mapped' into lambdas for your conveniance.
 
 ###Examples:
-Public Commands (APIKey and Secret optional):
-
+#### **Basic Public Setup (no ApiKey/Secret):**
 ```python
 import poloniex
-
 polo = poloniex.Poloniex()
-    
-# get ticker
-
+```
+##### Get Ticker
+```python
 ticker = polo.api('returnTicker')
-print(ticker['CGA'])
+print(ticker['BTC_CGA'])
 # or
 ticker = polo.marketTicker()
-print(ticker['CGA'])
-
-# get Loan Orders
-
+print(ticker['BTC_CGA'])
+```
+##### Get Market Loan Orders
+```python
 BTCloanOrders = polo.api('returnLoanOrders',{'currency':'BTC'})
 print(BTCloanOrders)
 # or 
@@ -33,7 +30,7 @@ BTCloanOrders = polo.marketLoans('BTC')
 print(BTCloanOrders)
 ```
 
-Private Commands (APIKey and Secret required):
+#### **Basic Private Setup (ApiKey/Secret required):**
 ```python
 import poloniex
 
@@ -41,23 +38,23 @@ polo = poloniex.Poloniex('yourApiKeyHere','yourSecretKeyHere123')
 # or
 polo.APIKey = 'yourApiKeyHere'
 polo.Secret = 'yourSecretKeyHere123'
-
-# Get all your balances
-
+```
+##### Get all your balances
+```python
 balance = polo.api('returnBalances')
 print("I have %s CGA!" % balance['CGA'])
 # or
 balance = polo.myBalances()
 print("I have %s BTC!" % balance['BTC'])
-
-# Make new CGA deposit address
-
+```
+##### Make new CGA deposit address
+```python
 print(polo.api('generateNewAddress',{'currency':'CGA'}))
 # or
 print(polo.generateNewAddress('CGA'))
-
-# Sell 10 CGA for 0.003 BTC
-
+```
+##### Sell 10 CGA for 0.003 BTC
+```python
 print(polo.api('sell', {'currencyPair': 'BTC_CGA', 'rate': 0.003 , 'amount': 10 }))
 # or
 print(polo.sell('BTC_CGA', 0.003, 10))
