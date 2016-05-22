@@ -34,7 +34,7 @@ class Poloniex:
 		self.marketLoans = lambda coin: self.api('returnLoanOrders',{'currency':coin})
 		self.marketOrders = lambda pair='all', depth=20: self.api('returnOrderBook', {'currencyPair':pair, 'depth':depth})
 		self.marketChart = lambda pair, period=self.DAY, start=time.time()-self.YEAR, end=time.time(): self.api('returnChartData', {'currencyPair':pair, 'period':period, 'start':start, 'end':end})
-		#self.marketTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':pair})# NEEDS TO BE FIXED ON Poloniex
+		self.marketTradeHist = lambda pair, start, end=time.time(): json.loads(urlopen(Request('https://poloniex.com/public?'+urlencode({'command':'returnTradeHistory', 'currencyPair':pair, 'start':start, 'end':end}))).read().decode(encoding='UTF-8'))		
 		
 		#PRIVATE COMMANDS
 		self.myTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':pair})
