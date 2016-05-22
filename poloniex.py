@@ -85,10 +85,6 @@ class Poloniex:
 		
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
-			if not args:
-				ret = urlopen(Request(url + command))
-				return json.loads(ret.read().decode(encoding='UTF-8'))
-			else:
-				ret = urlopen(Request(url + urlencode(args)))
-				return json.loads(ret.read().decode(encoding='UTF-8'))
+			ret = urlopen(Request(url + urlencode(args)))
+			return json.loads(ret.read().decode(encoding='UTF-8'))
 		else:return False
