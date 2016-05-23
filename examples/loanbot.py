@@ -61,7 +61,6 @@ class Loaner():
 	
 	def cancelOldLoans(self, orderList, ageLimit):
 		""" Cancel loans in <orderList> that are older than <ageLimit>
-			
 			- orderList = JSON object received from poloniex (open loan orders)
 			- ageLimit = max age to allow an order to sit still before canceling (in seconds)""" 
 		print('LOANER: Checking for stale offers')
@@ -75,7 +74,6 @@ class Loaner():
 	
 	def createLoans(self, balances, offset):
 		""" Create loans for all markets in <balances> at the <offset> from the top rate
-			
 			- balances = JSON object received from poloniex (available balances)
 			- offset = number of 'loanToshis' to offset from the top loan order (offset*0.000001)""" 
 		if 'lending' in balances:
