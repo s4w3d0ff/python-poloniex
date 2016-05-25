@@ -55,9 +55,9 @@ print(polo.generateNewAddress('CGA'))
 ```
 ##### Sell 10 CGA for 0.003 BTC
 ```python
-print(polo.api('sell', {'currencyPair': 'BTC_CGA', 'rate': 0.003 , 'amount': 10 }))
+print(polo.api('sell', {'currencyPair': 'BTC_CGA', 'rate': '0.003' , 'amount': '10' }))
 # or
-print(polo.sell('BTC_CGA', 0.003, 10))
+print(polo.sell('BTC_CGA', '0.003', '10'))
 ```
 
 An example of a WAMP application using the websocket push API can be found here: https://github.com/s4w3d0ff/python-poloniex/blob/master/examples/polocalbox.py
