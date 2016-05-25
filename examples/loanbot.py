@@ -68,7 +68,7 @@ class Loaner():
 			for order in orderList[market]:
 				print('LOANER: %s order %s has been open %f mins' % (market, str(order['id']), round((time.time()-self.POLO.UTCstr2epoch(order['date']))/60, 2)))
 				if time.time()-self.POLO.UTCstr2epoch(order['date']) > ageLimit:
-					result = self.POLO.cancelLoanOrder(int(order['id']))
+					result = self.POLO.cancelLoanOrder(order['id'])
 					if not 'error' in result: print('LOANER: %s %s [%s]' % (market, result["message"].lower(), str(order['id'])))
 					else: print('LOANER: %s' % result['error'])
 	
@@ -80,6 +80,6 @@ class Loaner():
 			print('LOANER: Checking for coins in account')
 			for market in balances['lending']:
 				if float(balances['lending'][market]) > self.MINAMOUNT:
-					result = self.POLO.createLoanOrder(market, float(balances['lending'][market]), float(self.POLO.marketLoans(market)['offers'][0]['rate'])+(offset*0.000001))
+					result = self.POLO.createLoanOrder(market, balances['lending'][market], float(self.POLO.marketLoans(market)['offers'][0]['rate'])+(offset*0.000001))
 					if not 'error' in result: print('LOANER: %f %s %s' % (float(balances['lending'][market]), market, result["message"].lower()))
 					else: print('LOANER: %s' % result['error'])
