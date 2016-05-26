@@ -61,3 +61,9 @@ print(polo.sell('BTC_CGA', '0.003', '10'))
 ```
 
 An example of a WAMP application using the websocket push API can be found here: https://github.com/s4w3d0ff/python-poloniex/blob/master/examples/polocalbox.py
+
+You like?
+CGA: aZ1yHGx4nA64aWMDNQKXJrojso7gfQ1J5P
+BTC: 15D8VaZco22GTLVrFMAehXyif6EGf8GMYV
+LTC: LakbntAYrwpVSnLWj1fCLttVzpiDXDa5JV
+DOGE: DAQjkQNbhpUoQw7KHAGkDYZ3yySKi751dd
