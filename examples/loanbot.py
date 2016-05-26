@@ -18,7 +18,7 @@ from poloniex import Poloniex
 # LOANER: Checking for stale offers
 # LOANER: BTS order 84780014 has been open 2.170000 mins
 
-class Loaner():
+class Loaner(object):
 	""" Object for control of threaded Loaner loop"""
 	def __init__(self, Key, Secret, interval=60*2, ageLimit=60*5, offset=2):
 		"""
