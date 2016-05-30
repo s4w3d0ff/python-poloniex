@@ -1,5 +1,6 @@
 import time
 from multiprocessing.dummy import Process as Thread
+#import sys; sys.path.append("..") # uncomment if running the script from the 'examples' folder and did not manualy install poloniex.py
 from poloniex import Poloniex
 # Most attributes of the Loaner object can be changed "on the fly"
 # Useage:
