@@ -16,14 +16,14 @@ class Subscribe2Ticker(ApplicationSession):
 		def onTick(*args): # everytime we get a push message from the polo ticker
 			# update local ticker with received data
 			TICKER[args[0]] = {	'last':args[1], 
-								'lowestAsk':args[2], 
-								'highestBid':args[3], 
-								'percentChange':args[4], 
-								'baseVolume':args[5], 
-								'quoteVolume':args[6], 
-								'isFrozen':args[7], 
-								'24hrHigh':args[8], 
-								'24hrLow':args[9]}
+						'lowestAsk':args[2], 
+						'highestBid':args[3], 
+						'percentChange':args[4], 
+						'baseVolume':args[5], 
+						'quoteVolume':args[6], 
+						'isFrozen':args[7], 
+						'24hrHigh':args[8], 
+						'24hrLow':args[9]}
 			# save/overwrite local ticker json file
 			saveJSON(TICKER,'ticker')
 		yield self.subscribe(onTick, 'ticker')
