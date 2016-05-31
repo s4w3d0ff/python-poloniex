@@ -78,9 +78,9 @@ class Loaner(object):
 			- balances = JSON object received from poloniex (available balances)
 			- offset = number of 'loanToshis' to offset from the top loan order (offset*0.000001)""" 
 		if 'lending' in balances:
-			print('LOANER: Checking for coins in account')
+			print('LOANER: Checking for coins in lending account')
 			for market in balances['lending']:
 				if float(balances['lending'][market]) > self.MINAMOUNT:
 					result = self.POLO.createLoanOrder(market, balances['lending'][market], float(self.POLO.marketLoans(market)['offers'][0]['rate'])+(offset*0.000001))
-					if not 'error' in result: print('LOANER: %f %s %s' % (float(balances['lending'][market]), market, result["message"].lower()))
+					if not 'error' in result: print('LOANER: %s %s %s' % (balances['lending'][market], market, result["message"].lower()))
 					else: print('LOANER: %s' % result['error'])
