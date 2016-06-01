@@ -45,9 +45,7 @@ class Loaner(object):
 				for i in range(self.CHECKINT):
 					if not self.RUNNING: break
 					time.sleep(self.INTERVAL/self.CHECKINT)
-			except Exception as e: 
-			# Sometimes (when losing connection) the loop will 'stall' from urlopen (in poloniex) and I have not figured out a way to capture it yet....
-			# maybe a 'timeout' setting in the revive socket will help...
+			except Exception as e:
 				print(e);time.sleep(self.INTERVAL/self.CHECKINT)
 	
 	def start(self):
