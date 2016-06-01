@@ -10,11 +10,11 @@ from poloniex import Poloniex
 # LOANER: started
 # LOANER: Checking for stale offers
 # LOANER: BTS order 84776305 has been open 4.360000 mins
-# LOANER: Checking for coins in account
+# LOANER: Checking for coins lending in account
 # LOANER: Checking for stale offers
 # LOANER: BTS order 84776305 has been open 6.550000 mins
 # LOANER: BTS loan offer canceled. [84776305]
-# LOANER: Checking for coins in account
+# LOANER: Checking for coins lending in account
 # LOANER: 2249.160702 BTS loan order placed.
 # LOANER: Checking for stale offers
 # LOANER: BTS order 84780014 has been open 2.170000 mins
