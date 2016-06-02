@@ -3,7 +3,7 @@ from twisted.internet import reactor
 from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
 import json
 
-#import sys; sys.path.append("..") # uncomment if running the script from the 'examples' folder and did not manualy install poloniex.py
+#import sys;sys.path.append("..") # uncomment if running the script from the 'examples' folder and did not manualy install poloniex.py
 import poloniex
 
 # Catches the push messages from polo ticker and saves them to a json file
