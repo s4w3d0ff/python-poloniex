@@ -11,10 +11,20 @@ Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
 ```bash
 git clone https://github.com/s4w3d0ff/python-poloniex.git
 cd python-poloniex
-sudo python setup.py install
-```
 
-###Useage:
+# Python 2
+sudo python setup.py install
+# Python 3
+sudo python3 setup.py install
+```
+##Uninstall:
+```bash
+# Python 2
+sudo pip uninstall poloniex
+# Python 3
+sudo pip3 uninstall poloniex
+```
+##Useage:
 #### **Basic Public Setup (no ApiKey/Secret):**
 ```python
 import poloniex
