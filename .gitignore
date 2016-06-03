@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 
+# Ghost Turds
+*.*~
+
 # C extensions
 *.so
 
@@ -22,6 +25,12 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# Compiled python modules.
+*.pyc
+
+# Python egg metadata, regenerated from source files by setuptools.
+*.egg-info
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

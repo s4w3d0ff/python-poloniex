@@ -7,7 +7,14 @@ Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
 - Returns `False` if the command supplied does not exist (this helps on bandwith when testing) .
 - Api Commands have been 'mapped' into lambdas for your conveniance.
 
-###Examples:
+##Install:
+```bash
+git clone https://github.com/s4w3d0ff/python-poloniex
+cd python-poloniex
+sudo setup.py install
+```
+
+###Useage:
 #### **Basic Public Setup (no ApiKey/Secret):**
 ```python
 import poloniex
@@ -60,7 +67,8 @@ print(polo.api('sell', {'currencyPair': 'BTC_CGA', 'rate': '0.003' , 'amount': '
 print(polo.sell('BTC_CGA', '0.003', '10'))
 ```
 
-An example of a WAMP application using the websocket push API can be found here: https://github.com/s4w3d0ff/python-poloniex/blob/master/examples/polocalbox.py
+**An example of a WAMP application using the websocket push API can be found here**:
+https://github.com/s4w3d0ff/python-poloniex/blob/master/examples/polocalbox.py
 
 You like?!
 ```

@@ -1,12 +1,8 @@
-import time
-from multiprocessing.dummy import Process as Thread
-#import sys; sys.path.append("..") # uncomment if running the script from the 'examples' folder and did not manualy install poloniex.py
-from poloniex import Poloniex
-# Most attributes of the Loaner object can be changed "on the fly"
+# NOTE: Most attributes of the loanbot.Loaner object can be changed "on the fly"
 # Useage:
-# >> import loanbot
-# >> bot = loanbot.Loaner('yourPOLOAPIkey','yourSuperAPISecret')
-# >> bot.start()
+# >>> import loanbot
+# >>> bot = loanbot.Loaner('yourPOLOAPIkey','yourSuperAPISecret')
+# >>> bot.start()
 # LOANER: started
 # LOANER: Checking for stale offers
 # LOANER: BTS order 84776305 has been open 4.360000 mins
@@ -18,6 +14,10 @@ from poloniex import Poloniex
 # LOANER: 2249.160702 BTS loan order placed.
 # LOANER: Checking for stale offers
 # LOANER: BTS order 84780014 has been open 2.170000 mins
+
+import time
+from multiprocessing.dummy import Process as Thread
+from poloniex import Poloniex
 
 class Loaner(object):
 	""" Object for control of threaded Loaner loop"""
@@ -33,10 +33,9 @@ class Loaner(object):
 		- Loaner.MINAMOUNT = Minimum amount for creating loan offers [default= 0.01]
 		"""
 		self.POLO = Poloniex(Key, Secret)
-		self.INTERVAL, self.AGELIMIT, self.OFFSET, self.CHECKINT, self.MINAMOUNT, self.RUNNING = [interval, ageLimit, offset, 20, 0.01, False]
-		self.thread = Thread(target=self.run);self.thread.daemon = True
+		self.INTERVAL, self.AGELIMIT, self.OFFSET, self.CHECKINT, self.MINAMOUNT, self.RUNNING, self._thread = [interval, ageLimit, offset, 20, 0.01, False, None]
 	
-	def run(self):
+	def _run(self):
 		""" Main loop that is threaded (set Loaner.RUNNING to 'False' to stop loop)"""
 		while self.RUNNING:
 			try:
@@ -50,12 +49,13 @@ class Loaner(object):
 	
 	def start(self):
 		""" Start Loaner.thread"""
-		self.RUNNING = True;self.thread.start()
+		self._thread = Thread(target=self._run);self._thread.daemon = True
+		self.RUNNING = True;self._thread.start()
 		print('LOANER: started')
 	
 	def stop(self):
 		""" Stop Loaner.thread"""
-		self.RUNNING = False;self.thread.join()
+		self.RUNNING = False;self._thread.join()
 		print('LOANER: stopped')
 	
 	def cancelOldLoans(self, orderList, ageLimit):
