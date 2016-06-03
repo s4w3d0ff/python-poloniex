@@ -9,7 +9,7 @@ Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
 
 ##Install:
 ```bash
-git clone https://github.com/s4w3d0ff/python-poloniex
+git clone https://github.com/s4w3d0ff/python-poloniex.git
 cd python-poloniex
 sudo python setup.py install
 ```
