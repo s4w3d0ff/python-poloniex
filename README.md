@@ -11,7 +11,7 @@ Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
 ```bash
 git clone https://github.com/s4w3d0ff/python-poloniex
 cd python-poloniex
-sudo setup.py install
+sudo python setup.py install
 ```
 
 ###Useage:
