@@ -1,6 +1,9 @@
 #**An API wrapper for Poloniex.com written in Python**
 #####poloniex.py - _Tested on Python 2.7.6 & 3.4.3_
 Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
+> Note: If you have been using the 'oipminer' wrapper and are switching to this one,
+> you will need to create a new Api Key. This is because the 'nonce' will no longer be sequential
+> for that Api Key due to the (small) optimization in the api method (instead of multiplying by 1k, we multiply by 42).
 
 ###Features:
 - ApiKey and Secret are optional if used for just public commands.
