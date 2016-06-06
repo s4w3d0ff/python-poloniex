@@ -2,14 +2,11 @@
 # BTC: 15D8VaZco22GTLVrFMAehXyif6EGf8GMYV
 import sys, json, time, calendar
 import hmac, hashlib
+import requests
 # Tested on Python 2.7.6 & 3.4.3
 if sys.version_info[0] == 3:
-	from urllib.request import Request as request
-	from urllib.request import urlopen
 	from urllib.parse import urlencode
 else:
-	from urllib2 import Request as request
-	from urllib2 import urlopen
 	from urllib import urlencode
 
 # Possible Commands
@@ -241,28 +238,17 @@ class Poloniex(object):
 			if len(self.APIKey) < 2 or len(self.Secret) < 2:
 				print("An APIKey and Secret is needed!");return False
 			url, args['nonce'] = ['https://poloniex.com/tradingApi', int(time.time()*42)]
-			#new
 			post_data = urlencode(args)
 			sign = hmac.new(self.Secret, post_data.encode('utf-8'), hashlib.sha512).hexdigest()
 			headers = {'Sign': sign, 'Key': self.APIKey}
 			ret = requests.post('https://poloniex.com/tradingApi', data=args, headers=headers)
 			return json.loads(ret.text)
-            		#old
-            		"""
-			post_data = urlencode(args).encode('utf8')
-			sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
-			headers = {'Sign': sign, 'Key': self.APIKey}
-			try:
-				ret = urlopen(request(url, post_data, headers))
-				return json.loads(ret.read().decode(encoding='UTF-8'))
-			except Exception as e:
-				raise e
-			"""
+		
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
 			try:
-				ret = urlopen(request(url + urlencode(args)))
-				return json.loads(ret.read().decode(encoding='UTF-8'))
+				ret = requests.post(request(url + urlencode(args)))
+				return json.loads(ret.text)
 			except Exception as e:
 				raise e
 		else:return False
