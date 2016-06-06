@@ -247,7 +247,7 @@ class Poloniex(object):
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
 			try:
-				ret = requests.post(request(url + urlencode(args)))
+				ret = requests.post(url + urlencode(args))
 				return json.loads(ret.text)
 			except Exception as e:
 				raise e
