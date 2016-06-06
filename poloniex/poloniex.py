@@ -241,6 +241,14 @@ class Poloniex(object):
 			if len(self.APIKey) < 2 or len(self.Secret) < 2:
 				print("An APIKey and Secret is needed!");return False
 			url, args['nonce'] = ['https://poloniex.com/tradingApi', int(time.time()*42)]
+			#new
+			post_data = urlencode(args)
+			sign = hmac.new(self.Secret, post_data.encode('utf-8'), hashlib.sha512).hexdigest()
+			headers = {'Sign': sign, 'Key': self.APIKey}
+			ret = requests.post('https://poloniex.com/tradingApi', data=args, headers=headers)
+			return json.loads(ret.text)
+            		#old
+            		"""
 			post_data = urlencode(args).encode('utf8')
 			sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
 			headers = {'Sign': sign, 'Key': self.APIKey}
@@ -249,6 +257,7 @@ class Poloniex(object):
 				return json.loads(ret.read().decode(encoding='UTF-8'))
 			except Exception as e:
 				raise e
+			"""
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
 			try:
