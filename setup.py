@@ -8,6 +8,7 @@ if sys.version_info[0] == 3:
 		author='s4w3d0ff',
 		license='GPL v2',
 		packages=['poloniex'],
+		install_requires=['requests'],
 		zip_safe=False)
 else:
 	setup(name='poloniex',
@@ -17,5 +18,5 @@ else:
 		author='s4w3d0ff',
 		license='GPL v2',
 		packages=['poloniex'],
-		install_requires=['hmac','hashlib'],
+		install_requires=['hmac','hashlib','requests'],
 		zip_safe=False)
