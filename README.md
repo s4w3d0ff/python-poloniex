@@ -27,6 +27,25 @@ sudo pip uninstall poloniex
 # Python 3
 sudo pip3 uninstall poloniex
 ```
+##Update:
+```python
+## Uninstall old ##
+# Python 2
+sudo pip uninstall poloniex
+# Python 3
+sudo pip3 uninstall poloniex
+
+## Pull updates into cloned repo ##
+cd python-poloniex
+git pull
+
+## Install update ##
+# Python 2
+sudo python setup.py install
+# Python 3
+sudo python3 setup.py install
+```
+
 ##Useage:
 #### **Basic Public Setup (no ApiKey/Secret):**
 ```python
