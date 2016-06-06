@@ -3,7 +3,7 @@ from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
 import logging, logging.handlers
 from HTMLParser import HTMLParser
 
-logging.basicConfig(format='%(message)s' ,level=logging.DEBUG)
+logging.basicConfig(format='[%(asctime)s]%(message)s', datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO)
 trolllogger = logging.getLogger()
 trolllogger.addHandler(logging.handlers.RotatingFileHandler('TrollBox.log', maxBytes=10**9, backupCount=5)) # makes 1Gb log files, 5 files max
 
