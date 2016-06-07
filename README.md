@@ -9,7 +9,7 @@ Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
 - ApiKey and Secret are optional if used for just public commands.
 - Returns `False` if the command supplied does not exist (this helps on bandwith when testing) .
 - Api Commands have been 'mapped' into lambdas for your conveniance.
-- The poloniex.Poloniex() object has an optional 'timeout' attribute/arg that adjusts the number of seconds to wait for a response from polo (default is 3 sec)
+- The `poloniex.Poloniex()` object has an optional 'timeout' attribute/arg that adjusts the number of seconds to wait for a response from polo (default = 3 sec)
 
 ##Install:
 ```bash
