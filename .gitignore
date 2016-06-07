@@ -5,6 +5,9 @@ __pycache__/
 # Ghost Turds
 *.*~
 
+# Cleanup script
+cleanrepo.sh
+
 # C extensions
 *.so
 
