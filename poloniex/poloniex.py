@@ -55,6 +55,7 @@ class Poloniex(object):
 		"""
 		self.APIKey = api key supplied by Poloniex
 		self.Secret = secret hash supplied by Poloniex
+		self.timeout = time in sec to wait for an api response (otherwise 'requests.exceptions.Timeout')
 		
 		
 		# Time Placeholders # (MONTH == 30*DAYS)
