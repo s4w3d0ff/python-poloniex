@@ -51,7 +51,7 @@ PRIVATE_COMMANDS = [
 
 class Poloniex(object):
 	"""The Poloniex Object!"""
-	def __init__(self, APIKey='', Secret=''):
+	def __init__(self, APIKey='', Secret='', timeout=3):
 		"""
 		self.APIKey = api key supplied by Poloniex
 		self.Secret = secret hash supplied by Poloniex
@@ -184,6 +184,7 @@ class Poloniex(object):
 		"""
 		self.APIKey = APIKey
 		self.Secret = Secret.encode('utf8')
+		self.timeout = timeout
 		self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = [60, 60*60, 60*60*24, 60*60*24*7, 60*60*24*30, 60*60*24*365]
 		# Convertions
 		self.epoch2UTCstr = lambda timestamp=time.time(), fmat="%Y-%m-%d %H:%M:%S": time.strftime(fmat, time.gmtime(timestamp))
@@ -244,14 +245,12 @@ class Poloniex(object):
 			post_data = urlencode(args)
 			sign = hmac.new(self.Secret, post_data.encode('utf-8'), hashlib.sha512).hexdigest()
 			headers = {'Sign': sign, 'Key': self.APIKey}
-			ret = requests.post('https://poloniex.com/tradingApi', data=args, headers=headers)
+			ret = requests.post('https://poloniex.com/tradingApi', data=args, headers=headers, timeout=self.timeout)
 			return json.loads(ret.text)
-		
+					
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
-			try:
-				ret = requests.post(url + urlencode(args))
-				return json.loads(ret.text)
-			except Exception as e:
-				raise e
+			ret = requests.post(url + urlencode(args), timeout=self.Timeout)
+			return json.loads(ret.text)
+			
 		else:return False
