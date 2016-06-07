@@ -1,6 +1,6 @@
 # Poloniex API wrapper for Python 2.7 and 3 - https://github.com/s4w3d0ff/python-poloniex
 # BTC: 15D8VaZco22GTLVrFMAehXyif6EGf8GMYV
-import sys, json, time, calendar
+import sys, logging, json, time, calendar
 import hmac, hashlib
 import requests
 # Tested on Python 2.7.6 & 3.4.3
@@ -8,6 +8,9 @@ if sys.version_info[0] == 3:
 	from urllib.parse import urlencode
 else:
 	from urllib import urlencode
+# Suppress the requests	module logging output
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 # Possible Commands
 PUBLIC_COMMANDS = [
