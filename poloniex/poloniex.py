@@ -55,6 +55,7 @@ class Poloniex(object):
 		"""
 		self.APIKey = api key supplied by Poloniex
 		self.Secret = secret hash supplied by Poloniex
+		self.timeout = time in sec to wait for an api response (otherwise 'requests.exceptions.Timeout')
 		
 		
 		# Time Placeholders # (MONTH == 30*DAYS)
@@ -103,7 +104,7 @@ class Poloniex(object):
 		self.marketLoans(coin) == self.api('returnLoanOrders',{'currency':<coin>})
 		- returns open loan orders for <coin>
 		
-		self.marketOrders(pair='all', depth=20) == 	self.api('returnOrderBook', {'currencyPair':[pair='all'], 'depth':[depth=20]})
+		self.marketOrders(pair='all', depth=20) == self.api('returnOrderBook', {'currencyPair':[pair='all'], 'depth':[depth=20]})
 		- returns orderbook for [pair='all'] at a depth of [depth=20] orders
 		
 		self.marketChart(pair, period=self.DAY, start=time.time()-self.YEAR, end=time.time()) == self.api('returnChartData', {'currencyPair':<pair>, 'period':[period=self.DAY], 'start':[start=time.time()-self.YEAR], 'end':[end=time.time()]})
@@ -115,6 +116,9 @@ class Poloniex(object):
 		# Private-------------------------
 		self.myTradeHist(pair) == self.api('returnTradeHistory',{'currencyPair':<pair>})
 		- returns your private trade history for <pair>
+		
+		self.myBalances() == polo.api('returnBalances')
+		- returns coin balances
 		
 		self.myAvailBalances() == self.api('returnAvailableAccountBalances')
 		- returns your available account balances
@@ -202,6 +206,7 @@ class Poloniex(object):
 		self.marketTradeHist = lambda pair, start, end=time.time(): json.loads(urlopen(request('https://poloniex.com/public?'+urlencode({'command':'returnTradeHistory', 'currencyPair':str(pair), 'start':str(start), 'end':str(end)}))).read().decode(encoding='UTF-8'))		
 		#PRIVATE COMMANDS
 		self.myTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':str(pair)})
+		self.myBalances = lambda x=0: self.api('returnBalances')
 		self.myAvailBalances = lambda x=0: self.api('returnAvailableAccountBalances')
 		self.myMarginAccountSummary = lambda x=0: self.api('returnMarginAccountSummary')
 		self.myMarginPosition = lambda pair='all': self.api('getMarginPosition',{'currencyPair':str(pair)})
@@ -250,7 +255,7 @@ class Poloniex(object):
 					
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
-			ret = requests.post(url + urlencode(args), timeout=self.Timeout)
+			ret = requests.post(url + urlencode(args), timeout=self.timeout)
 			return json.loads(ret.text)
 			
 		else:return False
