@@ -15,9 +15,11 @@
 # LOANER: Checking for stale offers
 # LOANER: BTS order 84780014 has been open 2.170000 mins
 
-import time
+import time, logging
 from multiprocessing.dummy import Process as Thread
 from poloniex import Poloniex
+
+logging.basicConfig(format='[%(asctime)s]%(message)s', datefmt="%H:%M:%S", level=logging.INFO)
 
 class Loaner(object):
 	""" Object for control of threaded Loaner loop"""
@@ -45,40 +47,40 @@ class Loaner(object):
 					if not self.RUNNING: break
 					time.sleep(self.INTERVAL/self.CHECKINT)
 			except Exception as e:
-				print(e);time.sleep(self.INTERVAL/self.CHECKINT)
+				logging.info(e);time.sleep(self.INTERVAL/self.CHECKINT)
 	
 	def start(self):
 		""" Start Loaner.thread"""
 		self._thread = Thread(target=self._run);self._thread.daemon = True
 		self.RUNNING = True;self._thread.start()
-		print('LOANER: started')
+		logging.info('LOANER: started')
 	
 	def stop(self):
 		""" Stop Loaner.thread"""
 		self.RUNNING = False;self._thread.join()
-		print('LOANER: stopped')
+		logging.info('LOANER: stopped')
 	
 	def cancelOldLoans(self, orderList, ageLimit):
 		""" Cancel loans in <orderList> that are older than <ageLimit>
 			- orderList = JSON object received from poloniex (open loan orders)
 			- ageLimit = max age to allow an order to sit still before canceling (in seconds)""" 
-		print('LOANER: Checking for stale offers')
+		logging.info('LOANER: Checking for stale offers')
 		for market in orderList:
 			for order in orderList[market]:
-				print('LOANER: %s order %s has been open %f mins' % (market, str(order['id']), round((time.time()-self.POLO.UTCstr2epoch(order['date']))/60, 2)))
+				logging.info('LOANER: %s order %s has been open %f2 mins' % (market, str(order['id']), round((time.time()-self.POLO.UTCstr2epoch(order['date']))/60, 2)))
 				if time.time()-self.POLO.UTCstr2epoch(order['date']) > ageLimit:
 					result = self.POLO.cancelLoanOrder(order['id'])
-					if not 'error' in result: print('LOANER: %s %s [%s]' % (market, result["message"].lower(), str(order['id'])))
-					else: print('LOANER: %s' % result['error'])
+					if not 'error' in result: logging.info('LOANER: %s %s [%s]' % (market, result["message"].lower(), str(order['id'])))
+					else: logging.info('LOANER: %s' % result['error'])
 	
 	def createLoans(self, balances, offset):
 		""" Create loans for all markets in <balances> at the <offset> from the top rate
 			- balances = JSON object received from poloniex (available balances)
 			- offset = number of 'loanToshis' to offset from the top loan order (offset*0.000001)""" 
 		if 'lending' in balances:
-			print('LOANER: Checking for coins in lending account')
+			logging.info('LOANER: Checking for coins in lending account')
 			for market in balances['lending']:
 				if float(balances['lending'][market]) > self.MINAMOUNT:
 					result = self.POLO.createLoanOrder(market, balances['lending'][market], float(self.POLO.marketLoans(market)['offers'][0]['rate'])+(offset*0.000001))
-					if not 'error' in result: print('LOANER: %s %s %s' % (balances['lending'][market], market, result["message"].lower()))
-					else: print('LOANER: %s' % result['error'])
+					if not 'error' in result: logging.info('LOANER: %s %s %s' % (balances['lending'][market], market, result["message"].lower()))
+					else: logging.info('LOANER: %s' % result['error'])
