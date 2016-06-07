@@ -27,7 +27,6 @@ class Loaner(object):
 		"""
 		- <Key> - Polo Api key
 		- <Secret> - Polo Api secret
-		- Loaner.RUNNING = bool (set to 'False' to stop main thread)
 		- Loaner.INTERVAL = time in sec to wait between updates [default= 2min]
 		- Loaner.AGELIMIT = max age (in sec) for an open loan offer [default= 5min]
 		- Loaner.OFFSET = offset from the top loan offer rate (offset*0.000001) [default= 2]
@@ -35,16 +34,16 @@ class Loaner(object):
 		- Loaner.MINAMOUNT = Minimum amount for creating loan offers [default= 0.01]
 		"""
 		self.POLO = Poloniex(Key, Secret)
-		self.INTERVAL, self.AGELIMIT, self.OFFSET, self.CHECKINT, self.MINAMOUNT, self.RUNNING, self._thread = [interval, ageLimit, offset, 20, 0.01, False, None]
+		self.INTERVAL, self.AGELIMIT, self.OFFSET, self.CHECKINT, self.MINAMOUNT, self._running, self._thread = [interval, ageLimit, offset, 20, 0.01, False, None]
 	
 	def _run(self):
 		""" Main loop that is threaded (set Loaner.RUNNING to 'False' to stop loop)"""
-		while self.RUNNING:
+		while self._running:
 			try:
 				self.cancelOldLoans(self.POLO.myOpenLoanOrders(), self.AGELIMIT)
 				self.createLoans(self.POLO.myAvailBalances(), self.OFFSET)
 				for i in range(self.CHECKINT):
-					if not self.RUNNING: break
+					if not self._running: break
 					time.sleep(self.INTERVAL/self.CHECKINT)
 			except Exception as e:
 				logging.info(e);time.sleep(self.INTERVAL/self.CHECKINT)
@@ -52,12 +51,12 @@ class Loaner(object):
 	def start(self):
 		""" Start Loaner.thread"""
 		self._thread = Thread(target=self._run);self._thread.daemon = True
-		self.RUNNING = True;self._thread.start()
+		self._running = True;self._thread.start()
 		logging.info('LOANER: started')
 	
 	def stop(self):
 		""" Stop Loaner.thread"""
-		self.RUNNING = False;self._thread.join()
+		self._running = False;self._thread.join()
 		logging.info('LOANER: stopped')
 	
 	def cancelOldLoans(self, orderList, ageLimit):
