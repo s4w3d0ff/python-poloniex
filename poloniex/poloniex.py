@@ -250,7 +250,7 @@ class Poloniex(object):
 					
 		elif command in PUBLIC_COMMANDS:
 			url = 'https://poloniex.com/public?'
-			ret = requests.post(url + urlencode(args), timeout=self.Timeout)
+			ret = requests.post(url + urlencode(args), timeout=self.timeout)
 			return json.loads(ret.text)
 			
 		else:return False
