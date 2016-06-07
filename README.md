@@ -102,6 +102,11 @@ print(polo.sell('BTC_CGA', '0.003', '10'))
 **An example of a WAMP application using the websocket push API can be found here**:
 https://github.com/s4w3d0ff/python-poloniex/blob/master/examples/polocalbox.py
 
+The requirements to run the above example (may be different on different systems see http://autobahn.ws/python/installation.html):
+```bash
+sudo pip install pyOpenSSL
+sudo pip install autobahn[twisted]
+```
 You like?!
 ```
 CGA: aZ1yHGx4nA64aWMDNQKXJrojso7gfQ1J5P
