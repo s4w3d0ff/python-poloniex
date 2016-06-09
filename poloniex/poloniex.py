@@ -42,6 +42,7 @@ PRIVATE_COMMANDS = [
 	'cancelOrder', 
 	'moveOrder', 
 	'withdraw', 
+	'returnFeeInfo', 
 	'transferBalance', 
 	'returnMarginAccountSummary', 
 	'marginBuy', 
@@ -182,6 +183,9 @@ class Poloniex(object):
 		
 		self.withdraw(coin, amount, address) == self.api('withdraw', {'currency':<coin>, 'amount':<amount>, 'address':<address>})
 		- withdraws <coin> <amount> to <address>
+
+		self.returnFeeInfo() == self.api('returnFeeInfo')
+                - return current trading fees and trailing 30-day volume in BTC
 		
 		self.transferBalance(coin, amount, fromac, toac) == self.api('transferBalance', {'currency':<coin>, 'amount':<amount>, 'fromAccount':<fromac>, 'toAccount':<toac>})
 		- moves <coin> <amount> from <fromac> to <toac>
@@ -229,6 +233,7 @@ class Poloniex(object):
 		self.cancelOrder = lambda orderId: self.api('cancelOrder', {'orderNumber':str(orderId)})
 		self.moveOrder = lambda orderId, rate, amount: self.api('moveOrder', {'orderNumber':str(orderId), 'rate':str(rate), 'amount':str(amount)})
 		self.withdraw = lambda coin, amount, address: self.api('withdraw', {'currency':str(coin), 'amount':str(amount), 'address':str(address)})
+		self.returnFeeInfo = lambda: self.api('returnFeeInfo')
 		self.transferBalance = lambda coin, amount, fromac, toac: self.api('transferBalance', {'currency':str(coin), 'amount':str(amount), 'fromAccount':str(fromac), 'toAccount':str(toac)})
 		
 	def api(self, command, args={}):
