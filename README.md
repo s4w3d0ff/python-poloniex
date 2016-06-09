@@ -1,7 +1,7 @@
 #**An API wrapper for Poloniex.com written in Python**
 #####poloniex.py - _Tested on Python 2.7.6 & 3.4.3_
-Based off of a wrapper written by 'oipminer': [http://pastebin.com/8fBVpjaj]
-> Note: If you have been using the 'oipminer' wrapper and are switching to this one,
+Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
+> Note: If you have been using the 'oipminer' wrapper (or any other) and are switching to this one,
 > you will need to create a new Api Key. This is because the 'nonce' will no longer be sequential
 > for that Api Key due to the (small) optimization in the api method (instead of multiplying by 1k, we multiply by 42).
 
@@ -101,10 +101,9 @@ print(polo.api('sell', {'currencyPair': 'BTC_CGA', 'rate': '0.003' , 'amount': '
 print(polo.sell('BTC_CGA', '0.003', '10'))
 ```
 
-**An example of a WAMP application using the websocket push API can be found here**:
-https://github.com/s4w3d0ff/python-poloniex/blob/master/examples/polocalbox.py
+**An example of a WAMP application using the websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/blob/master/examples/polocalbox.py)**
 
-The requirements to run the above example (may be different on different systems see http://autobahn.ws/python/installation.html):
+The requirements to run the above example (may be different on different systems, [see here](http://autobahn.ws/python/installation.html) for official documentaion):
 ```bash
 sudo pip install pyOpenSSL
 sudo pip install autobahn[twisted]
