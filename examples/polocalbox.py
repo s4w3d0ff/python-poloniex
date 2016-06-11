@@ -8,27 +8,53 @@ trolllogger = logging.getLogger()
 trolllogger.addHandler(logging.handlers.RotatingFileHandler('TrollBox.log', maxBytes=10**9, backupCount=5)) # makes 1Gb log files, 5 files max
 
 W  = '\033[0m'  # white (normal)
-R  = '\033[31m' # red
-G  = '\033[32m' # green
-O  = '\033[33m' # orange
-B  = '\033[34m' # blue
-P  = '\033[35m' # purple
-C  = '\033[36m' # cyan
-GR = '\033[37m' # gray
+R  = lambda text: '\033[31m'+text+W # red
+G  = lambda text: '\033[32m'+text+W # green
+O  = lambda text: '\033[33m'+text+W # orange
+B  = lambda text: '\033[34m'+text+W # blue
+P  = lambda text: '\033[35m'+text+W # purp
+C  = lambda text: '\033[36m'+text+W # cyan
+GR = lambda text: '\033[37m'+text+W # gray
 
 class Subscribe2Trollbox(ApplicationSession):
 	@inlineCallbacks
 	def onJoin(self, details):
 		h = HTMLParser()
-		self.alternator = True
+		self.alter = True
+		self.name = 'busoni@poloniex'
+		self.mods = ["Chickenliver", "MobyDick", "InfiniteJest", "cybiko123", "SweetJohnDee", "Wizwa", "OldManKidd", "Quantum", "busoni@poloniex", "wausboot", "Chewpacabra", "j33hopper", "Futterwacken"]
+		self.friends = []
 		def onTroll(*args):
 			try:
-				logging.info('%s(%s)%s%s:%s %s' % (R, str(args[4]), O, args[2], W, h.unescape(args[3]) ))
+				logging.debug(args[0].upper(), str(args[1]))
+				name = args[2]
+				message = h.unescape(args[3])
+				# Name coloring
+				if name == self.name: # own name is green
+					name = G(name)
+				elif name in self.friends: # friends are purple
+					name = P(name)
+				elif name in self.mods: # mods are orange
+					name = O(name)
+				else:
+					name = C(name) # others are cyan
+				# Message Coloring
+				if self.name in message: # mentions are green
+					message = G(message)
+				elif 'POLO TIP' in message: #(supposed) polo tips are blue
+					message = B(message)
+				# other messages alternate from 'normal' to gray
+				elif self.alter:
+					message = GR(message)
+					self.alter = False
+				else:
+					message = message
+					self.alter = True
+				logging.info('%s(%s): %s' % (name, B(str(args[4])), message))
 			except IndexError: # Sometimes its a banhammer!
 				#(u'trollboxMessage', 6943543, u'Banhammer', u'OldManKidd banned for 0 minutes by OldManKidd.')
-				logging.info('%s%s%s %s' % (R, args[2], W, h.unescape(args[3]) ))
-			finally:
-				logging.debug(args[0].upper(), str(args[1]))
+				logging.info('%s %s' % (R(name), R(message) ))
+				
 		yield self.subscribe(onTroll, 'trollbox')
 
 
