@@ -2,7 +2,7 @@
 
 #### _Examples require the poloniex module and/or autobahn installed._
 
-##Push Api Setup
+##Push Api Setup (see: http://autobahn.ws/python/installation.html)
 ### From fresh Ubuntu 14.04 install (Python 2.7):
 ```bash
 sudo apt-get install build-essential libssl-dev python-pip python-dev libffi-dev git
