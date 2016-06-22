@@ -112,9 +112,6 @@ class Poloniex(object):
 		self.marketChart(pair, period=self.DAY, start=time.time()-self.YEAR, end=time.time()) == self.api('returnChartData', {'currencyPair':<pair>, 'period':[period=self.DAY], 'start':[start=time.time()-self.YEAR], 'end':[end=time.time()]})
 		- returns chart data for <pair> with a candle period of [period=self.DAY] starting from [start=time.time()-self.YEAR] and ending at [end=time.time()]
 		
-		self.marketTradeHist(pair, start, end) == json.loads(urlopen(Request('https://poloniex.com/public?'+urlencode({'command':'returnTradeHistory', 'currencyPair':<pair>, 'start':<start>, 'end':[end=time.time()]}))).read().decode(encoding='UTF-8'))		
-		- returns trade public trade history for <pair> starting at <start> and ending at [end=time.time()]
-		
 		# Private-------------------------
 		self.myTradeHist(pair) == self.api('returnTradeHistory',{'currencyPair':<pair>})
 		- returns your private trade history for <pair>
@@ -172,7 +169,7 @@ class Poloniex(object):
 		
 		self.marginSell(pair, rate, amount, lendingRate=2) == self.api('marginSell', {'currencyPair':<pair>, 'rate':<rate>, 'amount':<amount>, 'lendingRate':[lendingRate=2]})
 		- creates a margin sell order for <pair> at <rate> for <amount> with [lendingRate=2]%
-				
+	
 		self.buy(pair, rate, amount) == self.api('buy', {'currencyPair':<pair>, 'rate':<rate>, 'amount':<amount>})
 		- creates buy order for <pair> at <rate> for <amount>
 		
@@ -242,9 +239,12 @@ class Poloniex(object):
 		self.transferBalance = lambda coin, amount, fromac, toac: self.api('transferBalance', {'currency':str(coin), 'amount':str(amount), 'fromAccount':str(fromac), 'toAccount':str(toac)})
 	
 	def marketTradeHist(self, pair, start, end=time.time()):
+		"""
+		- returns trade public trade history for <pair> starting at <start> and ending at [end=time.time()]
+		"""
 		ret = requests.post('https://poloniex.com/public?'+urlencode({'command':'returnTradeHistory', 'currencyPair':str(pair), 'start':str(start), 'end':str(end)}), timeout=self.timeout)
 		return json.loads(ret.text)
-
+	
 	def api(self, command, args={}):
 		"""
 		Main Api Function
