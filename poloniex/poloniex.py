@@ -211,7 +211,6 @@ class Poloniex(object):
 		self.marketLoans = lambda coin: self.api('returnLoanOrders',{'currency':str(coin)})
 		self.marketOrders = lambda pair='all', depth=20: self.api('returnOrderBook', {'currencyPair':str(pair), 'depth':str(depth)})
 		self.marketChart = lambda pair, period=self.DAY, start=time.time()-self.YEAR, end=time.time(): self.api('returnChartData', {'currencyPair':str(pair), 'period':str(period), 'start':str(start), 'end':str(end)})
-		self.marketTradeHist = lambda pair, start, end=time.time(): json.loads(urlopen(request('https://poloniex.com/public?'+urlencode({'command':'returnTradeHistory', 'currencyPair':str(pair), 'start':str(start), 'end':str(end)}))).read().decode(encoding='UTF-8'))		
 		#PRIVATE COMMANDS
 		self.myTradeHist = lambda pair: self.api('returnTradeHistory',{'currencyPair':str(pair)})
 		self.myBalances = lambda x=0: self.api('returnBalances')
@@ -241,7 +240,11 @@ class Poloniex(object):
 		self.withdraw = lambda coin, amount, address: self.api('withdraw', {'currency':str(coin), 'amount':str(amount), 'address':str(address)})
 		self.returnFeeInfo = lambda x=0: self.api('returnFeeInfo')
 		self.transferBalance = lambda coin, amount, fromac, toac: self.api('transferBalance', {'currency':str(coin), 'amount':str(amount), 'fromAccount':str(fromac), 'toAccount':str(toac)})
-		
+	
+	def marketTradeHist(self, pair, start, end=time.time()):
+		ret = requests.post('https://poloniex.com/public?'+urlencode({'command':'returnTradeHistory', 'currencyPair':str(pair), 'start':str(start), 'end':str(end)}), timeout=self.timeout)
+		return json.loads(ret.text)
+
 	def api(self, command, args={}):
 		"""
 		Main Api Function
