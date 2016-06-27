@@ -1,15 +1,16 @@
 #**An API wrapper for Poloniex.com written in Python**
 #####poloniex.py - _Tested on Python 2.7.6 & 3.4.3_
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
-> Note: If you have been using the 'oipminer' wrapper (or any other) and are switching to this one,
-> you will need to create a new Api Key. This is because the 'nonce' will no longer be sequential
-> for that Api Key due to the (small) optimization in the api method (instead of multiplying by 1k, we multiply by 42).
+##UPDATE!
+> If you have been using an older version of python-poloniex wrapper you may need to generate new api keys. This is because (once again) the nonce has been 'optimized' (even more)! This is the last time, I swear...
 
 ###Features:
 - ApiKey and Secret are optional if used for just public commands.
-- Returns `False` if the command supplied does not exist (this helps on bandwith when testing) .
 - Api Commands have been 'mapped' into lambdas for your conveniance.
 - The `poloniex.Poloniex()` object has an optional 'timeout' attribute/arg that adjusts the number of seconds to wait for a response from polo (default = 3 sec)
+- Optional api 'coach' can restrict the amount of calls per sec, keeping your api calls (that aren't threaded) under the limit (6 calls per sec). Activate the coach using `poloniex.Poloniex(coach=True)` when creating the polo object or by defining `polo._coaching = True`.
+- We now build apon our _last_ 'nonce' instead of generating a new one everytime a private command is called! Nonces are now incemented by 1.
+- Raises `ValueError` if the command supplied does not exist or if the api keys are not defined
 
 ##Install:
 ```bash
