@@ -1,6 +1,4 @@
 from setuptools import setup
-import sys
-
 setup(name='poloniex',
 	version='0.1',
 	description='Poloniex API wrapper for Python 2.7 and 3',
