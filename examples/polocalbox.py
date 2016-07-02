@@ -22,7 +22,7 @@ class Subscribe2Trollbox(ApplicationSession):
 		h = HTMLParser()
 		self.alter = True
 		self.name = 'busoni@poloniex'
-		self.mods = ["Chickenliver", "MobyDick", "InfiniteJest", "cybiko123", "SweetJohnDee", "Wizwa", "OldManKidd", "Quantum", "busoni@poloniex", "wausboot", "Chewpacabra", "j33hopper", "Futterwacken"]
+		self.mods = ["Chickenliver", "MobyDick", "InfiniteJest", "cybiko123", "SweetJohnDee", "smallbit", "Wizwa", "OldManKidd", "Quantum", "busoni@poloniex", "Thoth", "wausboot", "SolarPowered", "qubix", "Oldgamejunk", "Chewpacabra", "j33hopper", "Futterwacken", "ultim8um", "Atlanta"]
 		self.friends = []
 		def onTroll(*args):
 			try:
