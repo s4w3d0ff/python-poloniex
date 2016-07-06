@@ -12,9 +12,9 @@ class Ticker(object):
 		self.markets = poloniex.Poloniex().marketTicker()
 		
 	def startTicker(self):
-		""" Starts the 'tickcitcher' subprocess and 'tickCatcher' thread"""
+		""" Starts the 'tickcatcher' subprocess and 'tickCatcher' thread"""
 		self._tickerP = Popen(["python", "tickcatcher.py"], stdout=PIPE, bufsize=1)
-		print('TICKER: tickcitcher subprocess started')
+		print('TICKER: tickcatcher subprocess started')
 		
 		self._tickerT = Thread(target=self.tickCatcher);self._tickerT.daemon = True
 		self._tickerT.start()
