@@ -199,7 +199,7 @@ class Poloniex(object):
 		# Call coach, set nonce
 		self.apiCoach, self.nonce = [Coach(), int(time.time())]
 		# Grab keys, set timeout, ditch coach?
-		self.APIKey, self.Secret, self.timeout, self._coaching = [APIKey, Secret.encode('utf8'), timeout, coach]
+		self.APIKey, self.Secret, self.timeout, self._coaching = [APIKey, Secret, timeout, coach]
 		# Set time labels
 		self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = [60, 60*60, 60*60*24, 60*60*24*7, 60*60*24*30, 60*60*24*365]
 		# Convertions
@@ -272,7 +272,7 @@ class Poloniex(object):
 					raise ValueError("An APIKey and Secret is needed for private api commands!")
 				args['nonce'] = self.nonce
 				post_data = urlencode(args)
-				sign = hmac.new(self.Secret, post_data.encode('utf-8'), hashlib.sha512).hexdigest()
+				sign = hmac.new(self.Secret.encode('utf-8'), post_data.encode('utf-8'), hashlib.sha512).hexdigest()
 				headers = {'Sign': sign, 'Key': self.APIKey}
 				ret = requests.post('https://poloniex.com/tradingApi', data=args, headers=headers, timeout=self.timeout)
 				return json.loads(ret.text)
