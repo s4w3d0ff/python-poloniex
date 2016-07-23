@@ -16,5 +16,6 @@ sudo pip install autobahn[twisted]
 git clone https://github.com/s4w3d0ff/python-poloniex.git && cd python-poloniex/examples
 python polocalbox.py
 ```
-## Async Poloniex api
-Also you could use [this](https://github.com/absortium/poloniex-api) async poloniex library.
+>NOTE: There is also another wonderful api wrapper that wraps the WAMP polo api using asyncio:
+
+>[https://github.com/absortium/poloniex-api](https://github.com/absortium/poloniex-api)
