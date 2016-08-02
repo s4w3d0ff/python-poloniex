@@ -6,7 +6,7 @@ Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 
 ###Features:
 - ApiKey and Secret are optional if used for just public commands.
-- Api Commands have been 'mapped' into lambdas for your conveniance.
+- Api Commands have been 'mapped' into methods for your conveniance.
 - The `poloniex.Poloniex()` object has an optional 'timeout' attribute/arg that adjusts the number of seconds to wait for a response from polo (default = 3 sec)
 - Optional api 'coach' can restrict the amount of calls per sec, keeping your api calls (that aren't threaded) under the limit (6 calls per sec). Activate the coach using `poloniex.Poloniex(coach=True)` when creating the polo object or by defining `polo._coaching = True`.
 - We now build apon our _last_ 'nonce' instead of generating a new one everytime a private command is called! Nonces are now incemented by 1.
