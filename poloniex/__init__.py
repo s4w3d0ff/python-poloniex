@@ -95,7 +95,7 @@ class Poloniex(object):
         logging.getLogger("requests").setLevel(loglevel)
         logging.getLogger("urllib3").setLevel(loglevel)
         # Call coach, set nonce
-        self.apiCoach, self.nonce = [Coach(), int(time.time())]
+        self.apiCoach, self.nonce = [Coach(), int(time.time()*1000)]
         # Grab keys, set timeout, ditch coach?
         self.APIKey, self.Secret, self.timeout, self._coaching = \
             [APIKey, Secret, timeout, coach]
