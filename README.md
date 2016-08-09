@@ -76,7 +76,7 @@ print(BTCloanOrders)
 ```python
 import poloniex
 
-polo = poloniex.Poloniex('yourApiKeyHere','yourSecretKeyHere123', timeout=1)
+polo = poloniex.Poloniex('your-Api-Key-Here-xxxx','yourSecretKeyHere123456789', timeout=1)
 # or
 polo.APIKey = 'your-Api-Key-Here-xxxx'
 polo.Secret = 'yourSecretKeyHere123456789'
