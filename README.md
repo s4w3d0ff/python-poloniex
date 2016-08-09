@@ -78,8 +78,8 @@ import poloniex
 
 polo = poloniex.Poloniex('yourApiKeyHere','yourSecretKeyHere123', timeout=1)
 # or
-polo.APIKey = 'yourApiKeyHere'
-polo.Secret = 'yourSecretKeyHere123'
+polo.APIKey = 'your-Api-Key-Here-xxxx'
+polo.Secret = 'yourSecretKeyHere123456789'
 ```
 ##### Get all your balances
 ```python
