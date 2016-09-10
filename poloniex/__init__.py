@@ -221,23 +221,23 @@ class Poloniex(object):
         return str(round(float(floatN)*100, decimalP))+"%"
 
     # --PUBLIC COMMANDS-------------------------------------------------------
-    def marketTicker(self):
+    def returnTicker(self):
         """ Returns the ticker for all markets """
         return self.api('returnTicker')
 
-    def marketVolume(self):
+    def return24hVolume(self):
         """ Returns the volume data for all markets """
         return self.api('return24hVolume')
 
-    def marketStatus(self):
+    def returnCurrencies(self):
         """ Returns additional market info for all markets """
         return self.api('returnCurrencies')
 
-    def marketLoans(self, coin):
+    def returnLoanOrders(self, coin):
         """ Returns loan order book for <coin> """
         return self.api('returnLoanOrders', {'currency': str(coin)})
 
-    def marketOrders(self, pair='all', depth=20):
+    def returnOrderBook(self, pair='all', depth=20):
         """
         Returns orderbook for [pair='all']
         at a depth of [depth=20] orders
@@ -247,7 +247,7 @@ class Poloniex(object):
                     'depth': str(depth)
                     })
 
-    def marketChart(self, pair, period=False, start=False, end=time.time()):
+    def returnChartData(self, pair, period=False, start=False, end=time.time()):
         """
         Returns chart data for <pair> with a candle period of
         [period=self.DAY] starting from [start=time.time()-self.YEAR]
@@ -264,7 +264,7 @@ class Poloniex(object):
                     'end': str(end)
                     })
 
-    def marketTradeHist(self, pair, start=False, end=time.time()):
+    def publicTradeHistory(self, pair, start=False, end=time.time()):
         """
         Returns public trade history for <pair>
         starting at <start> and ending at [end=time.time()]
@@ -287,60 +287,60 @@ class Poloniex(object):
             raise e
 
     # --PRIVATE COMMANDS------------------------------------------------------
-    def myTradeHist(self, pair):
+    def myTradeHistory(self, pair):
         """ Returns private trade history for <pair> """
         return self.api('returnTradeHistory', {'currencyPair': str(pair)})
 
-    def myBalances(self):
+    def returnBalances(self):
         """ Returns coin balances """
         return self.api('returnBalances')
 
-    def myAvailBalances(self):
+    def returnAvailableAccountBalances(self):
         """ Returns available account balances """
         return self.api('returnAvailableAccountBalances')
 
-    def myMarginAccountSummary(self):
+    def returnMarginAccountSummary(self):
         """ Returns margin account summary """
         return self.api('returnMarginAccountSummary')
 
-    def myMarginPosition(self, pair='all'):
+    def getMarginPosition(self, pair='all'):
         """ Returns margin position for [pair='all'] """
         return self.api('getMarginPosition', {'currencyPair': str(pair)})
 
-    def myCompleteBalances(self):
+    def returnCompleteBalances(self):
         """ Returns complete balances """
         return self.api('returnCompleteBalances')
 
-    def myAddresses(self):
+    def returnDepositAddresses(self):
         """ Returns deposit addresses """
         return self.api('returnDepositAddresses')
 
-    def myOrders(self, pair='all'):
+    def returnOpenOrders(self, pair='all'):
         """ Returns your open orders for [pair='all'] """
         return self.api('returnOpenOrders', {'currencyPair': str(pair)})
 
-    def myDepositsWithdraws(self):
+    def returnDepositsWithdrawals(self):
         """ Returns deposit/withdraw history """
         return self.api('returnDepositsWithdrawals')
 
-    def myTradeableBalances(self):
+    def returnTradableBalances(self):
         """ Returns tradable balances """
         return self.api('returnTradableBalances')
 
-    def myActiveLoans(self):
+    def returnActiveLoans(self):
         """ Returns active loans """
         return self.api('returnActiveLoans')
 
-    def myOpenLoanOrders(self):
+    def returnOpenLoanOffers(self):
         """ Returns open loan offers """
         return self.api('returnOpenLoanOffers')
 
     # --Trading functions-- #
-    def orderTrades(self, orderId):
+    def returnOrderTrades(self, orderId):
         """ Returns any trades made from <orderId> """
         return self.api('returnOrderTrades', {'orderNumber': str(orderId)})
 
-    def createLoanOrder(self, coin, amount, rate):
+    def createLoanOffer(self, coin, amount, rate):
         """ Creates a loan offer for <coin> for <amount> at <rate> """
         return self.api('createLoanOffer', {
                     'currency': str(coin),
@@ -350,7 +350,7 @@ class Poloniex(object):
                     'lendingRate': str(rate)
                     })
 
-    def cancelLoanOrder(self, orderId):
+    def cancelLoanOffer(self, orderId):
         """ Cancels the loan offer with <orderId> """
         return self.api('cancelLoanOffer', {'orderNumber': str(orderId)})
 
