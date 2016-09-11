@@ -24,16 +24,14 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 import sys
-import time
-import calendar
 import logging
 import json
 import hmac
 import hashlib
 # pip
 import requests
-
-from coach import Coach
+# local
+from coach import Coach, time
 
 if sys.version_info[0] is 3:
     from urllib.parse import urlencode
@@ -109,13 +107,13 @@ class Poloniex(object):
         logging.getLogger("requests").setLevel(loglevel)
         logging.getLogger("urllib3").setLevel(loglevel)
         # Call coach, set nonce
-        self.apiCoach, self.nonce = [Coach(), int(time.time()*1000)]
+        self.apiCoach, self.nonce = Coach(), int(time()*1000)
         # Grab keys, set timeout, ditch coach?
         self.APIKey, self.Secret, self.timeout, self._coaching = \
-            [APIKey, Secret, timeout, coach]
+            APIKey, Secret, timeout, coach
         # Set time labels
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
-            [60, 60*60, 60*60*24, 60*60*24*7, 60*60*24*30, 60*60*24*365]
+            60, 60*60, 60*60*24, 60*60*24*7, 60*60*24*30, 60*60*24*365
 
     # -----------------Meat and Potatos---------------------------------------
     def api(self, command, args={}):
@@ -182,46 +180,6 @@ class Poloniex(object):
         else:
             raise ValueError("Invalid Command!")
 
-    # Convertions
-    def epoch2UTCstr(self, timestamp=time.time(), fmat="%Y-%m-%d %H:%M:%S"):
-        """
-        - takes epoch timestamp
-        - returns UTC formated string
-        """
-        return time.strftime(fmat, time.gmtime(timestamp))
-
-    def UTCstr2epoch(self, datestr=False, fmat="%Y-%m-%d %H:%M:%S"):
-        """
-        - takes UTC date string
-        - returns epoch
-        """
-        if not datestr:
-            datestr = self.epoch2UTCstr()
-        return calendar.timegm(time.strptime(datestr, fmat))
-
-    def epoch2localstr(self, timestamp=time.time(), fmat="%Y-%m-%d %H:%M:%S"):
-        """
-        - takes epoch timestamp
-        - returns localtimezone formated string
-        """
-        return time.strftime(fmat, time.localtime(timestamp))
-
-    def localstr2epoch(self, datestr=False, fmat="%Y-%m-%d %H:%M:%S"):
-        """
-        - takes localtimezone date string,
-        - returns epoch
-        """
-        if not datestr:
-            datestr = self.epoch2UTCstr()
-        return time.mktime(time.strptime(datestr, fmat))
-
-    def float2roundPercent(self, floatN, decimalP=2):
-        """
-        - takes float
-        - returns percent(*100) rounded to the Nth decimal place as a string
-        """
-        return str(round(float(floatN)*100, decimalP))+"%"
-
     # --PUBLIC COMMANDS-------------------------------------------------------
     def marketTicker(self):
         """ Returns the ticker for all markets """
@@ -249,16 +207,16 @@ class Poloniex(object):
                     'depth': str(depth)
                     })
 
-    def marketChart(self, pair, period=False, start=False, end=time.time()):
+    def marketChart(self, pair, period=False, start=False, end=time()):
         """
         Returns chart data for <pair> with a candle period of
-        [period=self.DAY] starting from [start=time.time()-self.YEAR]
-        and ending at [end=time.time()]
+        [period=self.DAY] starting from [start=time()-self.YEAR]
+        and ending at [end=time()]
         """
         if not period:
             period = self.DAY
         if not start:
-            start = time.time()-(self.MONTH*2)
+            start = time()-(self.MONTH*2)
         return self.api('returnChartData', {
                     'currencyPair': str(pair),
                     'period': str(period),
@@ -266,15 +224,15 @@ class Poloniex(object):
                     'end': str(end)
                     })
 
-    def marketTradeHist(self, pair, start=False, end=time.time()):
+    def marketTradeHist(self, pair, start=False, end=time()):
         """
         Returns public trade history for <pair>
-        starting at <start> and ending at [end=time.time()]
+        starting at <start> and ending at [end=time()]
         """
         if self._coaching:
             self.apiCoach.wait()
         if not start:
-            start = time.time()-self.HOUR
+            start = time()-self.HOUR
         try:
             ret = requests.post(
                     'https://poloniex.com/public?'+urlencode({
