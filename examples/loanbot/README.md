@@ -1,1 +1,3 @@
-See loaner.conf
+See conf.json to configure
+
+`python loanbot.py conf.json`
