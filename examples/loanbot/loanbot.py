@@ -1,7 +1,7 @@
 #!/usr/bin python
 import time, logging, os, json
 from multiprocessing.dummy import Process as Thread
-from poloniex import Poloniex
+import poloniex
 
 W  = '\033[0m'  # white (normal)
 R  = lambda text: '\033[31m'+text+W # red
@@ -18,13 +18,13 @@ class Loaner(object):
         if os.path.isfile(config):
             with open(config) as f:
                 config = json.load(f)
-        self.polo = Poloniex(config['key'], config['secret'])
+        self.polo = poloniex.Poloniex(config['key'], config['secret'])
         self.coins = config['coins']
         self.interval = config['interval']
         self._running, self._thread = False, None
         self.openLoanOffers = None
         self.availBalance = None
-        
+
     def _run(self):
         """
         Main loop that is threaded (set Loaner._running to 'False' to stop loop)
@@ -92,7 +92,7 @@ class Loaner(object):
 
     def getLoanOfferAge(self, coin, order):
         # epoch of loan order 
-        opnTime = self.polo.UTCstr2epoch(order['date'])
+        opnTime = poloniex.UTCstr2epoch(order['date'])
         # current epoch
         curTime = time.time()
         # age of open order = now-timeopened
@@ -129,7 +129,8 @@ class Loaner(object):
                     result = self.polo.createLoanOrder(
                             coin,
                             self.availBalance['lending'][coin],
-                            topRate+(self.coins[coin]['offset']*0.000001)
+                            topRate+(self.coins[coin]['offset']*0.000001),
+                            autoRenew = 1
                             )
                     if 'error' in result:
                         raise RuntimeError(P('LOANER:')+' %s' % R(result['error']))
