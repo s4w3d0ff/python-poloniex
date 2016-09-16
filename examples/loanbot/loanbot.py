@@ -1,6 +1,7 @@
 #!/usr/bin python
 import time, logging, os, json
 from multiprocessing.dummy import Process as Thread
+import poloniex
 from poloniex import Poloniex
 
 W  = '\033[0m'  # white (normal)

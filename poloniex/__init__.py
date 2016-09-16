@@ -31,7 +31,7 @@ import hashlib
 # pip
 import requests
 # local
-from coach import Coach, time
+from coach import *
 
 if sys.version_info[0] is 3:
     from urllib.parse import urlencode
