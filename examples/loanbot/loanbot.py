@@ -24,7 +24,7 @@ class Loaner(object):
         self._running, self._thread = False, None
         self.openLoanOffers = None
         self.availBalance = None
-        
+
     def _run(self):
         """
         Main loop that is threaded (set Loaner._running to 'False' to stop loop)
@@ -92,7 +92,7 @@ class Loaner(object):
 
     def getLoanOfferAge(self, coin, order):
         # epoch of loan order 
-        opnTime = self.poloniex.UTCstr2epoch(order['date'])
+        opnTime = poloniex.UTCstr2epoch(order['date'])
         # current epoch
         curTime = time.time()
         # age of open order = now-timeopened
