@@ -2,7 +2,6 @@
 import time, logging, os, json
 from multiprocessing.dummy import Process as Thread
 import poloniex
-from poloniex import Poloniex
 
 W  = '\033[0m'  # white (normal)
 R  = lambda text: '\033[31m'+text+W # red
@@ -19,7 +18,7 @@ class Loaner(object):
         if os.path.isfile(config):
             with open(config) as f:
                 config = json.load(f)
-        self.polo = Poloniex(config['key'], config['secret'])
+        self.polo = poloniex.Poloniex(config['key'], config['secret'])
         self.coins = config['coins']
         self.interval = config['interval']
         self._running, self._thread = False, None
@@ -93,7 +92,7 @@ class Loaner(object):
 
     def getLoanOfferAge(self, coin, order):
         # epoch of loan order 
-        opnTime = self.polo.UTCstr2epoch(order['date'])
+        opnTime = self.poloniex.UTCstr2epoch(order['date'])
         # current epoch
         curTime = time.time()
         # age of open order = now-timeopened

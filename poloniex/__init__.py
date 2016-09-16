@@ -300,13 +300,13 @@ class Poloniex(object):
         """ Returns any trades made from <orderId> """
         return self.api('returnOrderTrades', {'orderNumber': str(orderId)})
 
-    def createLoanOrder(self, coin, amount, rate):
+    def createLoanOrder(self, coin, amount, rate, autoRenew=0, duration=2):
         """ Creates a loan offer for <coin> for <amount> at <rate> """
         return self.api('createLoanOffer', {
                     'currency': str(coin),
                     'amount': str(amount),
-                    'duration': str(2),
-                    'autoRenew': str(0),
+                    'duration': str(duration),
+                    'autoRenew': str(autoRenew),
                     'lendingRate': str(rate)
                     })
 
