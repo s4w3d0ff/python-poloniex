@@ -11,40 +11,16 @@ Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 
 
 ##Install:
-```bash
-git clone https://github.com/s4w3d0ff/python-poloniex.git
-cd python-poloniex
+#### Python 2
+`pip install git+https://github.com/s4w3d0ff/python-poloniex.git`
+#### Python 3
+`pip3 install git+https://github.com/s4w3d0ff/python-poloniex.git`
 
-# Python 2
-python setup.py install --user
-# Python 3
-python3 setup.py install --user
-```
 ##Uninstall:
-```bash
-# Python 2
-pip uninstall poloniex
-# Python 3
-pip3 uninstall poloniex
-```
-##Update:
-```python
-## Uninstall old ##
-# Python 2
-pip uninstall poloniex
-# Python 3
-pip3 uninstall poloniex
-
-## Pull updates into cloned repo ##
-cd python-poloniex
-git pull
-
-## Install update ##
-# Python 2
-python setup.py install --user
-# Python 3
-python3 setup.py install --user
-```
+#### Python 2
+`pip uninstall poloniex`
+#### Python 3
+`pip3 uninstall poloniex`
 
 ##Useage:
 #### **Basic Public Setup (no ApiKey/Secret):**
