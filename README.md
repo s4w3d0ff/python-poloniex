@@ -16,24 +16,24 @@ git clone https://github.com/s4w3d0ff/python-poloniex.git
 cd python-poloniex
 
 # Python 2
-sudo python setup.py install
+python setup.py install --user
 # Python 3
-sudo python3 setup.py install
+python3 setup.py install --user
 ```
 ##Uninstall:
 ```bash
 # Python 2
-sudo pip uninstall poloniex
+pip uninstall poloniex --user
 # Python 3
-sudo pip3 uninstall poloniex
+pip3 uninstall poloniex --user
 ```
 ##Update:
 ```python
 ## Uninstall old ##
 # Python 2
-sudo pip uninstall poloniex
+pip uninstall poloniex --user
 # Python 3
-sudo pip3 uninstall poloniex
+pip3 uninstall poloniex --user
 
 ## Pull updates into cloned repo ##
 cd python-poloniex
@@ -41,9 +41,9 @@ git pull
 
 ## Install update ##
 # Python 2
-sudo python setup.py install
+python setup.py install --user
 # Python 3
-sudo python3 setup.py install
+python3 setup.py install --user
 ```
 
 ##Useage:

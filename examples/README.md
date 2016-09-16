@@ -9,8 +9,8 @@ See http://autobahn.ws/python/installation.html for more details on other system
 ```bash
 sudo apt-get install build-essential libssl-dev python-pip python-dev libffi-dev git
 sudo bash -c 'apt-get update && apt-get upgrade'
-sudo pip install service_identity
-sudo pip install autobahn[twisted]
+pip install service_identity --user
+pip install autobahn[twisted] --user
 ```
 ```bash
 git clone https://github.com/s4w3d0ff/python-poloniex.git && cd python-poloniex/examples
