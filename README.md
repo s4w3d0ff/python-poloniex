@@ -23,17 +23,17 @@ python3 setup.py install --user
 ##Uninstall:
 ```bash
 # Python 2
-pip uninstall poloniex --user
+pip uninstall poloniex
 # Python 3
-pip3 uninstall poloniex --user
+pip3 uninstall poloniex
 ```
 ##Update:
 ```python
 ## Uninstall old ##
 # Python 2
-pip uninstall poloniex --user
+pip uninstall poloniex
 # Python 3
-pip3 uninstall poloniex --user
+pip3 uninstall poloniex
 
 ## Pull updates into cloned repo ##
 cd python-poloniex

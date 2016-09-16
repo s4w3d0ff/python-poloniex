@@ -129,7 +129,8 @@ class Loaner(object):
                     result = self.polo.createLoanOrder(
                             coin,
                             self.availBalance['lending'][coin],
-                            topRate+(self.coins[coin]['offset']*0.000001)
+                            topRate+(self.coins[coin]['offset']*0.000001),
+                            autoRenew = 1
                             )
                     if 'error' in result:
                         raise RuntimeError(P('LOANER:')+' %s' % R(result['error']))
