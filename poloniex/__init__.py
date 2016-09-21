@@ -267,9 +267,9 @@ class Poloniex(object):
         """ Returns margin position for [pair='all'] """
         return self.api('getMarginPosition', {'currencyPair': str(pair)})
 
-    def myCompleteBalances(self):
+    def myCompleteBalances(self, account='all'):
         """ Returns complete balances """
-        return self.api('returnCompleteBalances')
+        return self.api('returnCompleteBalances', {'account': str(account)})
 
     def myAddresses(self):
         """ Returns deposit addresses """
