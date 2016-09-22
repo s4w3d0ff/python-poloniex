@@ -1,8 +1,11 @@
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
 import logging, logging.handlers
-from HTMLParser import HTMLParser
-
+import sys
+if sys.version_info[0] is 3:
+	from html.parser import HTMLParser
+else:
+	from HTMLParser import HTMLParser
 logging.basicConfig(format='[%(asctime)s]%(message)s', datefmt="%H:%M:%S", level=logging.INFO)
 trolllogger = logging.getLogger()
 trolllogger.addHandler(logging.handlers.RotatingFileHandler('TrollBox.log', maxBytes=10**9, backupCount=5)) # makes 1Gb log files, 5 files max
