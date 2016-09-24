@@ -4,7 +4,7 @@ Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 
 ###Features:
 - ApiKey and Secret are optional if used for just public commands.
-- Api Commands have been 'mapped' into methods within the Poloniex class for your conveniance.
+- Api Commands have been 'mapped' into methods within the Poloniex class for your convenience.
 - Raises `ValueError` if the command supplied does not exist or if the api keys are not defined
 - The `poloniex.Poloniex()` object has an optional 'timeout' attribute/arg that adjusts the number of seconds to wait for a response from polo (default = 3 sec)
 - Optional api 'coach' can restrict the amount of calls per sec, keeping your api calls (that aren't threaded) under the limit (6 calls per sec). Activate the coach using `poloniex.Poloniex(coach=True)` when creating the polo object or by defining `polo._coaching = True`.
@@ -20,7 +20,7 @@ Python 3:
 pip3 install git+https://github.com/s4w3d0ff/python-poloniex.git
 ```
 
-##Uninstall:
+## Uninstall:
 Python 2: 
 ```
 pip uninstall poloniex
@@ -31,7 +31,7 @@ Python 3:
 pip3 uninstall poloniex
 ```
 
-##Useage:
+## Usage:
 #### **Basic Public Setup (no ApiKey/Secret):**
 ```python
 import poloniex
