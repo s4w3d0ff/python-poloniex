@@ -23,7 +23,6 @@
 #    You should have received a copy of the GNU General Public License along
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-import sys
 import logging
 import json
 import hmac
@@ -32,10 +31,10 @@ import hashlib
 import requests
 # local
 from .coach import *
-
-if sys.version_info[0] is 3:
+# python 3 voodoo
+try:
     from urllib.parse import urlencode
-else:
+except ImportError:
     from urllib import urlencode
 
 # Possible Commands
