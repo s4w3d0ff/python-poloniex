@@ -28,7 +28,7 @@ from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
 # pip
-from requests import _post
+from requests import post as _post
 # local
 from .coach import (
         Coach, epoch2UTCstr, epoch2localstr,
