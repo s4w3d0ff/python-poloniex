@@ -38,21 +38,11 @@ import poloniex
 polo = poloniex.Poloniex()
 polo.timeout = 2
 ```
-##### Get Ticker
+##### Ticker
 ```python
-ticker = polo.api('returnTicker')
-print(ticker['BTC_CGA'])
+print(polo('returnTicker')['BTC_CGA'])
 # or
-ticker = polo.marketTicker()
-print(ticker['BTC_CGA'])
-```
-##### Get Market Loan Orders
-```python
-BTCloanOrders = polo.api('returnLoanOrders',{'currency':'BTC'})
-print(BTCloanOrders)
-# or 
-BTCloanOrders = polo.marketLoans('BTC')
-print(BTCloanOrders)
+print(polo.returnTicker()['BTC_CGA'])
 ```
 
 #### **Basic Private Setup (ApiKey/Secret required):**
@@ -71,18 +61,6 @@ print("I have %s CGA!" % balance['CGA'])
 # or
 balance = polo.myBalances()
 print("I have %s BTC!" % balance['BTC'])
-```
-##### Make new CGA deposit address
-```python
-print(polo.api('generateNewAddress',{'currency':'CGA'}))
-# or
-print(polo.generateNewAddress('CGA'))
-```
-##### Sell 10 CGA for 0.003 BTC
-```python
-print(polo.api('sell', {'currencyPair': 'BTC_CGA', 'rate': '0.003' , 'amount': '10' }))
-# or
-print(polo.sell('BTC_CGA', '0.003', '10'))
 ```
 
 **Examples of WAMP applications using the websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
