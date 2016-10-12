@@ -60,6 +60,7 @@ PRIVATE_COMMANDS = [
     'returnOpenLoanOffers',
     'returnOrderTrades',
     'returnActiveLoans',
+    'returnLendingHistory',
     'createLoanOffer',
     'cancelLoanOffer',
     'toggleAutoRenew',
