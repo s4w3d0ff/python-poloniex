@@ -25,7 +25,7 @@ class TickPitcher(ApplicationSession):
 
 class Ticker(object):
     def __init__(self):
-        self.ticker = poloniex.Poloniex().marketTicker()
+        self.ticker = poloniex.Poloniex(extend=True).marketTicker()
         self._appRunner = ApplicationRunner(
                     u"wss://api.poloniex.com:443", u"realm1"
                     )
