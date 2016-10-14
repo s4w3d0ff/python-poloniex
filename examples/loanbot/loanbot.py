@@ -18,7 +18,7 @@ class Loaner(object):
         if os.path.isfile(config):
             with open(config) as f:
                 config = json.load(f)
-        self.polo = poloniex.Poloniex(config['key'], config['secret'])
+        self.polo = poloniex.Poloniex(config['key'], config['secret'], extend=True)
         self.coins = config['coins']
         self.interval = config['interval']
         self._running, self._thread = False, None
