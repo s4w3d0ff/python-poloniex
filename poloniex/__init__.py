@@ -238,7 +238,7 @@ class Poloniex(object):
 
     def returnLoanOrders(self, coin):
         """ Returns loan order book for <coin> """
-        return self.__call__('returnLoanOrders', {'currency': str(coin)})
+        return self.__call__('returnLoanOrders', {'currency': str(coin).upper()})
 
     def returnOrderBook(self, pair='all', depth=20):
         """
@@ -246,7 +246,7 @@ class Poloniex(object):
         at a depth of [depth=20] orders
         """
         return self.__call__('returnOrderBook', {
-                    'currencyPair': str(pair),
+                    'currencyPair': str(pair).upper(),
                     'depth': str(depth)
                     })
 
@@ -261,7 +261,7 @@ class Poloniex(object):
         if not start:
             start = time()-(self.MONTH*2)
         return self.__call__('returnChartData', {
-                    'currencyPair': str(pair),
+                    'currencyPair': str(pair).upper(),
                     'period': str(period),
                     'start': str(start),
                     'end': str(end)
@@ -280,7 +280,7 @@ class Poloniex(object):
             ret = _post(
                     'https://poloniex.com/public?'+_urlencode({
                         'command': 'returnTradeHistory',
-                        'currencyPair': str(pair),
+                        'currencyPair': str(pair).upper(),
                         'start': str(start),
                         'end': str(end)
                         }),
@@ -292,7 +292,7 @@ class Poloniex(object):
     # --PRIVATE COMMANDS------------------------------------------------------
     def returnTradeHistory(self, pair):
         """ Returns private trade history for <pair> """
-        return self.__call__('returnTradeHistory', {'currencyPair': str(pair)})
+        return self.__call__('returnTradeHistory', {'currencyPair': str(pair).upper()})
 
     def returnBalances(self):
         """ Returns coin balances """
@@ -308,7 +308,7 @@ class Poloniex(object):
 
     def getMarginPosition(self, pair='all'):
         """ Returns margin position for [pair='all'] """
-        return self.__call__('getMarginPosition', {'currencyPair': str(pair)})
+        return self.__call__('getMarginPosition', {'currencyPair': str(pair).upper()})
 
     def returnCompleteBalances(self, account='all'):
         """ Returns complete balances """
@@ -320,7 +320,7 @@ class Poloniex(object):
 
     def returnOpenOrders(self, pair='all'):
         """ Returns your open orders for [pair='all'] """
-        return self.__call__('returnOpenOrders', {'currencyPair': str(pair)})
+        return self.__call__('returnOpenOrders', {'currencyPair': str(pair).upper()})
 
     def returnDepositsWithdrawals(self):
         """ Returns deposit/withdraw history """
@@ -357,7 +357,7 @@ class Poloniex(object):
     def createLoanOffer(self, coin, amount, rate, autoRenew=0, duration=2):
         """ Creates a loan offer for <coin> for <amount> at <rate> """
         return self.__call__('createLoanOffer', {
-                    'currency': str(coin),
+                    'currency': str(coin).upper(),
                     'amount': str(amount),
                     'duration': str(duration),
                     'autoRenew': str(autoRenew),
@@ -374,12 +374,12 @@ class Poloniex(object):
 
     def closeMarginPosition(self, pair):
         """ Closes the margin position on <pair> """
-        return self.__call__('closeMarginPosition', {'currencyPair': str(pair)})
+        return self.__call__('closeMarginPosition', {'currencyPair': str(pair).upper()})
 
     def marginBuy(self, pair, rate, amount, lendingRate=2):
         """ Creates <pair> margin buy order at <rate> for <amount> """
         return self.__call__('marginBuy', {
-                    'currencyPair': str(pair),
+                    'currencyPair': str(pair).upper(),
                     'rate': str(rate),
                     'amount': str(amount),
                     'lendingRate': str(lendingRate)
@@ -388,7 +388,7 @@ class Poloniex(object):
     def marginSell(self, pair, rate, amount, lendingRate=2):
         """ Creates <pair> margin sell order at <rate> for <amount> """
         return self.__call__('marginSell', {
-                    'currencyPair': str(pair),
+                    'currencyPair': str(pair).upper(),
                     'rate': str(rate),
                     'amount': str(amount),
                     'lendingRate': str(lendingRate)
@@ -397,7 +397,7 @@ class Poloniex(object):
     def buy(self, pair, rate, amount):
         """ Creates buy order for <pair> at <rate> for <amount> """
         return self.__call__('buy', {
-                    'currencyPair': str(pair),
+                    'currencyPair': str(pair).upper(),
                     'rate': str(rate),
                     'amount': str(amount)
                     })
@@ -405,7 +405,7 @@ class Poloniex(object):
     def sell(self, pair, rate, amount):
         """ Creates sell order for <pair> at <rate> for <amount> """
         return self.__call__('sell', {
-                    'currencyPair': str(pair),
+                    'currencyPair': str(pair).upper(),
                     'rate': str(rate),
                     'amount': str(amount)
                     })
@@ -425,7 +425,7 @@ class Poloniex(object):
     def withdraw(self, coin, amount, address):
         """ Withdraws <coin> <amount> to <address> """
         return self.__call__('withdraw', {
-                    'currency': str(coin),
+                    'currency': str(coin).upper(),
                     'amount': str(amount),
                     'address': str(address)
                     })
@@ -436,7 +436,7 @@ class Poloniex(object):
         - moves <coin> <amount> from <fromac> to <toac>
         """
         return self.__call__('transferBalance', {
-                    'currency': str(coin),
+                    'currency': str(coin).upper(),
                     'amount': str(amount),
                     'fromAccount': str(fromac),
                     'toAccount': str(toac)
