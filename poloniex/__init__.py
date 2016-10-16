@@ -224,26 +224,26 @@ class Poloniex(object):
     # --PUBLIC COMMANDS-------------------------------------------------------
     def returnTicker(self):
         """ Returns the ticker for all markets """
-        return self.api('returnTicker')
+        return self.__call__('returnTicker')
 
     def return24hVolume(self):
         """ Returns the volume data for all markets """
-        return self.api('return24hVolume')
+        return self.__call__('return24hVolume')
 
     def returnCurrencies(self):
         """ Returns additional market info for all markets """
-        return self.api('returnCurrencies')
+        return self.__call__('returnCurrencies')
 
     def returnLoanOrders(self, coin):
         """ Returns loan order book for <coin> """
-        return self.api('returnLoanOrders', {'currency': str(coin)})
+        return self.__call__('returnLoanOrders', {'currency': str(coin)})
 
     def returnOrderBook(self, pair='all', depth=20):
         """
         Returns orderbook for [pair='all']
         at a depth of [depth=20] orders
         """
-        return self.api('returnOrderBook', {
+        return self.__call__('returnOrderBook', {
                     'currencyPair': str(pair),
                     'depth': str(depth)
                     })
@@ -258,7 +258,7 @@ class Poloniex(object):
             period = self.DAY
         if not start:
             start = time()-(self.MONTH*2)
-        return self.api('returnChartData', {
+        return self.__call__('returnChartData', {
                     'currencyPair': str(pair),
                     'period': str(period),
                     'start': str(start),
@@ -290,55 +290,55 @@ class Poloniex(object):
     # --PRIVATE COMMANDS------------------------------------------------------
     def returnTradeHistory(self, pair):
         """ Returns private trade history for <pair> """
-        return self.api('returnTradeHistory', {'currencyPair': str(pair)})
+        return self.__call__('returnTradeHistory', {'currencyPair': str(pair)})
 
     def returnBalances(self):
         """ Returns coin balances """
-        return self.api('returnBalances')
+        return self.__call__('returnBalances')
 
     def returnAvailableAccountBalances(self):
         """ Returns available account balances """
-        return self.api('returnAvailableAccountBalances')
+        return self.__call__('returnAvailableAccountBalances')
 
     def returnMarginAccountSummary(self):
         """ Returns margin account summary """
-        return self.api('returnMarginAccountSummary')
+        return self.__call__('returnMarginAccountSummary')
 
     def getMarginPosition(self, pair='all'):
         """ Returns margin position for [pair='all'] """
-        return self.api('getMarginPosition', {'currencyPair': str(pair)})
+        return self.__call__('getMarginPosition', {'currencyPair': str(pair)})
 
     def returnCompleteBalances(self, account='all'):
         """ Returns complete balances """
-        return self.api('returnCompleteBalances', {'account': str(account)})
+        return self.__call__('returnCompleteBalances', {'account': str(account)})
 
     def returnDepositAddresses(self):
         """ Returns deposit addresses """
-        return self.api('returnDepositAddresses')
+        return self.__call__('returnDepositAddresses')
 
     def returnOpenOrders(self, pair='all'):
         """ Returns your open orders for [pair='all'] """
-        return self.api('returnOpenOrders', {'currencyPair': str(pair)})
+        return self.__call__('returnOpenOrders', {'currencyPair': str(pair)})
 
     def returnDepositsWithdrawals(self):
         """ Returns deposit/withdraw history """
-        return self.api('returnDepositsWithdrawals')
+        return self.__call__('returnDepositsWithdrawals')
 
     def returnTradableBalances(self):
         """ Returns tradable balances """
-        return self.api('returnTradableBalances')
+        return self.__call__('returnTradableBalances')
 
     def returnActiveLoans(self):
         """ Returns active loans """
-        return self.api('returnActiveLoans')
+        return self.__call__('returnActiveLoans')
 
     def returnOpenLoanOffers(self):
         """ Returns open loan offers """
-        return self.api('returnOpenLoanOffers')
+        return self.__call__('returnOpenLoanOffers')
 
     def returnFeeInfo(self):
         """ Returns current trading fees and trailing 30-day volume in BTC """
-        return self.api('returnFeeInfo')
+        return self.__call__('returnFeeInfo')
 
     def returnLendingHistory(self, start=False, end=time(), limit=False):
         if not start:
@@ -350,11 +350,11 @@ class Poloniex(object):
 
     def returnOrderTrades(self, orderId):
         """ Returns any trades made from <orderId> """
-        return self.api('returnOrderTrades', {'orderNumber': str(orderId)})
+        return self.__call__('returnOrderTrades', {'orderNumber': str(orderId)})
 
     def createLoanOffer(self, coin, amount, rate, autoRenew=0, duration=2):
         """ Creates a loan offer for <coin> for <amount> at <rate> """
-        return self.api('createLoanOffer', {
+        return self.__call__('createLoanOffer', {
                     'currency': str(coin),
                     'amount': str(amount),
                     'duration': str(duration),
@@ -364,19 +364,19 @@ class Poloniex(object):
 
     def cancelLoanOffer(self, orderId):
         """ Cancels the loan offer with <orderId> """
-        return self.api('cancelLoanOffer', {'orderNumber': str(orderId)})
+        return self.__call__('cancelLoanOffer', {'orderNumber': str(orderId)})
 
     def toggleAutoRenew(self, orderId):
         """ Toggles the 'autorenew' feature on loan <orderId> """
-        return self.api('toggleAutoRenew', {'orderNumber': str(orderId)})
+        return self.__call__('toggleAutoRenew', {'orderNumber': str(orderId)})
 
     def closeMarginPosition(self, pair):
         """ Closes the margin position on <pair> """
-        return self.api('closeMarginPosition', {'currencyPair': str(pair)})
+        return self.__call__('closeMarginPosition', {'currencyPair': str(pair)})
 
     def marginBuy(self, pair, rate, amount, lendingRate=2):
         """ Creates <pair> margin buy order at <rate> for <amount> """
-        return self.api('marginBuy', {
+        return self.__call__('marginBuy', {
                     'currencyPair': str(pair),
                     'rate': str(rate),
                     'amount': str(amount),
@@ -385,7 +385,7 @@ class Poloniex(object):
 
     def marginSell(self, pair, rate, amount, lendingRate=2):
         """ Creates <pair> margin sell order at <rate> for <amount> """
-        return self.api('marginSell', {
+        return self.__call__('marginSell', {
                     'currencyPair': str(pair),
                     'rate': str(rate),
                     'amount': str(amount),
@@ -394,7 +394,7 @@ class Poloniex(object):
 
     def buy(self, pair, rate, amount):
         """ Creates buy order for <pair> at <rate> for <amount> """
-        return self.api('buy', {
+        return self.__call__('buy', {
                     'currencyPair': str(pair),
                     'rate': str(rate),
                     'amount': str(amount)
@@ -402,7 +402,7 @@ class Poloniex(object):
 
     def sell(self, pair, rate, amount):
         """ Creates sell order for <pair> at <rate> for <amount> """
-        return self.api('sell', {
+        return self.__call__('sell', {
                     'currencyPair': str(pair),
                     'rate': str(rate),
                     'amount': str(amount)
@@ -410,11 +410,11 @@ class Poloniex(object):
 
     def cancelOrder(self, orderId):
         """ Cancels order <orderId> """
-        return self.api('cancelOrder', {'orderNumber': str(orderId)})
+        return self.__call__('cancelOrder', {'orderNumber': str(orderId)})
 
     def moveOrder(self, orderId, rate, amount):
         """ Moves an order by <orderId> to <rate> for <amount> """
-        return self.api('moveOrder', {
+        return self.__call__('moveOrder', {
                     'orderNumber': str(orderId),
                     'rate': str(rate),
                     'amount': str(amount)
@@ -422,7 +422,7 @@ class Poloniex(object):
 
     def withdraw(self, coin, amount, address):
         """ Withdraws <coin> <amount> to <address> """
-        return self.api('withdraw', {
+        return self.__call__('withdraw', {
                     'currency': str(coin),
                     'amount': str(amount),
                     'address': str(address)
@@ -433,7 +433,7 @@ class Poloniex(object):
         Transfers coins between accounts (exchange, margin, lending)
         - moves <coin> <amount> from <fromac> to <toac>
         """
-        return self.api('transferBalance', {
+        return self.__call__('transferBalance', {
                     'currency': str(coin),
                     'amount': str(amount),
                     'fromAccount': str(fromac),
