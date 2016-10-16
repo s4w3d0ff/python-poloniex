@@ -85,7 +85,7 @@ PRIVATE_COMMANDS = [
 class Poloniex(object):
     """The Poloniex Object!"""
     def __init__(
-            self, APIKey=False, Secret=False,
+            self, Key=False, Secret=False,
             timeout=3, coach=False, loglevel=logging.WARNING, extend=False):
         """
         APIKey = str api key supplied by Poloniex
@@ -113,8 +113,8 @@ class Poloniex(object):
         # Call coach, set nonce
         self.apiCoach, self.nonce = Coach(), int(time()*1000)
         # Grab keys, set timeout, ditch coach?
-        self.APIKey, self.Secret, self.timeout, self._coaching = \
-            APIKey, Secret, timeout, coach
+        self.Key, self.Secret, self.timeout, self._coaching = \
+            Key, Secret, timeout, coach
         # Set time labels
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
             60, 60*60, 60*60*24, 60*60*24*7, 60*60*24*30, 60*60*24*365
@@ -177,7 +177,7 @@ class Poloniex(object):
         # private?
         if command in PRIVATE_COMMANDS:
             # check for keys
-            if not self.APIKey or not self.Secret:
+            if not self.Key or not self.Secret:
                 raise ValueError("APIKey and Secret needed!")
             # set nonce
             args['nonce'] = self.nonce
@@ -196,7 +196,7 @@ class Poloniex(object):
                         data=args,
                         headers={
                             'Sign': sign.hexdigest(),
-                            'Key': self.APIKey
+                            'Key': self.Key
                             },
                         timeout=self.timeout)
                 # return decoded json
