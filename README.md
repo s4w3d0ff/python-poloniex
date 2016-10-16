@@ -35,47 +35,46 @@ pip3 uninstall poloniex
 #### **Basic Public Setup (no ApiKey/Secret):**
 ```python
 from poloniex import Poloniex
-poloApi = Poloniex()
+polo = Poloniex()
 ```
 ##### Ticker
 ```python
-print(poloApi('returnTicker')['BTC_CGA'])
+print(polo('returnTicker')['BTC_CGA'])
 # or
-print(poloApi.returnTicker()['BTC_CGA'])
+print(polo.returnTicker()['BTC_CGA'])
 ```
 #### Public trade history:
 ```python
-print(poloApi.marketTradeHist('BTC_CGA'))
+print(polo.marketTradeHist('BTC_CGA'))
 ```
 
 #### **Basic Private Setup (ApiKey/Secret required):**
 ```python
 import poloniex
-poloApi = poloniex.Poloniex('your-Api-Key-Here-xxxx','yourSecretKeyHere123456789')
+polo = poloniex.Poloniex('your-Api-Key-Here-xxxx','yourSecretKeyHere123456789')
 # or
-poloApi.APIKey = 'your-Api-Key-Here-xxxx'
-poloApi.Secret = 'yourSecretKeyHere123456789'
+polo.Key = 'your-Api-Key-Here-xxxx'
+polo.Secret = 'yourSecretKeyHere123456789'
 ```
 ##### Get all your balances
 ```python
-balance = poloApi.returnBalances()
+balance = polo.returnBalances()
 print("I have %s CGA!" % balance['CGA'])
 # or
-balance = poloApi('returnBalances')
+balance = polo('returnBalances')
 print("I have %s BTC!" % balance['BTC'])
 ```
 
 #### **Extended Setup:**
 ```python
 from poloniex import Poloniex
-poloApi = Poloniex('your-Api-Key-Here-xxxx','yourSecretKeyHere123456789', extend=True)
+polo = Poloniex('your-Api-Key-Here-xxxx','yourSecretKeyHere123456789', extend=True)
 ```
 Using `extend=True` will wrap most of the api commands with more 'meaningful' namespaces.
 ```python
-print(poloApi.marketTicker())
-print(poloApi.myBalances())
+print(polo.marketTicker())
+print(polo.myBalances())
 ```
-See [poloniex/__init__.py#L131](https://github.com/s4w3d0ff/python-poloniex/blob/v0.1.3/poloniex/__init__.py#L131) for more info.
 
 **Examples of WAMP applications using the websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
 
