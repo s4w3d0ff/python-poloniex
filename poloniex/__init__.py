@@ -130,6 +130,7 @@ class Poloniex(object):
         # added them here for those who wish to use them.
         if extend:
             # Public
+            self.api = self.__call__
             self.marketTicker = self.returnTicker
             self.marketVolume = self.return24hVolume
             self.marketStatus = self.returnCurrencies
