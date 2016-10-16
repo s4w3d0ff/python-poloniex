@@ -43,7 +43,7 @@ print(polo('returnTicker')['BTC_CGA'])
 # or
 print(polo.returnTicker()['BTC_CGA'])
 ```
-#### Public trade history:
+##### Public trade history:
 ```python
 print(polo.marketTradeHist('BTC_CGA'))
 ```
