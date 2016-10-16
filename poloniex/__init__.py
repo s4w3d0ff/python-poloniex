@@ -31,10 +31,10 @@ from hashlib import sha512 as _sha512
 from requests import post as _post
 # local
 from .coach import (
-        Coach, epoch2UTCstr, epoch2localstr,
-        UTCstr2epoch, localstr2epoch, float2roundPercent,
-        time
-        )
+    Coach, epoch2UTCstr, epoch2localstr,
+    UTCstr2epoch, localstr2epoch, float2roundPercent,
+    time
+    )
 # python 3 voodoo
 try:
     from urllib.parse import urlencode as _urlencode
@@ -178,7 +178,7 @@ class Poloniex(object):
         if command in PRIVATE_COMMANDS:
             # check for keys
             if not self.Key or not self.Secret:
-                raise ValueError("APIKey and Secret needed!")
+                raise ValueError("A Key and Secret needed!")
             # set nonce
             args['nonce'] = self.nonce
 
