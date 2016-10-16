@@ -222,8 +222,10 @@ class Poloniex(object):
             raise ValueError("Invalid Command!")
 
     # --PUBLIC COMMANDS-------------------------------------------------------
-    def returnTicker(self):
+    def returnTicker(self, market=False):
         """ Returns the ticker for all markets """
+        if market:
+            return self.__call__('returnTicker')[market.upper()]
         return self.__call__('returnTicker')
 
     def return24hVolume(self):
