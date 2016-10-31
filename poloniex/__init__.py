@@ -24,7 +24,6 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 import logging
-from decimal import Decimal
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
@@ -201,7 +200,7 @@ class Poloniex(object):
                             },
                         timeout=self.timeout)
                 # return decoded json
-                return _loads(ret.text, parse_float=Decimal)
+                return _loads(ret.text, parse_float=str)
 
             except Exception as e:
                 raise e
@@ -216,7 +215,7 @@ class Poloniex(object):
                 ret = _post(
                         'https://poloniex.com/public?' + _urlencode(args),
                         timeout=self.timeout)
-                return _loads(ret.text, parse_float=Decimal)
+                return _loads(ret.text, parse_float=str)
             except Exception as e:
                 raise e
         else:
@@ -286,7 +285,7 @@ class Poloniex(object):
                         'end': str(end)
                         }),
                     timeout=self.timeout)
-            return _loads(ret.text, parse_float=Decimal)
+            return _loads(ret.text, parse_float=str)
         except Exception as e:
             raise e
 
