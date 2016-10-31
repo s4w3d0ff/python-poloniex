@@ -200,8 +200,11 @@ class Poloniex(object):
                             },
                         timeout=self.timeout)
                 # return decoded json
-                return _loads(ret.text, parse_float=unicode)
-
+                try:
+                    return _loads(ret.text, parse_float=unicode)
+                except NameError:
+                    return _loads(ret.text, parse_float=str)
+                
             except Exception as e:
                 raise e
 
@@ -215,7 +218,10 @@ class Poloniex(object):
                 ret = _post(
                         'https://poloniex.com/public?' + _urlencode(args),
                         timeout=self.timeout)
-                return _loads(ret.text, parse_float=unicode)
+                try:
+                    return _loads(ret.text, parse_float=unicode)
+                except NameError:
+                    return _loads(ret.text, parse_float=str)
             except Exception as e:
                 raise e
         else:
@@ -285,7 +291,10 @@ class Poloniex(object):
                         'end': str(end)
                         }),
                     timeout=self.timeout)
-            return _loads(ret.text, parse_float=unicode)
+            try:
+                return _loads(ret.text, parse_float=unicode)
+            except NameError:
+                return _loads(ret.text, parse_float=str)
         except Exception as e:
             raise e
 
