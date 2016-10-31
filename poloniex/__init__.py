@@ -199,15 +199,13 @@ class Poloniex(object):
                             'Key': self.Key
                             },
                         timeout=self.timeout)
-                # return decoded json
-                try:
-                    return _loads(ret.text, parse_float=unicode)
-                except NameError:
-                    return _loads(ret.text, parse_float=str)
-                
             except Exception as e:
                 raise e
-
+            # return decoded json
+            try:
+                return _loads(ret.text, parse_float=unicode)
+            except NameError:
+                return _loads(ret.text, parse_float=str)
             finally:
                 # increment nonce(no matter what)
                 self.nonce += 1
@@ -218,12 +216,12 @@ class Poloniex(object):
                 ret = _post(
                         'https://poloniex.com/public?' + _urlencode(args),
                         timeout=self.timeout)
-                try:
-                    return _loads(ret.text, parse_float=unicode)
-                except NameError:
-                    return _loads(ret.text, parse_float=str)
             except Exception as e:
                 raise e
+            try:
+                return _loads(ret.text, parse_float=unicode)
+            except NameError:
+                return _loads(ret.text, parse_float=str)
         else:
             raise ValueError("Invalid Command!")
 
@@ -291,12 +289,12 @@ class Poloniex(object):
                         'end': str(end)
                         }),
                     timeout=self.timeout)
-            try:
-                return _loads(ret.text, parse_float=unicode)
-            except NameError:
-                return _loads(ret.text, parse_float=str)
         except Exception as e:
             raise e
+        try:
+            return _loads(ret.text, parse_float=unicode)
+        except NameError:
+            return _loads(ret.text, parse_float=str)
 
     # --PRIVATE COMMANDS------------------------------------------------------
     def returnTradeHistory(self, pair):
