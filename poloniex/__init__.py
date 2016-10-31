@@ -201,14 +201,14 @@ class Poloniex(object):
                         timeout=self.timeout)
             except Exception as e:
                 raise e
+            finally:
+                # increment nonce(no matter what)
+                self.nonce += 1
             # return decoded json
             try:
                 return _loads(ret.text, parse_float=unicode)
             except NameError:
                 return _loads(ret.text, parse_float=str)
-            finally:
-                # increment nonce(no matter what)
-                self.nonce += 1
 
         # public?
         elif command in PUBLIC_COMMANDS:
