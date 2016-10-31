@@ -199,15 +199,16 @@ class Poloniex(object):
                             'Key': self.Key
                             },
                         timeout=self.timeout)
-                # return decoded json
-                return _loads(ret.text)
-
             except Exception as e:
                 raise e
-
             finally:
                 # increment nonce(no matter what)
                 self.nonce += 1
+            # return decoded json
+            try:
+                return _loads(ret.text, parse_float=unicode)
+            except NameError:
+                return _loads(ret.text, parse_float=str)
 
         # public?
         elif command in PUBLIC_COMMANDS:
@@ -215,9 +216,12 @@ class Poloniex(object):
                 ret = _post(
                         'https://poloniex.com/public?' + _urlencode(args),
                         timeout=self.timeout)
-                return _loads(ret.text)
             except Exception as e:
                 raise e
+            try:
+                return _loads(ret.text, parse_float=unicode)
+            except NameError:
+                return _loads(ret.text, parse_float=str)
         else:
             raise ValueError("Invalid Command!")
 
@@ -285,9 +289,12 @@ class Poloniex(object):
                         'end': str(end)
                         }),
                     timeout=self.timeout)
-            return _loads(ret.text)
         except Exception as e:
             raise e
+        try:
+            return _loads(ret.text, parse_float=unicode)
+        except NameError:
+            return _loads(ret.text, parse_float=str)
 
     # --PRIVATE COMMANDS------------------------------------------------------
     def returnTradeHistory(self, pair):
