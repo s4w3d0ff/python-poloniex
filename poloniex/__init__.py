@@ -24,6 +24,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 import logging
+from decimal import Decimal
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
