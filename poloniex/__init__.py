@@ -23,7 +23,6 @@
 #    You should have received a copy of the GNU General Public License along
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-import logging
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
@@ -33,7 +32,7 @@ from requests import post as _post
 from .coach import (
     Coach, epoch2UTCstr, epoch2localstr,
     UTCstr2epoch, localstr2epoch, float2roundPercent,
-    time
+    time, logging
     )
 # python 3 voodoo
 try:
