@@ -28,6 +28,7 @@ from hmac import new as _new
 from hashlib import sha512 as _sha512
 # pip
 from requests import post as _post
+from requests import get as _get
 # local
 from .coach import (
     Coach, epoch2UTCstr, epoch2localstr,
@@ -212,7 +213,7 @@ class Poloniex(object):
         # public?
         elif command in PUBLIC_COMMANDS:
             try:
-                ret = _post(
+                ret = _get(
                         'https://poloniex.com/public?' + _urlencode(args),
                         timeout=self.timeout)
             except Exception as e:
@@ -280,7 +281,7 @@ class Poloniex(object):
         if not start:
             start = time()-self.HOUR
         try:
-            ret = _post(
+            ret = _get(
                     'https://poloniex.com/public?'+_urlencode({
                         'command': 'returnTradeHistory',
                         'currencyPair': str(pair).upper(),
