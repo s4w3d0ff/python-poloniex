@@ -2,6 +2,7 @@
 # https://github.com/s4w3d0ff/python-poloniex
 # BTC: 15D8VaZco22GTLVrFMAehXyif6EGf8GMYV
 # TODO:
+#   [x] PEP8
 #   [ ] Add better logger access
 #   [ ] Find out if request module has the equivalent to urlencode
 #   [ ] Add Push Api application wrapper
@@ -27,12 +28,13 @@ from hmac import new as _new
 from hashlib import sha512 as _sha512
 # pip
 from requests import post as _post
+from requests import get as _get
 # local
 from .coach import (
     Coach, epoch2UTCstr, epoch2localstr,
     UTCstr2epoch, localstr2epoch, float2roundPercent,
     time, logging
-)
+    )
 # python 3 voodoo
 try:
     from urllib.parse import urlencode as _urlencode
@@ -213,9 +215,9 @@ class Poloniex(object):
         # public?
         elif command in PUBLIC_COMMANDS:
             try:
-                ret = _post(
-                    'https://poloniex.com/public?' + _urlencode(args),
-                    timeout=self.timeout)
+                ret = _get(
+                        'https://poloniex.com/public?' + _urlencode(args),
+                        timeout=self.timeout)
             except Exception as e:
                 raise e
             try:
@@ -280,14 +282,14 @@ class Poloniex(object):
         if not start:
             start = time() - self.HOUR
         try:
-            ret = _post(
-                'https://poloniex.com/public?' + _urlencode({
-                    'command': 'returnTradeHistory',
-                    'currencyPair': str(pair).upper(),
-                    'start': str(start),
-                    'end': str(end)
-                }),
-                timeout=self.timeout)
+            ret = _get(
+                    'https://poloniex.com/public?'+_urlencode({
+                        'command': 'returnTradeHistory',
+                        'currencyPair': str(pair).upper(),
+                        'start': str(start),
+                        'end': str(end)
+                        }),
+                    timeout=self.timeout)
         except Exception as e:
             raise e
         try:
