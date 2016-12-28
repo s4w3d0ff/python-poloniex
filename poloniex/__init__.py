@@ -399,21 +399,49 @@ class Poloniex(object):
                     'lendingRate': str(lendingRate)
                     })
 
-    def buy(self, pair, rate, amount):
+    def buy(self, pair, rate, amount, fill_or_kill=False, immediate_or_cancel=False, post_only=False):
         """ Creates buy order for <pair> at <rate> for <amount> """
-        return self.__call__('buy', {
-                    'currencyPair': str(pair).upper(),
-                    'rate': str(rate),
-                    'amount': str(amount)
-                    })
+        excl_args = [x for x in (fill_or_kill, immediate_or_cancel, post_only) if x]
 
-    def sell(self, pair, rate, amount):
+        if len(excl_args) > 1:
+            raise ValueError('fill_or_kill, immediate_or_cancel, post_only are mutually exclusive')
+
+        req = {
+            'currencyPair': str(pair).upper(),
+            'rate': str(rate),
+            'amount': str(amount),
+        }
+
+        if fill_or_kill:
+            req['fillOrKill'] = 1
+        elif immediate_or_cancel:
+            req['immediateOrCancel'] = 1
+        elif post_only:
+            req['postOnly'] = 1
+
+        return self.__call__('buy', req)
+
+    def sell(self, pair, rate, amount, fill_or_kill=False, immediate_or_cancel=False, post_only=False):
         """ Creates sell order for <pair> at <rate> for <amount> """
-        return self.__call__('sell', {
-                    'currencyPair': str(pair).upper(),
-                    'rate': str(rate),
-                    'amount': str(amount)
-                    })
+        excl_args = [x for x in (fill_or_kill, immediate_or_cancel, post_only) if x]
+
+        if len(excl_args) > 1:
+            raise ValueError('fill_or_kill, immediate_or_cancel, post_only are mutually exclusive')
+
+        req = {
+            'currencyPair': str(pair).upper(),
+            'rate': str(rate),
+            'amount': str(amount),
+        }
+
+        if fill_or_kill:
+            req['fillOrKill'] = 1
+        elif immediate_or_cancel:
+            req['immediateOrCancel'] = 1
+        elif post_only:
+            req['postOnly'] = 1
+
+        return self.__call__('sell', req)
 
     def cancelOrder(self, orderId):
         """ Cancels order <orderId> """
