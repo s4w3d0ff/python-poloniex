@@ -84,6 +84,7 @@ PRIVATE_COMMANDS = [
 
 class Poloniex(object):
     """The Poloniex Object!"""
+
     def __init__(
             self, Key=False, Secret=False,
             timeout=3, coach=False, loglevel=logging.WARNING, extend=False):
@@ -104,20 +105,21 @@ class Poloniex(object):
         """
         # Set wrapper logging level
         logging.basicConfig(
-                format='[%(asctime)s] %(message)s',
-                datefmt="%H:%M:%S",
-                level=loglevel)
+            format='[%(asctime)s] %(message)s',
+            datefmt="%H:%M:%S",
+            level=loglevel)
         # Suppress the requests	module logging output
         logging.getLogger("requests").setLevel(loglevel)
         logging.getLogger("urllib3").setLevel(loglevel)
         # Call coach, set nonce
-        self.apicoach, self.nonce = Coach(), int(time()*1000)
+        self.apicoach, self.nonce = Coach(), int(time() * 1000)
         # Grab keys, set timeout, ditch coach?
         self.Key, self.Secret, self.timeout, self._coaching = \
             Key, Secret, timeout, coach
         # Set time labels
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
-            60, 60*60, 60*60*24, 60*60*24*7, 60*60*24*30, 60*60*24*365
+            60, 60 * 60, 60 * 60 * 24, 60 * 60 * 24 * \
+            7, 60 * 60 * 24 * 30, 60 * 60 * 24 * 365
 
         #   These namespaces are here because poloniex has overlapping
         # namespaces. There are 2 "returnTradeHistory" commands, one public and
@@ -187,18 +189,18 @@ class Poloniex(object):
                 postData = _urlencode(args)
                 # sign postData with our Secret
                 sign = _new(
-                        self.Secret.encode('utf-8'),
-                        postData.encode('utf-8'),
-                        _sha512)
+                    self.Secret.encode('utf-8'),
+                    postData.encode('utf-8'),
+                    _sha512)
                 # post request
                 ret = _post(
-                        'https://poloniex.com/tradingApi',
-                        data=args,
-                        headers={
-                            'Sign': sign.hexdigest(),
-                            'Key': self.Key
-                            },
-                        timeout=self.timeout)
+                    'https://poloniex.com/tradingApi',
+                    data=args,
+                    headers={
+                        'Sign': sign.hexdigest(),
+                        'Key': self.Key
+                    },
+                    timeout=self.timeout)
             except Exception as e:
                 raise e
             finally:
@@ -240,7 +242,8 @@ class Poloniex(object):
 
     def returnLoanOrders(self, coin):
         """ Returns loan order book for <coin> """
-        return self.__call__('returnLoanOrders', {'currency': str(coin).upper()})
+        return self.__call__('returnLoanOrders', {
+                             'currency': str(coin).upper()})
 
     def returnOrderBook(self, pair='all', depth=20):
         """
@@ -248,9 +251,9 @@ class Poloniex(object):
         at a depth of [depth=20] orders
         """
         return self.__call__('returnOrderBook', {
-                    'currencyPair': str(pair).upper(),
-                    'depth': str(depth)
-                    })
+            'currencyPair': str(pair).upper(),
+            'depth': str(depth)
+        })
 
     def returnChartData(self, pair, period=False, start=False, end=time()):
         """
@@ -261,13 +264,13 @@ class Poloniex(object):
         if not period:
             period = self.DAY
         if not start:
-            start = time()-(self.MONTH*2)
+            start = time() - (self.MONTH * 2)
         return self.__call__('returnChartData', {
-                    'currencyPair': str(pair).upper(),
-                    'period': str(period),
-                    'start': str(start),
-                    'end': str(end)
-                    })
+            'currencyPair': str(pair).upper(),
+            'period': str(period),
+            'start': str(start),
+            'end': str(end)
+        })
 
     def marketTradeHist(self, pair, start=False, end=time()):
         """
@@ -277,7 +280,7 @@ class Poloniex(object):
         if self._coaching:
             self.apicoach.wait()
         if not start:
-            start = time()-self.HOUR
+            start = time() - self.HOUR
         try:
             ret = _get(
                     'https://poloniex.com/public?'+_urlencode({
@@ -297,7 +300,8 @@ class Poloniex(object):
     # --PRIVATE COMMANDS------------------------------------------------------
     def returnTradeHistory(self, pair):
         """ Returns private trade history for <pair> """
-        return self.__call__('returnTradeHistory', {'currencyPair': str(pair).upper()})
+        return self.__call__('returnTradeHistory', {
+                             'currencyPair': str(pair).upper()})
 
     def returnBalances(self):
         """ Returns coin balances """
@@ -313,11 +317,13 @@ class Poloniex(object):
 
     def getMarginPosition(self, pair='all'):
         """ Returns margin position for [pair='all'] """
-        return self.__call__('getMarginPosition', {'currencyPair': str(pair).upper()})
+        return self.__call__('getMarginPosition', {
+                             'currencyPair': str(pair).upper()})
 
     def returnCompleteBalances(self, account='all'):
         """ Returns complete balances """
-        return self.__call__('returnCompleteBalances', {'account': str(account)})
+        return self.__call__('returnCompleteBalances',
+                             {'account': str(account)})
 
     def returnDepositAddresses(self):
         """ Returns deposit addresses """
@@ -325,11 +331,15 @@ class Poloniex(object):
 
     def returnOpenOrders(self, pair='all'):
         """ Returns your open orders for [pair='all'] """
-        return self.__call__('returnOpenOrders', {'currencyPair': str(pair).upper()})
+        return self.__call__('returnOpenOrders', {
+                             'currencyPair': str(pair).upper()})
 
-    def returnDepositsWithdrawals(self):
+    def returnDepositsWithdrawals(self, start=False, end=time()):
         """ Returns deposit/withdraw history """
-        return self.__call__('returnDepositsWithdrawals')
+        if not start:
+            start = time() - self.MONTH
+        args = {'start': str(start), 'end': str(end)}
+        return self.__call__('returnDepositsWithdrawals', args)
 
     def returnTradableBalances(self):
         """ Returns tradable balances """
@@ -349,7 +359,7 @@ class Poloniex(object):
 
     def returnLendingHistory(self, start=False, end=time(), limit=False):
         if not start:
-            start = time()-self.MONTH
+            start = time() - self.MONTH
         args = {'start': str(start), 'end': str(end)}
         if limit:
             args['limit'] = str(limit)
@@ -357,17 +367,18 @@ class Poloniex(object):
 
     def returnOrderTrades(self, orderId):
         """ Returns any trades made from <orderId> """
-        return self.__call__('returnOrderTrades', {'orderNumber': str(orderId)})
+        return self.__call__('returnOrderTrades', {
+                             'orderNumber': str(orderId)})
 
     def createLoanOffer(self, coin, amount, rate, autoRenew=0, duration=2):
         """ Creates a loan offer for <coin> for <amount> at <rate> """
         return self.__call__('createLoanOffer', {
-                    'currency': str(coin).upper(),
-                    'amount': str(amount),
-                    'duration': str(duration),
-                    'autoRenew': str(autoRenew),
-                    'lendingRate': str(rate)
-                    })
+            'currency': str(coin).upper(),
+            'amount': str(amount),
+            'duration': str(duration),
+            'autoRenew': str(autoRenew),
+            'lendingRate': str(rate)
+        })
 
     def cancelLoanOffer(self, orderId):
         """ Cancels the loan offer with <orderId> """
@@ -379,25 +390,27 @@ class Poloniex(object):
 
     def closeMarginPosition(self, pair):
         """ Closes the margin position on <pair> """
-        return self.__call__('closeMarginPosition', {'currencyPair': str(pair).upper()})
+        return self.__call__('closeMarginPosition', {
+                             'currencyPair': str(pair).upper()})
 
     def marginBuy(self, pair, rate, amount, lendingRate=2):
         """ Creates <pair> margin buy order at <rate> for <amount> """
         return self.__call__('marginBuy', {
-                    'currencyPair': str(pair).upper(),
-                    'rate': str(rate),
-                    'amount': str(amount),
-                    'lendingRate': str(lendingRate)
-                    })
+            'currencyPair': str(pair).upper(),
+            'rate': str(rate),
+            'amount': str(amount),
+            'lendingRate': str(lendingRate)
+        })
 
     def marginSell(self, pair, rate, amount, lendingRate=2):
         """ Creates <pair> margin sell order at <rate> for <amount> """
         return self.__call__('marginSell', {
-                    'currencyPair': str(pair).upper(),
-                    'rate': str(rate),
-                    'amount': str(amount),
-                    'lendingRate': str(lendingRate)
-                    })
+            'currencyPair': str(pair).upper(),
+            'rate': str(rate),
+            'amount': str(amount),
+            'lendingRate': str(lendingRate)
+        })
+
 
     def buy(self, pair, rate, amount, fill_or_kill=False, immediate_or_cancel=False, post_only=False):
         """ Creates buy order for <pair> at <rate> for <amount> """
@@ -421,28 +434,6 @@ class Poloniex(object):
 
         return self.__call__('buy', req)
 
-    def sell(self, pair, rate, amount, fill_or_kill=False, immediate_or_cancel=False, post_only=False):
-        """ Creates sell order for <pair> at <rate> for <amount> """
-        excl_args = [x for x in (fill_or_kill, immediate_or_cancel, post_only) if x]
-
-        if len(excl_args) > 1:
-            raise ValueError('fill_or_kill, immediate_or_cancel, post_only are mutually exclusive')
-
-        req = {
-            'currencyPair': str(pair).upper(),
-            'rate': str(rate),
-            'amount': str(amount),
-        }
-
-        if fill_or_kill:
-            req['fillOrKill'] = 1
-        elif immediate_or_cancel:
-            req['immediateOrCancel'] = 1
-        elif post_only:
-            req['postOnly'] = 1
-
-        return self.__call__('sell', req)
-
     def cancelOrder(self, orderId):
         """ Cancels order <orderId> """
         return self.__call__('cancelOrder', {'orderNumber': str(orderId)})
@@ -450,18 +441,18 @@ class Poloniex(object):
     def moveOrder(self, orderId, rate, amount):
         """ Moves an order by <orderId> to <rate> for <amount> """
         return self.__call__('moveOrder', {
-                    'orderNumber': str(orderId),
-                    'rate': str(rate),
-                    'amount': str(amount)
-                    })
+            'orderNumber': str(orderId),
+            'rate': str(rate),
+            'amount': str(amount)
+        })
 
     def withdraw(self, coin, amount, address):
         """ Withdraws <coin> <amount> to <address> """
         return self.__call__('withdraw', {
-                    'currency': str(coin).upper(),
-                    'amount': str(amount),
-                    'address': str(address)
-                    })
+            'currency': str(coin).upper(),
+            'amount': str(amount),
+            'address': str(address)
+        })
 
     def transferBalance(self, coin, amount, fromac, toac):
         """
@@ -469,8 +460,8 @@ class Poloniex(object):
         - moves <coin> <amount> from <fromac> to <toac>
         """
         return self.__call__('transferBalance', {
-                    'currency': str(coin).upper(),
-                    'amount': str(amount),
-                    'fromAccount': str(fromac),
-                    'toAccount': str(toac)
-                    })
+            'currency': str(coin).upper(),
+            'amount': str(amount),
+            'fromAccount': str(fromac),
+            'toAccount': str(toac)
+        })
