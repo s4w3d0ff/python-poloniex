@@ -255,7 +255,7 @@ class Poloniex(object):
             'depth': str(depth)
         })
 
-    def returnChartData(self, pair, period=False, start=False, end=time()):
+    def returnChartData(self, pair, period=False, start=False, end=False):
         """
         Returns chart data for <pair> with a candle period of
         [period=self.DAY] starting from [start=time()-self.YEAR]
@@ -265,6 +265,8 @@ class Poloniex(object):
             period = self.DAY
         if not start:
             start = time() - (self.MONTH * 2)
+        if not end:
+            end = time()
         return self.__call__('returnChartData', {
             'currencyPair': str(pair).upper(),
             'period': str(period),
@@ -272,7 +274,7 @@ class Poloniex(object):
             'end': str(end)
         })
 
-    def marketTradeHist(self, pair, start=False, end=time()):
+    def marketTradeHist(self, pair, start=False, end=False):
         """
         Returns public trade history for <pair>
         starting at <start> and ending at [end=time()]
@@ -281,6 +283,8 @@ class Poloniex(object):
             self.apicoach.wait()
         if not start:
             start = time() - self.HOUR
+        if not end:
+            end = time()
         try:
             ret = _get(
                     'https://poloniex.com/public?'+_urlencode({
@@ -334,10 +338,12 @@ class Poloniex(object):
         return self.__call__('returnOpenOrders', {
                              'currencyPair': str(pair).upper()})
 
-    def returnDepositsWithdrawals(self, start=False, end=time()):
+    def returnDepositsWithdrawals(self, start=False, end=False):
         """ Returns deposit/withdraw history """
         if not start:
             start = time() - self.MONTH
+        if not end:
+            end = time()
         args = {'start': str(start), 'end': str(end)}
         return self.__call__('returnDepositsWithdrawals', args)
 
@@ -357,9 +363,11 @@ class Poloniex(object):
         """ Returns current trading fees and trailing 30-day volume in BTC """
         return self.__call__('returnFeeInfo')
 
-    def returnLendingHistory(self, start=False, end=time(), limit=False):
+    def returnLendingHistory(self, start=False, end=False, limit=False):
         if not start:
             start = time() - self.MONTH
+        if not end:
+            end = time()
         args = {'start': str(start), 'end': str(end)}
         if limit:
             args['limit'] = str(limit)
