@@ -64,15 +64,4 @@ balance = polo('returnBalances')
 print("I have %s BTC!" % balance['BTC'])
 ```
 
-#### **Extended Setup:**
-```python
-from poloniex import Poloniex
-polo = Poloniex('your-Api-Key-Here-xxxx','yourSecretKeyHere123456789', extend=True)
-```
-Using `extend=True` will wrap most of the api commands with more 'meaningful' namespaces.
-```python
-print(polo.marketTicker())
-print(polo.myBalances())
-```
-
 **Examples of WAMP applications using the websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
