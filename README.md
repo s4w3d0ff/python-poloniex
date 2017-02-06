@@ -9,8 +9,7 @@ Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 - The `poloniex.Poloniex()` object has an optional 'timeout' attribute/arg that adjusts the number of seconds to wait for a response from polo (default = 3 sec)
 - Optional api 'coach' can restrict the amount of calls per sec, keeping your api calls (that aren't threaded) under the limit (6 calls per sec). Activate the coach using `poloniex.Poloniex(coach=True)` when creating the polo object or by defining `polo._coaching = True`.
 
-## Install:
-Python 2: 
+## Install:Python 2: 
 ```
 pip install git+https://github.com/s4w3d0ff/python-poloniex.git
 ```
@@ -39,13 +38,13 @@ polo = Poloniex()
 ```
 ##### Ticker
 ```python
-print(polo('returnTicker')['BTC_CGA'])
+print(polo('returnTicker')['BTC_ETH'])
 # or
-print(polo.returnTicker()['BTC_CGA'])
+print(polo.returnTicker()['BTC_ETH'])
 ```
 ##### Public trade history:
 ```python
-print(polo.marketTradeHist('BTC_CGA'))
+print(polo.marketTradeHist('BTC_ETH'))
 ```
 
 #### **Basic Private Setup (ApiKey/Secret required):**
@@ -59,7 +58,7 @@ polo.Secret = 'yourSecretKeyHere123456789'
 ##### Get all your balances
 ```python
 balance = polo.returnBalances()
-print("I have %s CGA!" % balance['CGA'])
+print("I have %s ETH!" % balance['ETH'])
 # or
 balance = polo('returnBalances')
 print("I have %s BTC!" % balance['BTC'])
@@ -77,11 +76,3 @@ print(polo.myBalances())
 ```
 
 **Examples of WAMP applications using the websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
-
-You like?!
-```
-CGA: aZ1yHGx4nA64aWMDNQKXJrojso7gfQ1J5P
-BTC: 15D8VaZco22GTLVrFMAehXyif6EGf8GMYV
-LTC: LakbntAYrwpVSnLWj1fCLttVzpiDXDa5JV
-DOGE: DAQjkQNbhpUoQw7KHAGkDYZ3yySKi751dd
-```
