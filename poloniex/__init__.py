@@ -462,6 +462,7 @@ class Poloniex(object):
         elif post_only:
             req['postOnly'] = 1
 
+        return self.__call__('sell', req)
 
     def cancelOrder(self, orderId):
         """ Cancels order <orderId> """
