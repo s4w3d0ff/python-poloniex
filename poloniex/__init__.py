@@ -468,13 +468,18 @@ class Poloniex(object):
         """ Cancels order <orderId> """
         return self.__call__('cancelOrder', {'orderNumber': str(orderId)})
 
-    def moveOrder(self, orderId, rate, amount):
+    def moveOrder(self, orderId, rate, amount, immediate_or_cancel=False, post_only=False):
         """ Moves an order by <orderId> to <rate> for <amount> """
-        return self.__call__('moveOrder', {
+        req = {
             'orderNumber': str(orderId),
             'rate': str(rate),
             'amount': str(amount)
-        })
+        }
+        if immediate_or_cancel:
+            req['immediateOrCancel'] = 1
+        elif post_only:
+            req['postOnly'] = 1
+        return self.__call__('moveOrder', req)
 
     def withdraw(self, coin, amount, address):
         """ Withdraws <coin> <amount> to <address> """
