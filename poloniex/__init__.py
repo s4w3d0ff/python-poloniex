@@ -420,12 +420,12 @@ class Poloniex(object):
         })
 
 
-    def buy(self, pair, rate, amount, fillOrKill=False, immediateoOrCancel=False, postOnly=False):
+    def buy(self, pair, rate, amount, fillOrKill=False, immediateOrCancel=False, postOnly=False):
         """ Creates buy order for <pair> at <rate> for <amount> """
-        excl_args = [x for x in (fillOrKill, immediateoOrCancel, postOnly) if x]
+        excl_args = [x for x in (fillOrKill, immediateOrCancel, postOnly) if x]
 
         if len(excl_args) > 1:
-            raise ValueError('fillOrKill, immediateoOrCancel, postOnly are mutually exclusive')
+            raise ValueError('fillOrKill, immediateOrCancel, postOnly are mutually exclusive')
 
         req = {
             'currencyPair': str(pair).upper(),
@@ -442,12 +442,12 @@ class Poloniex(object):
 
         return self.__call__('buy', req)
 
-    def sell(self, pair, rate, amount, fillOrKill=False, immediateoOrCancel=False, postOnly=False):
+    def sell(self, pair, rate, amount, fillOrKill=False, immediateOrCancel=False, postOnly=False):
         """ Creates sell order for <pair> at <rate> for <amount> """
-        excl_args = [x for x in (fillOrKill, immediateoOrCancel, postOnly) if x]
+        excl_args = [x for x in (fillOrKill, immediateOrCancel, postOnly) if x]
         
         if len(excl_args) > 1:
-            raise ValueError('fillOrKill, immediateoOrCancel, postOnly are mutually exclusive')
+            raise ValueError('fillOrKill, immediateOrCancel, postOnly are mutually exclusive')
 
         req = {
             'currencyPair': str(pair).upper(),
@@ -467,12 +467,12 @@ class Poloniex(object):
         """ Cancels order <orderId> """
         return self.__call__('cancelOrder', {'orderNumber': str(orderId)})
 
-    def moveOrder(self, orderId, rate, amount, immediate_or_cancel=False, post_only=False):
+    def moveOrder(self, orderId, rate, amount, immediateOrCancel=False, postOnly=False):
         """ Moves an order by <orderId> to <rate> for <amount> """
-        excl_args = [x for x in (immediateoOrCancel, postOnly) if x]
+        excl_args = [x for x in (immediateOrCancel, postOnly) if x]
         
         if len(excl_args) > 1:
-            raise ValueError('immediateoOrCancel, postOnly are mutually exclusive')
+            raise ValueError('immediateOrCancel, postOnly are mutually exclusive')
         req = {
             'orderNumber': str(orderId),
             'rate': str(rate),
