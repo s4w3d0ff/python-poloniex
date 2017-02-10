@@ -481,13 +481,16 @@ class Poloniex(object):
             req['postOnly'] = 1
         return self.__call__('moveOrder', req)
 
-    def withdraw(self, coin, amount, address):
+    def withdraw(self, coin, amount, address, paymentId=False):
         """ Withdraws <coin> <amount> to <address> """
-        return self.__call__('withdraw', {
+        req = {
             'currency': str(coin).upper(),
             'amount': str(amount),
             'address': str(address)
-        })
+        }
+        if paymentId:
+            req['paymentId'] = str(paymentId)
+        return self.__call__('withdraw', req)
 
     def transferBalance(self, coin, amount, fromac, toac):
         """
