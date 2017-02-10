@@ -420,12 +420,12 @@ class Poloniex(object):
         })
 
 
-    def buy(self, pair, rate, amount, fill_or_kill=False, immediate_or_cancel=False, post_only=False):
+    def buy(self, pair, rate, amount, fillOrKill=False, immediateoOrCancel=False, postOnly=False):
         """ Creates buy order for <pair> at <rate> for <amount> """
-        excl_args = [x for x in (fill_or_kill, immediate_or_cancel, post_only) if x]
+        excl_args = [x for x in (fillOrKill, immediateoOrCancel, postOnly) if x]
 
         if len(excl_args) > 1:
-            raise ValueError('fill_or_kill, immediate_or_cancel, post_only are mutually exclusive')
+            raise ValueError('fillOrKill, immediateoOrCancel, postOnly are mutually exclusive')
 
         req = {
             'currencyPair': str(pair).upper(),
@@ -433,33 +433,32 @@ class Poloniex(object):
             'amount': str(amount),
         }
 
-        if fill_or_kill:
+        if fillOrKill:
             req['fillOrKill'] = 1
-        elif immediate_or_cancel:
+        elif immediateOrCancel:
             req['immediateOrCancel'] = 1
-        elif post_only:
+        elif postOnly:
             req['postOnly'] = 1
 
         return self.__call__('buy', req)
 
-    def sell(self, pair, rate, amount, fill_or_kill=False, immediate_or_cancel=False, post_only=False):
+    def sell(self, pair, rate, amount, fillOrKill=False, immediateoOrCancel=False, postOnly=False):
         """ Creates sell order for <pair> at <rate> for <amount> """
-        excl_args = [x for x in (fill_or_kill, immediate_or_cancel, post_only) if x]
-
+        excl_args = [x for x in (fillOrKill, immediateoOrCancel, postOnly) if x]
+        
         if len(excl_args) > 1:
-            raise ValueError('fill_or_kill, immediate_or_cancel, post_only are mutually exclusive')
+            raise ValueError('fillOrKill, immediateoOrCancel, postOnly are mutually exclusive')
 
         req = {
             'currencyPair': str(pair).upper(),
             'rate': str(rate),
             'amount': str(amount),
         }
-
-        if fill_or_kill:
+        if fillOrKill:
             req['fillOrKill'] = 1
-        elif immediate_or_cancel:
+        elif immediateOrCancel:
             req['immediateOrCancel'] = 1
-        elif post_only:
+        elif postOnly:
             req['postOnly'] = 1
 
         return self.__call__('sell', req)
@@ -470,14 +469,18 @@ class Poloniex(object):
 
     def moveOrder(self, orderId, rate, amount, immediate_or_cancel=False, post_only=False):
         """ Moves an order by <orderId> to <rate> for <amount> """
+        excl_args = [x for x in (immediateoOrCancel, postOnly) if x]
+        
+        if len(excl_args) > 1:
+            raise ValueError('immediateoOrCancel, postOnly are mutually exclusive')
         req = {
             'orderNumber': str(orderId),
             'rate': str(rate),
             'amount': str(amount)
         }
-        if immediate_or_cancel:
+        if immediateOrCancel:
             req['immediateOrCancel'] = 1
-        elif post_only:
+        elif postOnly:
             req['postOnly'] = 1
         return self.__call__('moveOrder', req)
 
