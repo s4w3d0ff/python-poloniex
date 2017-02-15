@@ -420,12 +420,9 @@ class Poloniex(object):
         })
 
 
-    def buy(self, pair, rate, amount, fillOrKill=False, immediateOrCancel=False, postOnly=False):
-        """ Creates buy order for <pair> at <rate> for <amount> """
-        excl_args = [x for x in (fillOrKill, immediateOrCancel, postOnly) if x]
-
-        if len(excl_args) > 1:
-            raise ValueError('fillOrKill, immediateOrCancel, postOnly are mutually exclusive')
+    def buy(self, pair, rate, amount, orderType=False):
+        """ Creates buy order for <pair> at <rate> for
+            <amount> with optional orderType """
 
         req = {
             'currencyPair': str(pair).upper(),
@@ -433,33 +430,33 @@ class Poloniex(object):
             'amount': str(amount),
         }
 
-        if fillOrKill:
-            req['fillOrKill'] = 1
-        elif immediateOrCancel:
-            req['immediateOrCancel'] = 1
-        elif postOnly:
-            req['postOnly'] = 1
+        # order type specified?
+        if orderType:
+            possTypes = ['fillOrKill', 'immediateOrCancel', 'postOnly']
+            # check type
+            if not orderType in possTypes:
+                raise ValueError('Invalid orderType')
+            req[orderType] = 1
 
         return self.__call__('buy', req)
 
-    def sell(self, pair, rate, amount, fillOrKill=False, immediateOrCancel=False, postOnly=False):
-        """ Creates sell order for <pair> at <rate> for <amount> """
-        excl_args = [x for x in (fillOrKill, immediateOrCancel, postOnly) if x]
-        
-        if len(excl_args) > 1:
-            raise ValueError('fillOrKill, immediateOrCancel, postOnly are mutually exclusive')
+    def sell(self, pair, rate, amount, orderType=False):
+        """ Creates sell order for <pair> at <rate> for
+            <amount> with optional orderType """
 
         req = {
             'currencyPair': str(pair).upper(),
             'rate': str(rate),
             'amount': str(amount),
         }
-        if fillOrKill:
-            req['fillOrKill'] = 1
-        elif immediateOrCancel:
-            req['immediateOrCancel'] = 1
-        elif postOnly:
-            req['postOnly'] = 1
+
+        # order type specified?
+        if orderType:
+            possTypes = ['fillOrKill', 'immediateOrCancel', 'postOnly']
+            # check type
+            if not orderType in possTypes:
+                raise ValueError('Invalid orderType')
+            req[orderType] = 1
 
         return self.__call__('sell', req)
 
