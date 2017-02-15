@@ -464,21 +464,23 @@ class Poloniex(object):
         """ Cancels order <orderId> """
         return self.__call__('cancelOrder', {'orderNumber': str(orderId)})
 
-    def moveOrder(self, orderId, rate, amount, immediateOrCancel=False, postOnly=False):
+    def moveOrder(self, orderId, rate, amount, orderType=False):
         """ Moves an order by <orderId> to <rate> for <amount> """
-        excl_args = [x for x in (immediateOrCancel, postOnly) if x]
-        
-        if len(excl_args) > 1:
-            raise ValueError('immediateOrCancel, postOnly are mutually exclusive')
+
         req = {
             'orderNumber': str(orderId),
             'rate': str(rate),
             'amount': str(amount)
         }
-        if immediateOrCancel:
-            req['immediateOrCancel'] = 1
-        elif postOnly:
-            req['postOnly'] = 1
+
+        # order type specified?
+        if orderType:
+            possTypes = ['immediateOrCancel', 'postOnly']
+            # check type
+            if not orderType in possTypes:
+                raise ValueError('Invalid orderType')
+            req[orderType] = 1
+
         return self.__call__('moveOrder', req)
 
     def withdraw(self, coin, amount, address, paymentId=False):
