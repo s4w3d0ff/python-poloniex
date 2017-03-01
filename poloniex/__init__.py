@@ -87,7 +87,7 @@ class Poloniex(object):
 
     def __init__(
             self, Key=False, Secret=False,
-            timeout=3, coach=False, loglevel=logging.WARNING, extend=False):
+            timeout=3, coach=False, loglevel=False, extend=False):
         """
         APIKey = str api key supplied by Poloniex
         Secret = str secret hash supplied by Poloniex
@@ -103,14 +103,11 @@ class Poloniex(object):
 
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
-        # Set wrapper logging level
-        logging.basicConfig(
-            format='[%(asctime)s] %(message)s',
-            datefmt="%H:%M:%S",
-            level=loglevel)
-        # Suppress the requests	module logging output
-        logging.getLogger("requests").setLevel(loglevel)
-        logging.getLogger("urllib3").setLevel(loglevel)
+        self.logger = logging.getLogger(__name__)
+        if loglevel:
+            logging.getLogger("requests").setLevel(loglevel)
+            logging.getLogger("urllib3").setLevel(loglevel)
+            self.logger.setLevel(loglevel)
         # Call coach, set nonce
         self.apicoach, self.nonce = Coach(), int(time() * 1000)
         # Grab keys, set timeout, ditch coach?
