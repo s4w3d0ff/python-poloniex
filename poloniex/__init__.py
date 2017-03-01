@@ -87,7 +87,7 @@ class Poloniex(object):
 
     def __init__(
             self, Key=False, Secret=False,
-            timeout=3, coach=False, loglevel=logging.WARNING, extend=False):
+            timeout=3, coach=False, loglevel=False, extend=False):
         """
         APIKey = str api key supplied by Poloniex
         Secret = str secret hash supplied by Poloniex
@@ -103,14 +103,11 @@ class Poloniex(object):
 
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
-        # Set wrapper logging level
-        logging.basicConfig(
-            format='[%(asctime)s] %(message)s',
-            datefmt="%H:%M:%S",
-            level=loglevel)
-        # Suppress the requests	module logging output
-        logging.getLogger("requests").setLevel(loglevel)
-        logging.getLogger("urllib3").setLevel(loglevel)
+        self.logger = logging.getLogger(__name__)
+        if loglevel:
+            logging.getLogger("requests").setLevel(loglevel)
+            logging.getLogger("urllib3").setLevel(loglevel)
+            self.logger.setLevel(loglevel)
         # Call coach, set nonce
         self.apicoach, self.nonce = Coach(), int(time() * 1000)
         # Grab keys, set timeout, ditch coach?
@@ -420,12 +417,9 @@ class Poloniex(object):
         })
 
 
-    def buy(self, pair, rate, amount, fill_or_kill=False, immediate_or_cancel=False, post_only=False):
-        """ Creates buy order for <pair> at <rate> for <amount> """
-        excl_args = [x for x in (fill_or_kill, immediate_or_cancel, post_only) if x]
-
-        if len(excl_args) > 1:
-            raise ValueError('fill_or_kill, immediate_or_cancel, post_only are mutually exclusive')
+    def buy(self, pair, rate, amount, orderType=False):
+        """ Creates buy order for <pair> at <rate> for
+            <amount> with optional orderType """
 
         req = {
             'currencyPair': str(pair).upper(),
@@ -433,21 +427,19 @@ class Poloniex(object):
             'amount': str(amount),
         }
 
-        if fill_or_kill:
-            req['fillOrKill'] = 1
-        elif immediate_or_cancel:
-            req['immediateOrCancel'] = 1
-        elif post_only:
-            req['postOnly'] = 1
+        # order type specified?
+        if orderType:
+            possTypes = ['fillOrKill', 'immediateOrCancel', 'postOnly']
+            # check type
+            if not orderType in possTypes:
+                raise ValueError('Invalid orderType')
+            req[orderType] = 1
 
         return self.__call__('buy', req)
 
-    def sell(self, pair, rate, amount, fill_or_kill=False, immediate_or_cancel=False, post_only=False):
-        """ Creates sell order for <pair> at <rate> for <amount> """
-        excl_args = [x for x in (fill_or_kill, immediate_or_cancel, post_only) if x]
-
-        if len(excl_args) > 1:
-            raise ValueError('fill_or_kill, immediate_or_cancel, post_only are mutually exclusive')
+    def sell(self, pair, rate, amount, orderType=False):
+        """ Creates sell order for <pair> at <rate> for
+            <amount> with optional orderType """
 
         req = {
             'currencyPair': str(pair).upper(),
@@ -455,12 +447,13 @@ class Poloniex(object):
             'amount': str(amount),
         }
 
-        if fill_or_kill:
-            req['fillOrKill'] = 1
-        elif immediate_or_cancel:
-            req['immediateOrCancel'] = 1
-        elif post_only:
-            req['postOnly'] = 1
+        # order type specified?
+        if orderType:
+            possTypes = ['fillOrKill', 'immediateOrCancel', 'postOnly']
+            # check type
+            if not orderType in possTypes:
+                raise ValueError('Invalid orderType')
+            req[orderType] = 1
 
         return self.__call__('sell', req)
 
@@ -468,21 +461,35 @@ class Poloniex(object):
         """ Cancels order <orderId> """
         return self.__call__('cancelOrder', {'orderNumber': str(orderId)})
 
-    def moveOrder(self, orderId, rate, amount):
+    def moveOrder(self, orderId, rate, amount, orderType=False):
         """ Moves an order by <orderId> to <rate> for <amount> """
-        return self.__call__('moveOrder', {
+
+        req = {
             'orderNumber': str(orderId),
             'rate': str(rate),
             'amount': str(amount)
-        })
+        }
 
-    def withdraw(self, coin, amount, address):
+        # order type specified?
+        if orderType:
+            possTypes = ['immediateOrCancel', 'postOnly']
+            # check type
+            if not orderType in possTypes:
+                raise ValueError('Invalid orderType')
+            req[orderType] = 1
+
+        return self.__call__('moveOrder', req)
+
+    def withdraw(self, coin, amount, address, paymentId=False):
         """ Withdraws <coin> <amount> to <address> """
-        return self.__call__('withdraw', {
+        req = {
             'currency': str(coin).upper(),
             'amount': str(amount),
             'address': str(address)
-        })
+        }
+        if paymentId:
+            req['paymentId'] = str(paymentId)
+        return self.__call__('withdraw', req)
 
     def transferBalance(self, coin, amount, fromac, toac):
         """
