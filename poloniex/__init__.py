@@ -34,7 +34,7 @@ from .coach import (
     Coach, epoch2UTCstr, epoch2localstr,
     UTCstr2epoch, localstr2epoch, float2roundPercent,
     time, logging
-    )
+)
 # python 3 voodoo
 try:
     from urllib.parse import urlencode as _urlencode
@@ -213,8 +213,8 @@ class Poloniex(object):
         elif command in PUBLIC_COMMANDS:
             try:
                 ret = _get(
-                        'https://poloniex.com/public?' + _urlencode(args),
-                        timeout=self.timeout)
+                    'https://poloniex.com/public?' + _urlencode(args),
+                    timeout=self.timeout)
             except Exception as e:
                 raise e
             try:
@@ -284,13 +284,13 @@ class Poloniex(object):
             end = time()
         try:
             ret = _get(
-                    'https://poloniex.com/public?'+_urlencode({
-                        'command': 'returnTradeHistory',
-                        'currencyPair': str(pair).upper(),
-                        'start': str(start),
-                        'end': str(end)
-                        }),
-                    timeout=self.timeout)
+                'https://poloniex.com/public?' + _urlencode({
+                    'command': 'returnTradeHistory',
+                    'currencyPair': str(pair).upper(),
+                    'start': str(start),
+                    'end': str(end)
+                }),
+                timeout=self.timeout)
         except Exception as e:
             raise e
         try:
@@ -415,7 +415,6 @@ class Poloniex(object):
             'amount': str(amount),
             'lendingRate': str(lendingRate)
         })
-
 
     def buy(self, pair, rate, amount, orderType=False):
         """ Creates buy order for <pair> at <rate> for
