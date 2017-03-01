@@ -87,7 +87,7 @@ class Poloniex(object):
 
     def __init__(
             self, Key=False, Secret=False,
-            timeout=3, coach=False, loglevel=False, extend=False):
+            timeout=3, coach=False, loglevel=False):
         """
         APIKey = str api key supplied by Poloniex
         Secret = str secret hash supplied by Poloniex
@@ -117,43 +117,6 @@ class Poloniex(object):
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
             60, 60 * 60, 60 * 60 * 24, 60 * 60 * 24 * \
             7, 60 * 60 * 24 * 30, 60 * 60 * 24 * 365
-
-        #   These namespaces are here because poloniex has overlapping
-        # namespaces. There are 2 "returnTradeHistory" commands, one public and
-        # one private. Currently if one were to try: polo('returnTradeHistory')
-        # it would default to the private command and if no api key is defined a
-        # 'ValueError' will be raise. The workaround is 'marketTradeHist'. It
-        # returns the public data (bypassing the 'main' api call function). As
-        # I continued to write this wrapper I found more 'practical' namespaces
-        # for most of the api commands (at least at the time of writing). So I
-        # added them here for those who wish to use them.
-        if extend:
-            # Public
-            self.api = self.__call__
-            self.marketTicker = self.returnTicker
-            self.marketVolume = self.return24hVolume
-            self.marketStatus = self.returnCurrencies
-            self.marketLoans = self.returnLoanOrders
-            self.marketOrders = self.returnOrderBook
-            self.marketChart = self.returnChartData
-            # Private
-            self.myTradeHist = self.returnTradeHistory
-            self.myBalances = self.returnBalances
-            self.myAvailBalances = self.returnAvailableAccountBalances
-            self.myMarginAccountSummary = self.returnMarginAccountSummary
-            self.myMarginPosition = self.getMarginPosition
-            self.myCompleteBalances = self.returnCompleteBalances
-            self.myAddresses = self.returnDepositAddresses
-            self.myOrders = self.returnOpenOrders
-            self.myDepositsWithdraws = self.returnDepositsWithdrawals
-            self.myTradeableBalances = self.returnTradableBalances
-            self.myActiveLoans = self.returnActiveLoans
-            self.myOpenLoanOrders = self.returnOpenLoanOffers
-            self.myFeeInfo = self.returnFeeInfo
-            self.myLendingHistory = self.returnLendingHistory
-            self.orderTrades = self.returnOrderTrades
-            self.createLoanOrder = self.createLoanOffer
-            self.cancelLoanOrder = self.cancelLoanOffer
 
     # -----------------Meat and Potatos---------------------------------------
     def __call__(self, command, args={}):
