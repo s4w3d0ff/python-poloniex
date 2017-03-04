@@ -89,7 +89,7 @@ class Poloniex(object):
             self, Key=False, Secret=False,
             timeout=3, coach=False, loglevel=False):
         """
-        APIKey = str api key supplied by Poloniex
+        Key = str api key supplied by Poloniex
         Secret = str secret hash supplied by Poloniex
         timeout = int time in sec to wait for an api response
             (otherwise 'requests.exceptions.Timeout' is raised)
