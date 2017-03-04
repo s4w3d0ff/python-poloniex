@@ -26,9 +26,13 @@
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
+import pprint
 # pip
 from requests import post as _post
 from requests import get as _get
+
+from mock import Mock
+
 # local
 from .coach import (
     Coach, epoch2UTCstr, epoch2localstr,
@@ -40,6 +44,11 @@ try:
     from urllib.parse import urlencode as _urlencode
 except ImportError:
     from urllib import urlencode as _urlencode
+
+
+
+
+
 
 # Possible Commands
 PUBLIC_COMMANDS = [
@@ -103,11 +112,14 @@ class Poloniex(object):
 
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
-        self.logger = logging.getLogger(__name__)
+
         if loglevel:
+            logging.basicConfig(level=loglevel)
+            self.logger = logging.getLogger(__name__)
             logging.getLogger("requests").setLevel(loglevel)
             logging.getLogger("urllib3").setLevel(loglevel)
-            self.logger.setLevel(loglevel)
+        else:
+            self.logger = Mock()
         # Call coach, set nonce
         self.apicoach, self.nonce = Coach(), int(time() * 1000)
         # Grab keys, set timeout, ditch coach?
@@ -198,6 +210,11 @@ class Poloniex(object):
                         'Key': self.Key
                     },
                     timeout=self.timeout)
+
+                self.logger.debug(
+                    "{0}({1}) = {2}".format(
+                        command, args, pprint.pformat(ret)))
+
             except Exception as e:
                 raise e
             finally:
@@ -215,6 +232,10 @@ class Poloniex(object):
                 ret = _get(
                     'https://poloniex.com/public?' + _urlencode(args),
                     timeout=self.timeout)
+
+                self.logger.debug(
+                    "{0}({1}) = {2}".format(
+                        command, args, pprint.pformat(ret)))
             except Exception as e:
                 raise e
             try:
