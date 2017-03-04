@@ -211,10 +211,6 @@ class Poloniex(object):
                     },
                     timeout=self.timeout)
 
-                self.logger.debug(
-                    "{0}({1}) = {2}".format(
-                        command, args, pprint.pformat(ret)))
-
             except Exception as e:
                 raise e
             finally:
@@ -222,9 +218,14 @@ class Poloniex(object):
                 self.nonce += 1
             # return decoded json
             try:
-                return _loads(ret.text, parse_float=unicode)
+                text = ret.text
+                self.logger.debug(
+                    "{0}({1}) = {2}".format(
+                        command, args, pprint.pformat(text)))
+
+                return _loads(text, parse_float=unicode)
             except NameError:
-                return _loads(ret.text, parse_float=str)
+                return _loads(text, parse_float=str)
 
         # public?
         elif command in PUBLIC_COMMANDS:
@@ -233,15 +234,17 @@ class Poloniex(object):
                     'https://poloniex.com/public?' + _urlencode(args),
                     timeout=self.timeout)
 
-                self.logger.debug(
-                    "{0}({1}) = {2}".format(
-                        command, args, pprint.pformat(ret)))
             except Exception as e:
                 raise e
             try:
-                return _loads(ret.text, parse_float=unicode)
+                text = ret.text
+                self.logger.debug(
+                    "{0}({1}) = {2}".format(
+                        command, args, pprint.pformat(text)))
+
+                return _loads(text, parse_float=unicode)
             except NameError:
-                return _loads(ret.text, parse_float=str)
+                return _loads(text, parse_float=str)
         else:
             raise ValueError("Invalid Command!")
 
