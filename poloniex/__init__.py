@@ -28,6 +28,7 @@ from hmac import new as _new
 from hashlib import sha512 as _sha512
 import pprint
 # pip
+from dotmap import DotMap
 from requests import post as _post
 from requests import get as _get
 
@@ -96,15 +97,19 @@ class Poloniex(object):
 
     def __init__(
             self, Key=False, Secret=False,
-            timeout=3, coach=False, loglevel=False, extend=False):
+            timeout=3, coach=False, loglevel=False, extend=False,
+            retval_wrapper=DotMap
+    ):
         """
         Key = str api key supplied by Poloniex
         Secret = str secret hash supplied by Poloniex
+        retval_wrapper = defaults to DotMap. What to wrap data in.
         timeout = int time in sec to wait for an api response
             (otherwise 'requests.exceptions.Timeout' is raised)
         coach = bool to indicate if the api coach should be used
         loglevel = logging level object to set the module at
             (changes the requests module as well)
+
 
         self.apiCoach = object that regulates spacing between api calls
 
@@ -120,8 +125,11 @@ class Poloniex(object):
             logging.getLogger("urllib3").setLevel(loglevel)
         else:
             self.logger = Mock()
+
+        self.retval_wrapper = retval_wrapper
+
         # Call coach, set nonce
-        self.apicoach, self.nonce = Coach(), int(time() * 1000)
+        self.apicoach = Coach()
         # Grab keys, set timeout, ditch coach?
         self.Key, self.Secret, self.timeout, self._coaching = \
             Key, Secret, timeout, coach
@@ -166,6 +174,10 @@ class Poloniex(object):
             self.orderTrades = self.returnOrderTrades
             self.createLoanOrder = self.createLoanOffer
             self.cancelLoanOrder = self.cancelLoanOffer
+
+    @property
+    def nonce(self):
+        return int(time() * 1000)
 
     # -----------------Meat and Potatos---------------------------------------
     def __call__(self, command, args={}):
@@ -214,16 +226,22 @@ class Poloniex(object):
             except Exception as e:
                 raise e
             finally:
-                # increment nonce(no matter what)
-                self.nonce += 1
+                pass
             # return decoded json
             try:
                 text = ret.text
                 self.logger.debug(
-                    "{0}({1}) = {2}".format(
-                        command, args, pprint.pformat(text)))
+                    """
+<{0}>
+ <args>{1}</args>
+ <RESULT>{2}</RESULT>
+</{0}>
+""".format(command, args, text, command))
 
-                return _loads(text, parse_float=unicode)
+                struct = _loads(text, parse_float=unicode)
+                struct = self.retval_wrapper(struct)
+
+                return struct
             except NameError:
                 return _loads(text, parse_float=str)
 
@@ -239,10 +257,17 @@ class Poloniex(object):
             try:
                 text = ret.text
                 self.logger.debug(
-                    "{0}({1}) = {2}".format(
-                        command, args, pprint.pformat(text)))
+                    """
+<{0}>
+ <args>{1}</args>
+ <result>{2}</result>
+</{0}>
+""".format(command, args, text, command))
 
-                return _loads(text, parse_float=unicode)
+                struct = _loads(text, parse_float=unicode)
+                struct = self.retval_wrapper(struct)
+
+                return struct
             except NameError:
                 return _loads(text, parse_float=str)
         else:
