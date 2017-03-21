@@ -252,6 +252,7 @@ class Poloniex(object):
             ret = _get(
                 'https://poloniex.com/public?' + _urlencode(args),
                 timeout=self.timeout)
+            self.logger.debug(ret.url)
         except Exception as e:
             raise e
         try:
