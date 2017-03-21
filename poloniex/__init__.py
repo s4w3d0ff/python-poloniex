@@ -243,18 +243,14 @@ class Poloniex(object):
         """
         if self._coaching:
             self.apicoach.wait()
-        if not start:
-            start = time() - self.HOUR
-        if not end:
-            end = time()
+        args = {'command': 'returnTradeHistory', 'currencyPair': str(pair).upper()}
+        if start:
+            args['start'] = start
+        if end:
+            args['end'] = end
         try:
             ret = _get(
-                'https://poloniex.com/public?' + _urlencode({
-                    'command': 'returnTradeHistory',
-                    'currencyPair': str(pair).upper(),
-                    'start': str(start),
-                    'end': str(end)
-                }),
+                'https://poloniex.com/public?' + _urlencode(args),
                 timeout=self.timeout)
         except Exception as e:
             raise e
@@ -269,10 +265,14 @@ class Poloniex(object):
         return self.__call__('generateNewAddress', {
                              'currency': coin})
     
-    def returnTradeHistory(self, pair):
+    def returnTradeHistory(self, pair='all', start=False, end=False):
         """ Returns private trade history for <pair> """
-        return self.__call__('returnTradeHistory', {
-                             'currencyPair': str(pair).upper()})
+        args = {'currencyPair': str(pair).upper()}
+        if start:
+            args['start'] = start
+        if end:
+            args['end'] = end
+        return self.__call__('returnTradeHistory', args)
 
     def returnBalances(self):
         """ Returns coin balances """
