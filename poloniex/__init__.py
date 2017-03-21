@@ -264,6 +264,11 @@ class Poloniex(object):
             return _loads(ret.text, parse_float=str)
 
     # --PRIVATE COMMANDS------------------------------------------------------
+    def generateNewAddress(self, coin):
+        """ Returns private trade history for <pair> """
+        return self.__call__('generateNewAddress', {
+                             'currency': coin})
+    
     def returnTradeHistory(self, pair):
         """ Returns private trade history for <pair> """
         return self.__call__('returnTradeHistory', {
