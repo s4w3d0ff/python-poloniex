@@ -23,18 +23,21 @@
 #    You should have received a copy of the GNU General Public License along
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Core
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
 import pprint
-# pip
+
+# Third Party
 from dotmap import DotMap
 from requests import post as _post
 from requests import get as _get
-
+from retry import retry
 from mock import Mock
 
-# local
+# Local
 from .coach import (
     Coach, epoch2UTCstr, epoch2localstr,
     UTCstr2epoch, localstr2epoch, float2roundPercent,
@@ -180,6 +183,7 @@ class Poloniex(object):
         return int(time() * 1000)
 
     # -----------------Meat and Potatos---------------------------------------
+    @retry(requests.exceptions.RequestException)
     def __call__(self, command, args={}):
         """
         Main Api Function

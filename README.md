@@ -12,6 +12,16 @@ version
 Instead of setting the nonce, it is dynamically provided on each access.
 This eliminates the "stale nonce" errors I was occasionally getting.
 
+### Automatic Retry of HTTP timeouts
+
+If you use this API with any frequency or volume, you will eventually encounter
+[HTTPRequest timeout errors from the Requests module](http://docs.python-requests.org/en/master/_modules/requests/exceptions/?highlight=timeout%20exception)
+
+Initially, I was handling this is my own code, but because I was making multiple
+calls to the API in different places, it made more sense tht the API itself
+would handle this.
+
+
 ### constructor option for debugging/logging
 
 ### wrapping of return results
