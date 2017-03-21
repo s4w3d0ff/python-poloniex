@@ -161,6 +161,7 @@ class Poloniex(object):
                         'Key': self.Key
                     },
                     timeout=self.timeout)
+                self.logger.debug(ret.url)
             except Exception as e:
                 raise e
             finally:
@@ -178,6 +179,7 @@ class Poloniex(object):
                 ret = _get(
                     'https://poloniex.com/public?' + _urlencode(args),
                     timeout=self.timeout)
+                self.logger.debug(ret.url)
             except Exception as e:
                 raise e
             try:
@@ -262,6 +264,11 @@ class Poloniex(object):
             return _loads(ret.text, parse_float=str)
 
     # --PRIVATE COMMANDS------------------------------------------------------
+    def generateNewAddress(self, coin):
+        """ Returns private trade history for <pair> """
+        return self.__call__('generateNewAddress', {
+                             'currency': coin})
+    
     def returnTradeHistory(self, pair):
         """ Returns private trade history for <pair> """
         return self.__call__('returnTradeHistory', {
