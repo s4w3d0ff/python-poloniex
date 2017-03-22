@@ -2,17 +2,17 @@
 
 #### _Examples require the poloniex module and/or autobahn installed._
 
-##Push Api Setup 
+## Push Api Setup 
 See http://autobahn.ws/python/installation.html for more details on other systems.
 ### From fresh Ubuntu install (14.04, 16.04):
-#####Python 2.7
+##### Python 2.7
 ```
 sudo apt-get install build-essential libssl-dev python-pip python-dev libffi-dev git
 sudo bash -c 'apt-get update && apt-get upgrade'
 pip install service_identity
 pip install autobahn[twisted]
 ```
-#####Python 3
+##### Python 3
 ```
 sudo apt-get install build-essential libssl-dev python3-pip python3-dev libffi-dev git
 sudo bash -c 'apt-get update && apt-get upgrade'
