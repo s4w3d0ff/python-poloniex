@@ -18,8 +18,8 @@ If you use this API with any frequency or volume, you will eventually encounter
 [HTTPRequest timeout errors from the Requests module](http://docs.python-requests.org/en/master/_modules/requests/exceptions/?highlight=timeout%20exception)
 
 Initially, I was handling this is my own code, but because I was making multiple
-calls to the API in different places, it made more sense tht the API itself
-would handle this.
+calls to the API in different places, it made more sense that [the API itself
+would handle this](https://github.com/metaperl/python-poloniex/commit/107667805a900d4acfe731ce1e444dd1157db985).
 
 
 ### constructor option for debugging/logging

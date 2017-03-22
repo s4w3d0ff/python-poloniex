@@ -34,6 +34,7 @@ import pprint
 from dotmap import DotMap
 from requests import post as _post
 from requests import get as _get
+import requests
 from retry import retry
 from mock import Mock
 
