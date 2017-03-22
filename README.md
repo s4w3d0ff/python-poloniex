@@ -1,32 +1,64 @@
-# **An API wrapper for Poloniex.com written in Python**
-#####poloniex.py - _Tested on Python 2.7.12 & 3.5.2_
-Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
+# An API wrapper for Poloniex.com written in Python
+Tested on Python 2.7.12 & 3.5.2
 
-### Features:
-- ApiKey and Secret are optional if used for just public commands.
+Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
+Extended from [s4w3d0ff](https://github.com/s4w3d0ff/python-poloniex/)'s
+version
+
+## Extensions from s4w3d0ff
+
+### Unique nonce generation
+
+Instead of setting the nonce, it is dynamically provided on each access.
+This eliminates the "stale nonce" errors I was occasionally getting.
+
+### Automatic Retry of HTTP timeouts
+
+If you use this API with any frequency or volume, you will eventually encounter
+[HTTPRequest timeout errors from the Requests module](http://docs.python-requests.org/en/master/_modules/requests/exceptions/?highlight=timeout%20exception)
+
+Initially, I was handling this is my own code, but because I was making multiple
+calls to the API in different places, it made more sense that [the API itself
+would handle this](https://github.com/metaperl/python-poloniex/commit/107667805a900d4acfe731ce1e444dd1157db985).
+
+
+### constructor option for debugging/logging
+
+### wrapping of return results
+Results from API are by default wrapped in a [DotMap](https://pypi.python.org/pypi/dotmap)
+
+You can supply a constructor with a user-supplied class if you want even
+further customization of return results.
+
+For instance, I typically wrap Polo with a subclass of DotMap where I
+override certain properties and add addtional properties.
+
+
+## Features:
+- Key and Secret are optional if used for just public commands.
 - Api Commands have been 'mapped' into methods within the Poloniex class for your convenience.
 - Raises `ValueError` if the command supplied does not exist or if the api keys are not defined
 - The `poloniex.Poloniex()` object has an optional 'timeout' attribute/arg that adjusts the number of seconds to wait for a response from polo (default = 3 sec)
 - Optional api 'coach' can restrict the amount of calls per sec, keeping your api calls (that aren't threaded) under the limit (6 calls per sec). Activate the coach using `poloniex.Poloniex(coach=True)` when creating the polo object or by defining `polo._coaching = True`.
 
 ## Install:
-Python 2: 
+Python 2:
 ```
-pip install git+https://github.com/s4w3d0ff/python-poloniex.git
+pip install git+https://github.com/metaperl/python-poloniex.git
 ```
 
-Python 3: 
+Python 3:
 ```
-pip3 install git+https://github.com/s4w3d0ff/python-poloniex.git
+pip3 install git+https://github.com/metaperl/python-poloniex.git
 ```
 
 ## Uninstall:
-Python 2: 
+Python 2:
 ```
 pip uninstall poloniex
 ```
 
-Python 3: 
+Python 3:
 ```
 pip3 uninstall poloniex
 ```

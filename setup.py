@@ -6,5 +6,5 @@ setup(name='poloniex',
 	author='s4w3d0ff',
 	license='GPL v2',
 	packages=['poloniex'],
-	install_requires=['requests'],
+	install_requires=['mock', 'requests'],
 	zip_safe=False)
