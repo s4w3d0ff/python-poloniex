@@ -1,5 +1,5 @@
 # **An API wrapper for Poloniex.com written in Python**
-#####poloniex.py - _Tested on Python 2.7.12 & 3.5.2_
+##### poloniex.py - _Tested on Python 2.7.12 & 3.5.2_
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 
 ### Features:
