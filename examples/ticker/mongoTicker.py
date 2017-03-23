@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # core
-from multiprocessing import Process as Thread
+from multiprocessing import Process
 # pip
 from pymongo import MongoClient
 from twisted.internet import reactor
@@ -54,7 +54,7 @@ class Ticker(object):
     def __init__(self):
         self.running = False
         # thread namespace
-        self._appThread = None
+        self._appProcess = None
         self._appRunner = ApplicationRunner(
             u"wss://api.poloniex.com:443", u"realm1"
         )
@@ -65,21 +65,21 @@ class Ticker(object):
 
     def start(self):
         """ Start WAMP application runner process """
-        self._appThread = Thread(
+        self._appProcess = Process(
             target=self._appRunner.run, args=(WAMPTicker,)
         )
-        self._appThread.daemon = True
-        self._appThread.start()
+        self._appProcess.daemon = True
+        self._appProcess.start()
         self.running = True
 
     def stop(self):
         """ Stop WAMP application """
         try:
-            self._appThread.terminate()
+            self._appProcess.terminate()
         except:
             pass
         try:
-            self._appThread.join()
+            self._appProcess.join()
         except:
             pass
         self.running = False
@@ -90,6 +90,6 @@ if __name__ == '__main__':
     ticker.start()
     for i in range(5):
         sleep(10)
-        print("USDT_BTC: lowestAsk=%s" % ticker()['lowestAsk'])
+        print("USDT_BTC: lowestAsk= %s" % ticker()['lowestAsk'])
     ticker.stop()
     print("Done")
