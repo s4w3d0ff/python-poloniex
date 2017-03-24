@@ -21,8 +21,16 @@ Initially, I was handling this is my own code, but because I was making multiple
 calls to the API in different places, it made more sense that [the API itself
 would handle this](https://github.com/metaperl/python-poloniex/commit/107667805a900d4acfe731ce1e444dd1157db985).
 
+### API Coach enabled by default
+
+I encountered this error when using python-poloniex:
+    {"error":"Please do not make more than 6 API calls per second."}
+
+I noticed that the coach was not enabled by default. So I enabled it.
+
 
 ### constructor option for debugging/logging
+
 
 ### wrapping of return results
 Results from API are by default wrapped in a [DotMap](https://pypi.python.org/pypi/dotmap)
