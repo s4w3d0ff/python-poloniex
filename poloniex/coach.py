@@ -18,44 +18,9 @@
 
 import logging
 from collections import deque
-from time import sleep, time, gmtime, strftime, strptime, localtime, mktime
-from calendar import timegm
+from time import time, sleep
 
-# Convertions
-def epoch2UTCstr(timestamp=time(), fmat="%Y-%m-%d %H:%M:%S"):
-    """
-    - takes epoch timestamp
-    - returns UTC formated string
-    """
-    return strftime(fmat, gmtime(timestamp))
-
-def UTCstr2epoch(datestr=epoch2UTCstr(), fmat="%Y-%m-%d %H:%M:%S"):
-    """
-    - takes UTC date string
-    - returns epoch
-    """
-    return timegm(strptime(datestr, fmat))
-
-def epoch2localstr(timestamp=time(), fmat="%Y-%m-%d %H:%M:%S"):
-    """
-    - takes epoch timestamp
-    - returns localtimezone formated string
-    """
-    return strftime(fmat, localtime(timestamp))
-
-def localstr2epoch(datestr=epoch2UTCstr(), fmat="%Y-%m-%d %H:%M:%S"):
-    """
-    - takes localtimezone date string,
-    - returns epoch
-    """
-    return mktime(strptime(datestr, fmat))
-
-def float2roundPercent(floatN, decimalP=2):
-    """
-    - takes float
-    - returns percent(*100) rounded to the Nth decimal place as a string
-    """
-    return str(round(float(floatN)*100, decimalP))+"%"
+logger = logging.getLogger(__name__)
 
 class Coach(object):
     """
