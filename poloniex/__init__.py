@@ -30,11 +30,7 @@ from hashlib import sha512 as _sha512
 from requests import post as _post
 from requests import get as _get
 # local
-from .coach import (
-    Coach, epoch2UTCstr, epoch2localstr,
-    UTCstr2epoch, localstr2epoch, float2roundPercent,
-    time, logging
-)
+from .coach import Coach, time, logging
 # python 3 voodoo
 try:
     from urllib.parse import urlencode as _urlencode
