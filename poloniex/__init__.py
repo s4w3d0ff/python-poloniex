@@ -28,7 +28,9 @@
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
+import logging
 import pprint
+from time import time
 
 # Third Party
 from dotmap import DotMap
@@ -39,11 +41,7 @@ from retry import retry
 from mock import Mock
 
 # Local
-from .coach import (
-    Coach, epoch2UTCstr, epoch2localstr,
-    UTCstr2epoch, localstr2epoch, float2roundPercent,
-    time, logging
-)
+from coach import Coach
 # python 3 voodoo
 try:
     from urllib.parse import urlencode as _urlencode
@@ -132,7 +130,7 @@ class Poloniex(object):
 
         self.retval_wrapper = retval_wrapper
 
-        # Call coach, set nonce
+        # Call coach
         self.apicoach = Coach()
         # Grab keys, set timeout, ditch coach?
         self.Key, self.Secret, self.timeout, self._coaching = \
@@ -196,8 +194,7 @@ class Poloniex(object):
         global PUBLIC_COMMANDS, PRIVATE_COMMANDS
 
         # check in with the coach
-        if self._coaching:
-            self.apicoach.wait()
+        self.apicoach.wait()
 
         # pass the command
         args['command'] = command
@@ -330,8 +327,7 @@ class Poloniex(object):
         Returns public trade history for <pair>
         starting at <start> and ending at [end=time()]
         """
-        if self._coaching:
-            self.apicoach.wait()
+        self.apicoach.wait()
         if not start:
             start = time() - self.HOUR
         if not end:
