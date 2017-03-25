@@ -120,7 +120,8 @@ class Poloniex(object):
 
     @property
     def nonce(self):
-        return self._nonce += 42
+        self._nonce += 42
+        return self._nonce
 
     # -----------------Meat and Potatos---------------------------------------
     def __call__(self, command, args={}):
