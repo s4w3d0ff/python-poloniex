@@ -223,10 +223,10 @@ class Poloniex(object):
         [period=self.DAY] starting from [start=time()-self.YEAR]
         and ending at [end=time()]
         """
-        if not period:
+        if period not in [300, 900, 1800, 7200, 14400, 86400]:
             period = self.DAY
         if not start:
-            start = time() - (self.MONTH * 2)
+            start = time() - self.MONTH
         if not end:
             end = time()
         return self.__call__('returnChartData', {
