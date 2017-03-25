@@ -109,7 +109,7 @@ class Poloniex(object):
             logging.getLogger("urllib3").setLevel(loglevel)
             self.logger.setLevel(loglevel)
         # Call coach, set nonce
-        self.apicoach, self.nonce = Coach(), int(time() * 1000)
+        self.apicoach, self._nonce = Coach(), int(time() * 1000)
         # Grab keys, set timeout, ditch coach?
         self.Key, self.Secret, self.timeout, self._coaching = \
             Key, Secret, timeout, coach
@@ -117,6 +117,10 @@ class Poloniex(object):
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
             60, 60 * 60, 60 * 60 * 24, 60 * 60 * 24 * \
             7, 60 * 60 * 24 * 30, 60 * 60 * 24 * 365
+
+    @property
+    def nonce(self):
+        return self._nonce += 42
 
     # -----------------Meat and Potatos---------------------------------------
     def __call__(self, command, args={}):
@@ -164,9 +168,6 @@ class Poloniex(object):
                 self.logger.debug(ret.url)
             except Exception as e:
                 raise e
-            finally:
-                # increment nonce(no matter what)
-                self.nonce += 1
             # return decoded json
             try:
                 return _loads(ret.text, parse_float=unicode)
