@@ -100,7 +100,8 @@ class Poloniex(object):
     def __init__(
             self, Key=False, Secret=False,
             timeout=3, coach=True, loglevel=False, extend=False,
-            retval_wrapper=DotMap
+            retval_wrapper=DotMap,
+            retval_wrapper_args={'_dynamic': False}
     ):
         """
         Key = str api key supplied by Poloniex
@@ -129,6 +130,7 @@ class Poloniex(object):
             self.logger = Mock()
 
         self.retval_wrapper = retval_wrapper
+        self.retval_wrapper_args = retval_wrapper_args
 
         # Call coach
         self.apicoach = Coach()
@@ -241,7 +243,10 @@ class Poloniex(object):
 """.format(command, args, text, command))
 
                 struct = _loads(text, parse_float=unicode)
-                struct = self.retval_wrapper(struct)
+                struct = self.retval_wrapper(
+                    struct,
+                    **self.retval_wrapper_args
+                )
 
                 return struct
             except NameError:
