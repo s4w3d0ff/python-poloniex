@@ -87,7 +87,7 @@ class Poloniex(object):
 
     def __init__(
             self, Key=False, Secret=False,
-            timeout=3, coach=True, loglevel=False):
+            timeout=3, coach=True, loglevel=False, jsonNums=False):
         """
         Key = str api key supplied by Poloniex
         Secret = str secret hash supplied by Poloniex
@@ -110,6 +110,8 @@ class Poloniex(object):
             self.logger.setLevel(loglevel)
         # Call coach, set nonce
         self.apicoach, self.nonce = Coach(), int(time() * 1000)
+        # json number datatypes
+        self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
         self.Key, self.Secret, self.timeout, self._coaching = \
             Key, Secret, timeout, coach
@@ -168,10 +170,12 @@ class Poloniex(object):
                 # increment nonce(no matter what)
                 self.nonce += 1
             # return decoded json
-            try:
-                return _loads(ret.text, parse_float=unicode)
-            except NameError:
-                return _loads(ret.text, parse_float=str)
+            if not self.jsonNums:
+                try:
+                    return _loads(ret.text, parse_float=unicode)
+                except NameError:
+                    return _loads(ret.text, parse_float=str)
+            return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
 
         # public?
         elif command in PUBLIC_COMMANDS:
@@ -182,10 +186,12 @@ class Poloniex(object):
                 self.logger.debug(ret.url)
             except Exception as e:
                 raise e
-            try:
-                return _loads(ret.text, parse_float=unicode)
-            except NameError:
-                return _loads(ret.text, parse_float=str)
+            if not self.jsonNums:
+                try:
+                    return _loads(ret.text, parse_float=unicode)
+                except NameError:
+                    return _loads(ret.text, parse_float=str)
+            return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
         else:
             raise ValueError("Invalid Command!")
 
