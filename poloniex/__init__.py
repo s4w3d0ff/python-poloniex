@@ -261,10 +261,12 @@ class Poloniex(object):
             self.logger.debug(ret.url)
         except Exception as e:
             raise e
-        try:
-            return _loads(ret.text, parse_float=unicode)
-        except NameError:
-            return _loads(ret.text, parse_float=str)
+        if not self.jsonNums:
+            try:
+                return _loads(ret.text, parse_float=unicode)
+            except NameError:
+                return _loads(ret.text, parse_float=str)
+        return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
 
     # --PRIVATE COMMANDS------------------------------------------------------
     def generateNewAddress(self, coin):
