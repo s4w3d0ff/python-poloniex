@@ -26,11 +26,13 @@
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
+from time import time
+import logging
 # pip
 from requests import post as _post
 from requests import get as _get
 # local
-from .coach import Coach, time, logging
+from .coach import Coach
 # python 3 voodoo
 try:
     from urllib.parse import urlencode as _urlencode
