@@ -1,6 +1,7 @@
 #    coach.py
 #    Copyright (C) 2016  https://github.com/s4w3d0ff
 #    Copyright (C) 2017  https://github.com/metaperl
+#    Copyright (C) 2017  https://github.com/enricobacis
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,8 +18,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import logging
-from collections import deque
-from time import time, sleep
+from threading import Semaphore, Timer
 
 logger = logging.getLogger(__name__)
 
@@ -33,27 +33,11 @@ class Coach(object):
         callLimit = int max amount of calls per 'timeFrame' [default = 6]
         """
         self.timeFrame = timeFrame
-        self.timeBook = deque(list(), callLimit)
-
-    @property
-    def timeOverTimeframe(self):
-        elapsed = self.timeBook[-1] - self.timeBook[0]
-        logging.debug("Timebook=%s, Elapsed over time frame = %f",
-                      self.timeBook, elapsed)
-        return elapsed
-
-    def maybeSleep(self):
-        if len(self.timeBook) == 1:
-            logging.debug("First API call. No need to sleep.")
-            return
-
-        requiredElapsed = self.timeOverTimeframe - self.timeFrame
-        if requiredElapsed < 0:
-            requiredElapsed *= -1
-            logging.debug("Need to sleep %f seconds", requiredElapsed)
-            sleep(requiredElapsed)
+        self.semaphore = Semaphore(callLimit)
 
     def wait(self):
         """ Makes sure our api calls don't go past the api call limit """
-        self.timeBook.append(time())
-        self.maybeSleep()
+        self.semaphore.acquire()                                 # blocking call
+        timer = Timer(self.timeFrame, self.semaphore.release)  # delayed release
+        timer.setDaemon(True)          # allows the timer to be canceled on exit
+        timer.start()
