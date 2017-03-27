@@ -273,7 +273,7 @@ class Poloniex(object):
 
     # --PRIVATE COMMANDS------------------------------------------------------
     def generateNewAddress(self, coin):
-        """ Returns private trade history for <pair> """
+        """ Creates a new deposit address for <coin> """
         return self.__call__('generateNewAddress', {
                              'currency': coin})
     
