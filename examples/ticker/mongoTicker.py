@@ -17,17 +17,17 @@ class WAMPTicker(ApplicationSession):
     @inlineCallbacks
     def onJoin(self, details):
         # open/create poloniex database, ticker collection/table
-        db = MongoClient().poloniex['ticker']
-        db.drop()
+        self.db = MongoClient().poloniex['ticker']
+        self.db.drop()
         initTick = Poloniex().returnTicker()
         for market in initTick:
             initTick[market]['_id'] = market
-            db.insert_one(initTick[market])
+            self.db.insert_one(initTick[market])
         yield self.subscribe(self.onTick, 'ticker')
         print('Subscribed to Ticker')
 
     def onTick(self, *data):
-        db.update_one(
+        self.db.update_one(
             {"_id": data[0]},
             {"$set": {'last': data[1],
                       'lowestAsk': data[2],
