@@ -18,7 +18,9 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import logging
-from threading import Semaphore, Timer
+from time import time, sleep
+from threading import Semaphore
+from collections import deque
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +29,7 @@ class Coach(object):
     Coaches the api wrapper, makes sure it doesn't get all hyped up on Mt.Dew
     Poloniex default call limit is 6 calls per 1 sec.
     """
+
     def __init__(self, timeFrame=1.0, callLimit=6):
         """
         timeFrame = float time in secs [default = 1.0]
@@ -34,10 +37,16 @@ class Coach(object):
         """
         self.timeFrame = timeFrame
         self.semaphore = Semaphore(callLimit)
+        self.timeBook = deque(maxlen=callLimit, iterable=[time()])
 
     def wait(self):
         """ Makes sure our api calls don't go past the api call limit """
-        self.semaphore.acquire()                                 # blocking call
-        timer = Timer(self.timeFrame, self.semaphore.release)  # delayed release
-        timer.setDaemon(True)          # allows the timer to be canceled on exit
-        timer.start()
+        self.semaphore.acquire()  # blocking call
+        self.timeBook.append(time())
+        elapsed = self.timeBook[-1] - self.timeBook[0]
+        waitTime = elapsed - self.timeFrame
+        if waitTime < 0:
+            sleep(waitTime + self.timeFrame)
+            self.semaphore.release()
+        else:
+            self.semaphore.release()
