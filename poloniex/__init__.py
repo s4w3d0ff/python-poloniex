@@ -111,7 +111,7 @@ class Poloniex(object):
         # json number datatypes
         self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
-        self.Key, self.Secret, self.timeout \
+        self.Key, self.Secret, self.timeout = \
             Key, Secret, timeout
         # Set time labels
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
