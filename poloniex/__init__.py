@@ -107,7 +107,7 @@ class Poloniex(object):
             logging.getLogger("urllib3").setLevel(loglevel)
             self.logger.setLevel(loglevel)
         # Call coach, set nonce
-        self.apicoach, self._nonce = Coach(), int(time() * 1000)
+        self.coach, self._nonce = Coach(), int(time() * 1000)
         # json number datatypes
         self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
