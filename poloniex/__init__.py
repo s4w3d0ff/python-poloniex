@@ -107,7 +107,9 @@ class Poloniex(object):
             logging.getLogger("urllib3").setLevel(loglevel)
             self.logger.setLevel(loglevel)
         # Call coach, set nonce
-        self.coach, self.nonce = coach, int(time() * 1000)
+        self.apicoach, self._nonce = Coach(), int(time() * 1000)
+        # json number datatypes
+        self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
         self.Key, self.Secret, self.timeout \
             Key, Secret, timeout
@@ -116,42 +118,10 @@ class Poloniex(object):
             60, 60 * 60, 60 * 60 * 24, 60 * 60 * 24 * \
             7, 60 * 60 * 24 * 30, 60 * 60 * 24 * 365
 
-        #   These namespaces are here because poloniex has overlapping
-        # namespaces. There are 2 "returnTradeHistory" commands, one public and
-        # one private. Currently if one were to try: polo('returnTradeHistory')
-        # it would default to the private command and if no api key is defined a
-        # 'ValueError' will be raise. The workaround is 'marketTradeHist'. It
-        # returns the public data (bypassing the 'main' api call function). As
-        # I continued to write this wrapper I found more 'practical' namespaces
-        # for most of the api commands (at least at the time of writing). So I
-        # added them here for those who wish to use them.
-        if extend:
-            # Public
-            self.api = self.__call__
-            self.marketTicker = self.returnTicker
-            self.marketVolume = self.return24hVolume
-            self.marketStatus = self.returnCurrencies
-            self.marketLoans = self.returnLoanOrders
-            self.marketOrders = self.returnOrderBook
-            self.marketChart = self.returnChartData
-            # Private
-            self.myTradeHist = self.returnTradeHistory
-            self.myBalances = self.returnBalances
-            self.myAvailBalances = self.returnAvailableAccountBalances
-            self.myMarginAccountSummary = self.returnMarginAccountSummary
-            self.myMarginPosition = self.getMarginPosition
-            self.myCompleteBalances = self.returnCompleteBalances
-            self.myAddresses = self.returnDepositAddresses
-            self.myOrders = self.returnOpenOrders
-            self.myDepositsWithdraws = self.returnDepositsWithdrawals
-            self.myTradeableBalances = self.returnTradableBalances
-            self.myActiveLoans = self.returnActiveLoans
-            self.myOpenLoanOrders = self.returnOpenLoanOffers
-            self.myFeeInfo = self.returnFeeInfo
-            self.myLendingHistory = self.returnLendingHistory
-            self.orderTrades = self.returnOrderTrades
-            self.createLoanOrder = self.createLoanOffer
-            self.cancelLoanOrder = self.cancelLoanOffer
+    @property
+    def nonce(self):
+        self._nonce += 42
+        return self._nonce
 
     # -----------------Meat and Potatos---------------------------------------
     def __call__(self, command, args={}):
@@ -196,16 +166,16 @@ class Poloniex(object):
                         'Key': self.Key
                     },
                     timeout=self.timeout)
+                self.logger.debug(ret.url)
             except Exception as e:
                 raise e
-            finally:
-                # increment nonce(no matter what)
-                self.nonce += 1
             # return decoded json
-            try:
-                return _loads(ret.text, parse_float=unicode)
-            except NameError:
-                return _loads(ret.text, parse_float=str)
+            if not self.jsonNums:
+                try:
+                    return _loads(ret.text, parse_float=unicode)
+                except NameError:
+                    return _loads(ret.text, parse_float=str)
+            return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
 
         # public?
         elif command in PUBLIC_COMMANDS:
@@ -213,12 +183,15 @@ class Poloniex(object):
                 ret = _get(
                     'https://poloniex.com/public?' + _urlencode(args),
                     timeout=self.timeout)
+                self.logger.debug(ret.url)
             except Exception as e:
                 raise e
-            try:
-                return _loads(ret.text, parse_float=unicode)
-            except NameError:
-                return _loads(ret.text, parse_float=str)
+            if not self.jsonNums:
+                try:
+                    return _loads(ret.text, parse_float=unicode)
+                except NameError:
+                    return _loads(ret.text, parse_float=str)
+            return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
         else:
             raise ValueError("Invalid Command!")
 
@@ -256,10 +229,10 @@ class Poloniex(object):
         [period=self.DAY] starting from [start=time()-self.YEAR]
         and ending at [end=time()]
         """
-        if not period:
+        if period not in [300, 900, 1800, 7200, 14400, 86400]:
             period = self.DAY
         if not start:
-            start = time() - (self.MONTH * 2)
+            start = time() - self.MONTH
         if not end:
             end = time()
         return self.__call__('returnChartData', {
@@ -276,31 +249,39 @@ class Poloniex(object):
         """
         if self.coach:
             self.coach.wait()
-        if not start:
-            start = time() - self.HOUR
-        if not end:
-            end = time()
+        args = {'command': 'returnTradeHistory', 'currencyPair': str(pair).upper()}
+        if start:
+            args['start'] = start
+        if end:
+            args['end'] = end
         try:
             ret = _get(
-                'https://poloniex.com/public?' + _urlencode({
-                    'command': 'returnTradeHistory',
-                    'currencyPair': str(pair).upper(),
-                    'start': str(start),
-                    'end': str(end)
-                }),
+                'https://poloniex.com/public?' + _urlencode(args),
                 timeout=self.timeout)
+            self.logger.debug(ret.url)
         except Exception as e:
             raise e
-        try:
-            return _loads(ret.text, parse_float=unicode)
-        except NameError:
-            return _loads(ret.text, parse_float=str)
+        if not self.jsonNums:
+            try:
+                return _loads(ret.text, parse_float=unicode)
+            except NameError:
+                return _loads(ret.text, parse_float=str)
+        return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
 
     # --PRIVATE COMMANDS------------------------------------------------------
-    def returnTradeHistory(self, pair):
+    def generateNewAddress(self, coin):
+        """ Creates a new deposit address for <coin> """
+        return self.__call__('generateNewAddress', {
+                             'currency': coin})
+    
+    def returnTradeHistory(self, pair='all', start=False, end=False):
         """ Returns private trade history for <pair> """
-        return self.__call__('returnTradeHistory', {
-                             'currencyPair': str(pair).upper()})
+        args = {'currencyPair': str(pair).upper()}
+        if start:
+            args['start'] = start
+        if end:
+            args['end'] = end
+        return self.__call__('returnTradeHistory', args)
 
     def returnBalances(self):
         """ Returns coin balances """
