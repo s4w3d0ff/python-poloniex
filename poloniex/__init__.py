@@ -85,7 +85,7 @@ class Poloniex(object):
 
     def __init__(
             self, Key=False, Secret=False,
-            timeout=3, coach=False, loglevel=False, extend=False):
+            timeout=3, coach=Coach(), loglevel=False, extend=False):
         """
         Key = str api key supplied by Poloniex
         Secret = str secret hash supplied by Poloniex
@@ -107,10 +107,10 @@ class Poloniex(object):
             logging.getLogger("urllib3").setLevel(loglevel)
             self.logger.setLevel(loglevel)
         # Call coach, set nonce
-        self.apicoach, self.nonce = Coach(), int(time() * 1000)
+        self.coach, self.nonce = coach, int(time() * 1000)
         # Grab keys, set timeout, ditch coach?
-        self.Key, self.Secret, self.timeout, self._coaching = \
-            Key, Secret, timeout, coach
+        self.Key, self.Secret, self.timeout \
+            Key, Secret, timeout
         # Set time labels
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
             60, 60 * 60, 60 * 60 * 24, 60 * 60 * 24 * \
@@ -165,8 +165,8 @@ class Poloniex(object):
         global PUBLIC_COMMANDS, PRIVATE_COMMANDS
 
         # check in with the coach
-        if self._coaching:
-            self.apicoach.wait()
+        if self.coach:
+            self.coach.wait()
 
         # pass the command
         args['command'] = command
@@ -274,8 +274,8 @@ class Poloniex(object):
         Returns public trade history for <pair>
         starting at <start> and ending at [end=time()]
         """
-        if self._coaching:
-            self.apicoach.wait()
+        if self.coach:
+            self.coach.wait()
         if not start:
             start = time() - self.HOUR
         if not end:
