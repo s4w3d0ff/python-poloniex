@@ -10,25 +10,24 @@ from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
 # git
 from poloniex import Poloniex
 
-# open/create poloniex database, ticker collection/table
-db = lambda collection='ticker': MongoClient().poloniex[collection]
-
 
 class WAMPTicker(ApplicationSession):
     """ WAMP application - subscribes to the 'ticker' push api and saves pushed
     data into a mongodb """
     @inlineCallbacks
     def onJoin(self, details):
-        db().drop()
+        # open/create poloniex database, ticker collection/table
+        self.db = MongoClient().poloniex['ticker']
+        self.db.drop()
         initTick = Poloniex().returnTicker()
         for market in initTick:
             initTick[market]['_id'] = market
-            db().insert_one(initTick[market])
+            self.db.insert_one(initTick[market])
         yield self.subscribe(self.onTick, 'ticker')
         print('Subscribed to Ticker')
 
     def onTick(self, *data):
-        db().update_one(
+        self.db.update_one(
             {"_id": data[0]},
             {"$set": {'last': data[1],
                       'lowestAsk': data[2],
@@ -53,6 +52,8 @@ class Ticker(object):
 
     def __init__(self):
         self.running = False
+        # open/create poloniex database, ticker collection/table
+        self.db = MongoClient().poloniex['ticker']
         # thread namespace
         self._appProcess = None
         self._appRunner = ApplicationRunner(
@@ -61,7 +62,7 @@ class Ticker(object):
 
     def __call__(self, market='USDT_BTC'):
         """ returns ticker from mongodb """
-        return db().find_one({'_id': market})
+        return self.db.find_one({'_id': market})
 
     def start(self):
         """ Start WAMP application runner process """
