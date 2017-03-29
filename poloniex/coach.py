@@ -36,7 +36,7 @@ class Coach(object):
         callLimit = int max amount of calls per 'timeFrame' [default = 6]
         """
         self.timeFrame = timeFrame
-        #self.semaphore = Semaphore(callLimit)
+        self.semaphore = Semaphore(callLimit)
         self.timeBook = deque(maxlen=callLimit, iterable=[time()])
 
     def wait(self):
