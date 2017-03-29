@@ -42,14 +42,18 @@ class Coach(object):
     def wait(self):
         """ Makes sure our api calls don't go past the api call limit """
         self.semaphore.acquire()  # blocking call
-        # put now in timebook
-        self.timeBook.append(time())
-        # newest time (now) - the oldest time = time elapsed between calls
+        # newest time - the oldest time = time elapsed between calls
         elapsed = self.timeBook[-1] - self.timeBook[0]
         # if elapsed is greater than timeframe
         if elapsed > self.timeFrame:
             # waittime =  elapsed - timeframe
             sleep(elapsed - self.timeFrame)
+            # put now in timebook
+            self.timeBook.append(time())
+            # release semaphore
             self.semaphore.release()
         else:
+            # put now in timebook
+            self.timeBook.append(time())
+            # release semaphore
             self.semaphore.release()
