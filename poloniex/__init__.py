@@ -107,11 +107,11 @@ class Poloniex(object):
             logging.getLogger("urllib3").setLevel(loglevel)
             self.logger.setLevel(loglevel)
         # Call coach, set nonce
-        self.apicoach, self._nonce = Coach(), int(time() * 1000)
+        self.coach, self._nonce = Coach(), int(time() * 1000)
         # json number datatypes
         self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
-        self.Key, self.Secret, self.timeout \
+        self.Key, self.Secret, self.timeout = \
             Key, Secret, timeout
         # Set time labels
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
