@@ -1,5 +1,5 @@
-#!/usr/bin python
-import time, logging, os, json
+#!/usr/bin/python
+import time, calendar logging, os, json
 from multiprocessing.dummy import Process as Thread
 import poloniex
 
@@ -11,6 +11,9 @@ B  = lambda text: '\033[34m'+text+W # blue
 P  = lambda text: '\033[35m'+text+W # purp
 C  = lambda text: '\033[36m'+text+W # cyan
 GR = lambda text: '\033[37m'+text+W # gray
+
+def UTCstr2epoch(datestr, fmat="%Y-%m-%d %H:%M:%S"):
+    return calendar.timegm(time.strptime(datestr, fmat))
 
 class Loaner(object):
     """ Object for control of threaded Loaner loop"""
@@ -35,26 +38,21 @@ class Loaner(object):
                 self.openLoanOffers = self.polo.returnActiveLoans()
                 for coin in self.coins:
                     # Check for old offers
-                    time.sleep(0.5) # throttle api usage
                     self.cancelOldOffers(coin)
-                time.sleep(0.5) # throttle api usage
                 print 'return balances'
                 self.availBalance = self.polo.returnBalances()
                 for coin in self.coins:
                     # ALL the coins??
                     if self.coins[coin]['allBal']:
-                        time.sleep(0.5) # throttle api usage
                         self.moveAll2Lending(coin)
-                time.sleep(0.5) # throttle api usage
                 print 'return balances (2)'
                 self.availBalance = self.polo.returnBalances()
                 for coin in self.coins:
                     # Creat new offer
                     print 'create loan offers'
-                    time.sleep(0.5) # throttle api usage
                     self.createLoanOffer(coin)
                 # wait the interval (or shutdown)
-                print 'sleep for %d seconds' % self.interval
+                print 'sleep for %d seconds' % (self.interval*2)*0.5
                 for i in range(self.interval*2):
                     if not self._running:
                         break
@@ -102,7 +100,7 @@ class Loaner(object):
 
     def getLoanOfferAge(self, coin, order):
         # epoch of loan order 
-        opnTime = poloniex.UTCstr2epoch(order['date'])
+        opnTime = UTCstr2epoch(order['date'])
         # current epoch
         curTime = time.time()
         # age of open order = now-timeopened
