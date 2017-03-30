@@ -65,6 +65,7 @@ class Coach2(object):
     Coaches the api wrapper, makes sure it doesn't get all hyped up on Mt.Dew
     Poloniex default call limit is 6 calls per 1 sec.
     """
+
     def __init__(self, timeFrame=1.0, callLimit=6):
         """
         timeFrame = float time in secs [default = 1.0]
@@ -76,19 +77,18 @@ class Coach2(object):
     @property
     def timeOverTimeframe(self):
         elapsed = self.timeBook[-1] - self.timeBook[0]
-        logging.debug("Timebook=%s, Elapsed over time frame = %f",
-                      self.timeBook, elapsed)
+        logger.debug("Elapsed : %f", elapsed)
         return elapsed
 
     def maybeSleep(self):
         if len(self.timeBook) == 1:
-            logging.debug("First API call. No need to sleep.")
+            logger.debug("First API call. No need to sleep.")
             return
 
         requiredElapsed = self.timeOverTimeframe - self.timeFrame
         if requiredElapsed < 0:
             requiredElapsed *= -1
-            logging.debug("Need to sleep %f seconds", requiredElapsed)
+            logger.debug("...waiting... %f", requiredElapsed)
             sleep(requiredElapsed)
 
     def wait(self):
@@ -102,6 +102,7 @@ class Coach3(object):
     Coaches the api wrapper, makes sure it doesn't get all hyped up on Mt.Dew
     Poloniex default call limit is 6 calls per 1 sec.
     """
+
     def __init__(self, timeFrame=1.0, callLimit=6):
         """
         timeFrame = float time in secs [default = 1.0]
@@ -113,8 +114,10 @@ class Coach3(object):
     def wait(self):
         """ Makes sure our api calls don't go past the api call limit """
         self.semaphore.acquire()                                 # blocking call
-        timer = Timer(self.timeFrame, self.semaphore.release)  # delayed release
-        timer.setDaemon(True)          # allows the timer to be canceled on exit
+        # delayed release
+        timer = Timer(self.timeFrame, self.semaphore.release)
+        # allows the timer to be canceled on exit
+        timer.setDaemon(True)
         timer.start()
 
 
@@ -125,5 +128,5 @@ if __name__ == '__main__':
     coach = Coach()
     for i in range(50):
         logger.debug(i)
-        sleep(random.uniform(0.1, 0.001))
+        sleep(random.uniform(0.1, 0.01))
         coach.wait()
