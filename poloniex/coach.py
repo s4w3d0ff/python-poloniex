@@ -123,7 +123,7 @@ class Coach3(object):
 
 if __name__ == '__main__':
     import random
-    logging.basicConfig(loglevel=logging.DEBUG)
+    logging.basicConfig()
     logger.setLevel(logging.DEBUG)
     coach = Coach()
     for i in range(50):
