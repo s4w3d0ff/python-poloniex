@@ -18,7 +18,7 @@ class Loaner(object):
         if os.path.isfile(config):
             with open(config) as f:
                 config = json.load(f)
-        self.polo = poloniex.Poloniex(config['key'], config['secret'], extend=True)
+        self.polo = poloniex.Poloniex(config['key'], config['secret'])
         self.coins = config['coins']
         self.interval = config['interval']
         self._running, self._thread = False, None
@@ -31,20 +31,30 @@ class Loaner(object):
         """
         while self._running:
             try:
-                self.openLoanOffers = self.polo.myOpenLoanOrders()
+                print 'return active'
+                self.openLoanOffers = self.polo.returnActiveLoans()
                 for coin in self.coins:
                     # Check for old offers
+                    time.sleep(0.5) # throttle api usage
                     self.cancelOldOffers(coin)
-                self.availBalance = self.polo.myAvailBalances()
+                time.sleep(0.5) # throttle api usage
+                print 'return balances'
+                self.availBalance = self.polo.returnBalances()
                 for coin in self.coins:
                     # ALL the coins??
                     if self.coins[coin]['allBal']:
+                        time.sleep(0.5) # throttle api usage
                         self.moveAll2Lending(coin)
-                self.availBalance = self.polo.myAvailBalances()
+                time.sleep(0.5) # throttle api usage
+                print 'return balances (2)'
+                self.availBalance = self.polo.returnBalances()
                 for coin in self.coins:
                     # Creat new offer
+                    print 'create loan offers'
+                    time.sleep(0.5) # throttle api usage
                     self.createLoanOffer(coin)
                 # wait the interval (or shutdown)
+                print 'sleep for %d seconds' % self.interval
                 for i in range(self.interval*2):
                     if not self._running:
                         break
@@ -108,7 +118,7 @@ class Loaner(object):
                 age = self.getLoanOfferAge(coin, offer)
                 # check if it is beyond max age
                 if age > self.coins[coin]['maxAge']:
-                    result = self.polo.cancelLoanOrder(offer['id'])
+                    result = self.polo.cancelLoanOffer(offer['id'])
                     if 'error' in result:
                         raise RuntimeError(P('LOANER:')+' %s' % R(result['error']))
                     else:
@@ -123,7 +133,7 @@ class Loaner(object):
                 if float(self.availBalance['lending'][coin]) > self.coins[coin]['minAmount']:
                     # get lowset rate
                     topRate = float(
-                            self.polo.marketLoans(coin)['offers'][0]['rate']
+                            self.polo.returnLoanOrders(coin)['offers'][0]['rate']
                             )
                     # create loan
                     result = self.polo.createLoanOrder(
