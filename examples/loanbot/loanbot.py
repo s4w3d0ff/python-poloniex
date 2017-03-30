@@ -1,5 +1,5 @@
-#!/usr/bin python
-import time, logging, os, json
+#!/usr/bin/python
+import time, calendar logging, os, json
 from multiprocessing.dummy import Process as Thread
 import poloniex
 
@@ -12,13 +12,16 @@ P  = lambda text: '\033[35m'+text+W # purp
 C  = lambda text: '\033[36m'+text+W # cyan
 GR = lambda text: '\033[37m'+text+W # gray
 
+def UTCstr2epoch(datestr, fmat="%Y-%m-%d %H:%M:%S"):
+    return calendar.timegm(time.strptime(datestr, fmat))
+
 class Loaner(object):
     """ Object for control of threaded Loaner loop"""
     def __init__(self, config):
         if os.path.isfile(config):
             with open(config) as f:
                 config = json.load(f)
-        self.polo = poloniex.Poloniex(config['key'], config['secret'], extend=True)
+        self.polo = poloniex.Poloniex(config['key'], config['secret'])
         self.coins = config['coins']
         self.interval = config['interval']
         self._running, self._thread = False, None
@@ -31,20 +34,25 @@ class Loaner(object):
         """
         while self._running:
             try:
-                self.openLoanOffers = self.polo.myOpenLoanOrders()
+                print 'return active'
+                self.openLoanOffers = self.polo.returnActiveLoans()
                 for coin in self.coins:
                     # Check for old offers
                     self.cancelOldOffers(coin)
-                self.availBalance = self.polo.myAvailBalances()
+                print 'return balances'
+                self.availBalance = self.polo.returnBalances()
                 for coin in self.coins:
                     # ALL the coins??
                     if self.coins[coin]['allBal']:
                         self.moveAll2Lending(coin)
-                self.availBalance = self.polo.myAvailBalances()
+                print 'return balances (2)'
+                self.availBalance = self.polo.returnBalances()
                 for coin in self.coins:
                     # Creat new offer
+                    print 'create loan offers'
                     self.createLoanOffer(coin)
                 # wait the interval (or shutdown)
+                print 'sleep for %d seconds' % (self.interval*2)*0.5
                 for i in range(self.interval*2):
                     if not self._running:
                         break
@@ -92,7 +100,7 @@ class Loaner(object):
 
     def getLoanOfferAge(self, coin, order):
         # epoch of loan order 
-        opnTime = poloniex.UTCstr2epoch(order['date'])
+        opnTime = UTCstr2epoch(order['date'])
         # current epoch
         curTime = time.time()
         # age of open order = now-timeopened
@@ -108,7 +116,7 @@ class Loaner(object):
                 age = self.getLoanOfferAge(coin, offer)
                 # check if it is beyond max age
                 if age > self.coins[coin]['maxAge']:
-                    result = self.polo.cancelLoanOrder(offer['id'])
+                    result = self.polo.cancelLoanOffer(offer['id'])
                     if 'error' in result:
                         raise RuntimeError(P('LOANER:')+' %s' % R(result['error']))
                     else:
@@ -123,7 +131,7 @@ class Loaner(object):
                 if float(self.availBalance['lending'][coin]) > self.coins[coin]['minAmount']:
                     # get lowset rate
                     topRate = float(
-                            self.polo.marketLoans(coin)['offers'][0]['rate']
+                            self.polo.returnLoanOrders(coin)['offers'][0]['rate']
                             )
                     # create loan
                     result = self.polo.createLoanOrder(
