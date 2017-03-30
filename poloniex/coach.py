@@ -30,6 +30,7 @@ class Coach(object):
     Coaches the api wrapper, makes sure it doesn't get all hyped up on Mt.Dew
     Poloniex default call limit is 6 calls per 1 sec.
     """
+
     def __init__(self, timeFrame=1.0, callLimit=6):
         """
         timeFrame = float time in secs [default = 1.0]
@@ -37,26 +38,26 @@ class Coach(object):
         """
         self.timeFrame = timeFrame
         self.semaphore = Semaphore(callLimit)
-        self.timeBook = deque(maxlen=callLimit, iterable=[time()])
+        self.timeBook = deque(iterable=[time()], maxlen=callLimit)
+        self.callLimit = callLimit
 
     def wait(self):
         """ Makes sure our api calls don't go past the api call limit """
         self.semaphore.acquire()  # blocking call
         # newest time - the oldest time = time elapsed between calls
         elapsed = self.timeBook[-1] - self.timeBook[0]
-        # if elapsed is less than timeframe
-        if elapsed < self.timeFrame:
+        logger.debug('Elapsed: %f', elapsed)
+        # if elapsed is less than timeframe and the timebook is full
+        if elapsed < self.timeFrame and len(self.timeBook) == self.callLimit:
             # waittime =  timeframe - elapsed
-            sleep(self.timeFrame - elapsed)
-            # put now in timebook
-            self.timeBook.append(time())
-            # release semaphore
-            self.semaphore.release()
+            waittime = self.timeFrame - elapsed
+            logger.debug('...Waiting... %f', waittime)
+            sleep(waittime)  # wait
+            self.timeBook.append(time())  # put now in timebook
+            self.semaphore.release()  # release semaphore
         else:
-            # put now in timebook
-            self.timeBook.append(time())
-            # release semaphore
-            self.semaphore.release()
+            self.timeBook.append(time())  # put now in timebook
+            self.semaphore.release()  # release semaphore
 
 
 class Coach2(object):
@@ -115,3 +116,14 @@ class Coach3(object):
         timer = Timer(self.timeFrame, self.semaphore.release)  # delayed release
         timer.setDaemon(True)          # allows the timer to be canceled on exit
         timer.start()
+
+
+if __name__ == '__main__':
+    import random
+    logging.basicConfig(loglevel=logging.DEBUG)
+    logger.setLevel(logging.DEBUG)
+    coach = Coach()
+    for i in range(50):
+        logger.debug(i)
+        sleep(random.uniform(0.1, 0.001))
+        coach.wait()
