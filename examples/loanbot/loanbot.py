@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import time, calendar logging, os, json
+import time, calendar, logging, os, json
 from multiprocessing.dummy import Process as Thread
 import poloniex
 
