@@ -33,6 +33,7 @@ from requests import post as _post
 from requests import get as _get
 # local
 from .coach import Coach
+from .retry import retry
 # python 3 voodoo
 try:
     from urllib.parse import urlencode as _urlencode
@@ -126,6 +127,7 @@ class Poloniex(object):
         return self._nonce
 
     # -----------------Meat and Potatos---------------------------------------
+    @retry(logger=self.logger)
     def __call__(self, command, args={}):
         """
         Main Api Function
