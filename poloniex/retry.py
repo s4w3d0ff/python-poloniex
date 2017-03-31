@@ -1,10 +1,11 @@
 # http://code.activestate.com/recipes/580745-retry-decorator-in-python/
+import logging
 from itertools import chain
 from time import sleep
 
 def retry(delays=(0, 1, 5, 30, 180, 600, 3600),
           exception=Exception,
-          report=lambda *args: None):
+          logger=logging.getLogger(__name__)):
     def wrapper(function):
         def wrapped(*args, **kwargs):
             problems = []
@@ -14,11 +15,11 @@ def retry(delays=(0, 1, 5, 30, 180, 600, 3600),
                 except exception as problem:
                     problems.append(problem)
                     if delay is None:
-                        report("retryable failed definitely:", problems)
+                        logger.error("retryable failed definitely:", problems)
                         raise
                     else:
-                        report("retryable failed:", problem)
-                        report("-- delaying for %ds", delay)
+                        logger.warn("retryable failed:", problem)
+                        logger.info("-- delaying for %ds", delay)
                         sleep(delay)
         return wrapped
     return wrapper
