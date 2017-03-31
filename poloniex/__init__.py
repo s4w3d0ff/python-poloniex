@@ -85,7 +85,7 @@ class Poloniex(object):
 
     def __init__(
             self, Key=False, Secret=False,
-            timeout=3, coach=Coach(), loglevel=False, jsonNums=False):
+            timeout=3, coach=True, loglevel=False, jsonNums=False):
         """
         Key = str api key supplied by Poloniex
         Secret = str secret hash supplied by Poloniex
@@ -107,7 +107,9 @@ class Poloniex(object):
             logging.getLogger("urllib3").setLevel(loglevel)
             self.logger.setLevel(loglevel)
         # Call coach, set nonce
-        self.coach, self._nonce = Coach(), int(time() * 1000)
+        if coach is True:
+            coach = Coach()
+        self.coach, self._nonce = coach, int(time() * 1000)
         # json number datatypes
         self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
