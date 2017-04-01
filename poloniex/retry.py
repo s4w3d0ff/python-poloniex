@@ -15,10 +15,10 @@ def retry(delays=(0, 1, 5, 30, 180, 600, 3600),
                 except exception as problem:
                     problems.append(problem)
                     if delay is None:
-                        logger.error("retryable failed definitely:", problems)
+                        logger.error(problems)
                         raise
                     else:
-                        logger.warn("retryable failed:", problem)
+                        logger.exception(problem)
                         logger.info("-- delaying for %ds", delay)
                         sleep(delay)
         return wrapped
