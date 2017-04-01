@@ -24,9 +24,32 @@ class Subscribe2Trollbox(ApplicationSession):
 	def onJoin(self, details):
 		h = HTMLParser()
 		self.alter = True
-		self.name = 'busoni@poloniex'
-		self.mods = ["Chickenliver", "MobyDick", "InfiniteJest", "cybiko123", "SweetJohnDee", "smallbit", "Wizwa", "OldManKidd", "Quantum", "busoni@poloniex", "Thoth", "wausboot", "SolarPowered", "qubix", "Oldgamejunk", "Chewpacabra", "j33hopper", "Futterwacken", "ultim8um", "Atlanta"]
-		self.friends = []
+		self.name = 'PulloutKing'
+		self.mods = {
+			"Xoblort": 1,
+			"Chickenliver": 1,
+			"MobyDick": 1,
+			"cybiko123": 1,
+			"SweetJohnDee": 1,
+			"smallbit": 1,
+			"Wizwa": 1,
+			"OldManKidd": 1,
+			"Quantum": 1,
+			"busoni@poloniex": 1,
+			"Thoth": 1,
+			"wausboot": 1,
+			"Mirai": 1,
+			"qubix": 1,
+			"Oldgamejunk": 1,
+			"Chewpacabra": 1,
+			"j33hopper": 1,
+			"VenomGhost": 1,
+			"ultim8um": 1,
+			"TheDjentleman": 1,
+			"Bigolas": 1,
+			"Watchtower": 1
+		}
+		self.friends = [] # :.(
 		def onTroll(*args):
 			try:
 				logging.debug(args[0].upper(), str(args[1]))
