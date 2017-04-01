@@ -127,7 +127,7 @@ class Poloniex(object):
         return self._nonce
 
     # -----------------Meat and Potatos---------------------------------------
-    @retry(logger=self.logger)
+    @retry()
     def __call__(self, command, args={}):
         """
         Main Api Function
