@@ -29,6 +29,7 @@ from hashlib import sha512 as _sha512
 from time import time
 import logging
 # pip
+import requests
 from requests import post as _post
 from requests import get as _get
 # local
@@ -127,7 +128,7 @@ class Poloniex(object):
         return self._nonce
 
     # -----------------Meat and Potatos---------------------------------------
-    @retry()
+    @retry(exception=requests.exceptions.RequestException)
     def __call__(self, command, args={}):
         """
         Main Api Function
