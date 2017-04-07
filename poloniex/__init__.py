@@ -169,7 +169,7 @@ class Poloniex(object):
                         'Key': self.Key
                     },
                     timeout=self.timeout)
-                logging.debug(ret.url)
+                self.logger.debug(ret.url)
             except Exception as e:
                 raise e
             # return decoded json
@@ -186,7 +186,7 @@ class Poloniex(object):
                 ret = _get(
                     'https://poloniex.com/public?' + _urlencode(args),
                     timeout=self.timeout)
-                logging.debug(ret.url)
+                self.logger.debug(ret.url)
             except Exception as e:
                 raise e
             if not self.jsonNums:
@@ -262,7 +262,7 @@ class Poloniex(object):
             ret = _get(
                 'https://poloniex.com/public?' + _urlencode(args),
                 timeout=self.timeout)
-            logging.debug(ret.url)
+            self.logger.debug(ret.url)
         except Exception as e:
             raise e
         if not self.jsonNums:
