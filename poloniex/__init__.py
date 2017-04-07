@@ -23,21 +23,27 @@
 #    You should have received a copy of the GNU General Public License along
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# python 3 voodoo
+try:
+    from urllib.parse import urlencode as _urlencode
+except:
+    from urllib import urlencode as _urlencode
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
 from time import time
 import logging
-# pip
+# 3rd party
+from requests.exceptions import RequestException
 from requests import post as _post
 from requests import get as _get
 # local
 from .coach import Coach
-# python 3 voodoo
-try:
-    from urllib.parse import urlencode as _urlencode
-except ImportError:
-    from urllib import urlencode as _urlencode
+from .retry import retry
+# logger
+logger = logging.getLogger(__name__)
+
+retryDelays = (0, 2, 5, 30)
 
 # Possible Commands
 PUBLIC_COMMANDS = [
@@ -85,30 +91,24 @@ class Poloniex(object):
 
     def __init__(
             self, Key=False, Secret=False,
-            timeout=3, coach=True, loglevel=False, jsonNums=False):
+            timeout=1, coach=True, jsonNums=False):
         """
         Key = str api key supplied by Poloniex
         Secret = str secret hash supplied by Poloniex
         timeout = int time in sec to wait for an api response
             (otherwise 'requests.exceptions.Timeout' is raised)
         coach = bool to indicate if the api coach should be used
-        loglevel = logging level object to set the module at
-            (changes the requests module as well)
-
-        self.apiCoach = object that regulates spacing between api calls
+        jsonNums = datatype to use when parsing json ints and floats
 
         # Time Placeholders # (MONTH == 30*DAYS)
 
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
-        self.logger = logging.getLogger(__name__)
-        if loglevel:
-            logging.getLogger("requests").setLevel(loglevel)
-            logging.getLogger("urllib3").setLevel(loglevel)
-            self.logger.setLevel(loglevel)
         # Call coach, set nonce
         if coach is True:
             coach = Coach()
+        self.logger = logger
+        self.retryDelays = retryDelays
         self.coach, self._nonce = coach, int(time() * 1000)
         # json number datatypes
         self.jsonNums = jsonNums
@@ -126,6 +126,7 @@ class Poloniex(object):
         return self._nonce
 
     # -----------------Meat and Potatos---------------------------------------
+    @retry(delays=retryDelays, exception=RequestException)
     def __call__(self, command, args={}):
         """
         Main Api Function
@@ -251,7 +252,8 @@ class Poloniex(object):
         """
         if self.coach:
             self.coach.wait()
-        args = {'command': 'returnTradeHistory', 'currencyPair': str(pair).upper()}
+        args = {'command': 'returnTradeHistory',
+                'currencyPair': str(pair).upper()}
         if start:
             args['start'] = start
         if end:
@@ -275,7 +277,7 @@ class Poloniex(object):
         """ Creates a new deposit address for <coin> """
         return self.__call__('generateNewAddress', {
                              'currency': coin})
-    
+
     def returnTradeHistory(self, pair='all', start=False, end=False):
         """ Returns private trade history for <pair> """
         args = {'currencyPair': str(pair).upper()}

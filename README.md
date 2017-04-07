@@ -9,7 +9,7 @@ Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 - The `poloniex.Poloniex(timeout=3)` attribute/arg adjusts the number of seconds to wait for a response from poloniex, else `requests.exceptions.Timeout` is raised.
 - A call restrictor (`coach`) is enabled by default, limiting the api wrapper to 6 calls per second. If you wish, you can deactivate the coach using `Poloniex(coach=False)` or use an 'external' coach.
 - By default, json floats are parsed as strings (ints are ints), you can define `Poloniex(jsonNums=float)` to have _all numbers_ (floats _and_ ints) parsed as floats (or import and use `decimal.Decimal`).
-- `poloniex.coach` and `poloniex.Poloniex` have self named loggers. You can define the log level of the `requests` module by defining `Poloniex(loglevel=logging.DEBUG)` (this also changes the log level of the `Poloniex` object).
+- `poloniex.coach`, 'poloniex.retry', and `poloniex` have self named loggers.
 
 ## Install:
 Python 2: 
