@@ -21,7 +21,6 @@ import logging
 from time import time, sleep
 from threading import Semaphore, Timer
 from collections import deque
-
 logger = logging.getLogger(__name__)
 
 
@@ -41,7 +40,7 @@ class Coach(object):
 
     def wait(self):
         """ Makes sure our api calls don't go past the api call limit """
-        self.semaphore.acquire() # blocking call
+        self.semaphore.acquire()  # blocking call
         # delayed release
         timer = Timer(self.timeFrame, self.semaphore.release)
         # allows the timer to be canceled on exit
@@ -88,8 +87,7 @@ class Coach2(object):
 
 if __name__ == '__main__':
     import random
-    logging.basicConfig()
-    logger.setLevel(logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
     coach = Coach()
     for i in range(50):
         logger.debug(i)
