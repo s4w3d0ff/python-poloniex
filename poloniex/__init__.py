@@ -112,6 +112,11 @@ class Poloniex(object):
         self.coach, self._nonce = coach, int(time() * 1000)
         # json number datatypes
         self.jsonNums = jsonNums
+        if not jsonNums:
+            try:
+                self.jsonNums = unicode
+            except:
+                self.jsonNums = str
         # Grab keys, set timeout, ditch coach?
         self.Key, self.Secret, self.timeout = \
             Key, Secret, timeout
@@ -173,11 +178,6 @@ class Poloniex(object):
             except Exception as e:
                 raise e
             # return decoded json
-            if not self.jsonNums:
-                try:
-                    return _loads(ret.text, parse_float=unicode)
-                except NameError:
-                    return _loads(ret.text, parse_float=str)
             return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
 
         # public?
@@ -189,11 +189,6 @@ class Poloniex(object):
                 self.logger.debug(ret.url)
             except Exception as e:
                 raise e
-            if not self.jsonNums:
-                try:
-                    return _loads(ret.text, parse_float=unicode)
-                except NameError:
-                    return _loads(ret.text, parse_float=str)
             return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
         else:
             raise ValueError("Invalid Command!")
@@ -265,11 +260,6 @@ class Poloniex(object):
             self.logger.debug(ret.url)
         except Exception as e:
             raise e
-        if not self.jsonNums:
-            try:
-                return _loads(ret.text, parse_float=unicode)
-            except NameError:
-                return _loads(ret.text, parse_float=str)
         return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
 
     # --PRIVATE COMMANDS------------------------------------------------------
