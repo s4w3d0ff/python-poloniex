@@ -23,11 +23,16 @@
 #    You should have received a copy of the GNU General Public License along
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-# python 3 voodoo
+# python 2
 try:
-    from urllib.parse import urlencode as _urlencode
-except:
     from urllib import urlencode as _urlencode
+    basestring = basestring
+    unicode = unicode
+# python 3
+except:
+    from urllib.parse import urlencode as _urlencode
+    basestring = str
+    unicode = str
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
@@ -178,6 +183,8 @@ class Poloniex(object):
             except Exception as e:
                 raise e
             # return decoded json
+            if not self.jsonNums:
+                return _loads(ret.text, parse_float=str)
             return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
 
         # public?
@@ -189,6 +196,8 @@ class Poloniex(object):
                 self.logger.debug(ret.url)
             except Exception as e:
                 raise e
+            if not self.jsonNums:
+                return _loads(ret.text, parse_float=str)
             return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
         else:
             raise ValueError("Invalid Command!")
@@ -260,6 +269,8 @@ class Poloniex(object):
             self.logger.debug(ret.url)
         except Exception as e:
             raise e
+        if not self.jsonNums:
+            return _loads(ret.text, parse_float=str)
         return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
 
     # --PRIVATE COMMANDS------------------------------------------------------
