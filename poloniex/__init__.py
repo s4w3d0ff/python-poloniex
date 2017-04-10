@@ -113,7 +113,6 @@ class Poloniex(object):
         if coach is True:
             coach = Coach()
         self.logger = logger
-        self.retryDelays = retryDelays
         self.coach, self._nonce = coach, int(time() * 1000)
         # json number datatypes
         self.jsonNums = jsonNums
