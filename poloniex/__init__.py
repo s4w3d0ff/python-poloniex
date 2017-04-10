@@ -117,11 +117,6 @@ class Poloniex(object):
         self.coach, self._nonce = coach, int(time() * 1000)
         # json number datatypes
         self.jsonNums = jsonNums
-        if not jsonNums:
-            try:
-                self.jsonNums = unicode
-            except:
-                self.jsonNums = str
         # Grab keys, set timeout, ditch coach?
         self.Key, self.Secret, self.timeout = \
             Key, Secret, timeout
