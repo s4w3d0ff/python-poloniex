@@ -26,13 +26,11 @@
 # python 2
 try:
     from urllib import urlencode as _urlencode
-    basestring = basestring
-    unicode = unicode
+    str = unicode
 # python 3
 except:
     from urllib.parse import urlencode as _urlencode
-    basestring = str
-    unicode = str
+
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
