@@ -10,7 +10,7 @@ Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 - If a `requests` exception is raised (including `Timeout`s), signaling that the api call did not go through, the wrapper will attempt to try the call again. The wait pattern between retrys are as follows (in seconds): (0, 2, 5, 30). Once the retry delay list is exausted and the call still throws an error, the list of captured exceptions is raised.
 - A call restrictor (`coach`) is enabled by default, limiting the api wrapper to 6 calls per second. If you wish, you can deactivate the coach using `Poloniex(coach=False)` or use an 'external' coach.
 - By default, json floats are parsed as strings (ints are ints), you can define `Poloniex(jsonNums=float)` to have _all numbers_ (floats _and_ ints) parsed as floats (or import and use `decimal.Decimal`).
-- `poloniex.coach`, 'poloniex.retry', and `poloniex` have self named loggers.
+- `poloniex.coach`, `poloniex.retry`, and `poloniex` have self named loggers.
 
 ## Install:
 Python 2: 
