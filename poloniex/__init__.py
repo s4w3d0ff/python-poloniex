@@ -89,6 +89,10 @@ PRIVATE_COMMANDS = [
     'closeMarginPosition']
 
 
+class PoloniexError(Exception):
+    pass
+
+
 class Poloniex(object):
     """The Poloniex Object!"""
 
@@ -150,49 +154,52 @@ class Poloniex(object):
         if command in PRIVATE_COMMANDS:
             # check for keys
             if not self.Key or not self.Secret:
-                raise ValueError("A Key and Secret needed!")
+                raise PoloniexError("A Key and Secret needed!")
             # set nonce
             args['nonce'] = self.nonce
-
-            try:
-                # encode arguments for url
-                postData = _urlencode(args)
-                # sign postData with our Secret
-                sign = _new(
-                    self.Secret.encode('utf-8'),
-                    postData.encode('utf-8'),
-                    _sha512)
-                # post request
-                ret = _post(
-                    'https://poloniex.com/tradingApi',
-                    data=args,
-                    headers={
-                        'Sign': sign.hexdigest(),
-                        'Key': self.Key
-                    },
-                    timeout=self.timeout)
-                self.logger.debug(ret.url)
-            except Exception as e:
-                raise e
-            # return decoded json
+            # encode arguments for url
+            postData = _urlencode(args)
+            # sign postData with our Secret
+            sign = _new(
+                self.Secret.encode('utf-8'),
+                postData.encode('utf-8'),
+                _sha512)
+            # post request
+            ret = _post(
+                'https://poloniex.com/tradingApi',
+                data=args,
+                headers={'Sign': sign.hexdigest(), 'Key': self.Key},
+                timeout=self.timeout)
+            # decode json
             if not self.jsonNums:
-                return _loads(ret.text, parse_float=str)
-            return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
+                jsonout = _loads(ret.text, parse_float=str)
+            else:
+                jsonout = _loads(ret.text,
+                                 parse_float=self.jsonNums,
+                                 parse_int=self.jsonNums)
+            # check if poloniex returned an error
+            if 'error' in jsonout:
+                raise PoloniexError(jsonout['error'])
+            return jsonout
 
         # public?
         elif command in PUBLIC_COMMANDS:
-            try:
-                ret = _get(
-                    'https://poloniex.com/public?' + _urlencode(args),
-                    timeout=self.timeout)
-                self.logger.debug(ret.url)
-            except Exception as e:
-                raise e
+            ret = _get(
+                'https://poloniex.com/public?' + _urlencode(args),
+                timeout=self.timeout)
+            # decode json
             if not self.jsonNums:
-                return _loads(ret.text, parse_float=str)
-            return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
+                jsonout = _loads(ret.text, parse_float=str)
+            else:
+                jsonout = _loads(ret.text,
+                                 parse_float=self.jsonNums,
+                                 parse_int=self.jsonNums)
+            # check if poloniex returned an error
+            if 'error' in jsonout:
+                raise PoloniexError(jsonout['error'])
+            return jsonout
         else:
-            raise ValueError("Invalid Command!")
+            raise PoloniexError("Invalid Command!: %s" % command)
 
     # --PUBLIC COMMANDS-------------------------------------------------------
     def returnTicker(self):
@@ -241,6 +248,7 @@ class Poloniex(object):
             'end': str(end)
         })
 
+    @retry(delays=retryDelays, exception=RequestException)
     def marketTradeHist(self, pair, start=False, end=False):
         """
         Returns public trade history for <pair>
@@ -254,16 +262,20 @@ class Poloniex(object):
             args['start'] = start
         if end:
             args['end'] = end
-        try:
-            ret = _get(
-                'https://poloniex.com/public?' + _urlencode(args),
-                timeout=self.timeout)
-            self.logger.debug(ret.url)
-        except Exception as e:
-            raise e
+        ret = _get(
+            'https://poloniex.com/public?' + _urlencode(args),
+            timeout=self.timeout)
+        # decode json
         if not self.jsonNums:
-            return _loads(ret.text, parse_float=str)
-        return _loads(ret.text, parse_float=self.jsonNums, parse_int=self.jsonNums)
+            jsonout = _loads(ret.text, parse_float=str)
+        else:
+            jsonout = _loads(ret.text,
+                             parse_float=self.jsonNums,
+                             parse_int=self.jsonNums)
+        # check if poloniex returned an error
+        if 'error' in jsonout:
+            raise PoloniexError(jsonout['error'])
+        return jsonout
 
     # --PRIVATE COMMANDS------------------------------------------------------
     def generateNewAddress(self, coin):
