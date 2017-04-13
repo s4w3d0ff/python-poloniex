@@ -137,8 +137,9 @@ class Poloniex(object):
         """
         Main Api Function
         - encodes and sends <command> with optional [args] to Poloniex api
-        - raises 'ValueError' if an api key or secret is missing
-            (and the command is 'private'), or if the <command> is not valid
+        - raises 'poloniex.PoloniexError' if an api key or secret is missing
+            (and the command is 'private'), if the <command> is not valid, or
+            if an error is returned from poloniex.com
         - returns decoded json api message
         """
         global PUBLIC_COMMANDS, PRIVATE_COMMANDS
