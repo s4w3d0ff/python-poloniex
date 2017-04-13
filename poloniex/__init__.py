@@ -137,8 +137,9 @@ class Poloniex(object):
         """
         Main Api Function
         - encodes and sends <command> with optional [args] to Poloniex api
-        - raises 'ValueError' if an api key or secret is missing
-            (and the command is 'private'), or if the <command> is not valid
+        - raises 'poloniex.PoloniexError' if an api key or secret is missing
+            (and the command is 'private'), if the <command> is not valid, or
+            if an error is returned from poloniex.com
         - returns decoded json api message
         """
         global PUBLIC_COMMANDS, PRIVATE_COMMANDS
@@ -296,8 +297,10 @@ class Poloniex(object):
         """ Returns coin balances """
         return self.__call__('returnBalances')
 
-    def returnAvailableAccountBalances(self):
+    def returnAvailableAccountBalances(self, account=False):
         """ Returns available account balances """
+        if account:
+            return self.__call__('returnAvailableAccountBalances', {'account': account})
         return self.__call__('returnAvailableAccountBalances')
 
     def returnMarginAccountSummary(self):
