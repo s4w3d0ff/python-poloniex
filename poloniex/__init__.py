@@ -296,8 +296,10 @@ class Poloniex(object):
         """ Returns coin balances """
         return self.__call__('returnBalances')
 
-    def returnAvailableAccountBalances(self):
+    def returnAvailableAccountBalances(self, account=False):
         """ Returns available account balances """
+        if account:
+            return self.__call__('returnAvailableAccountBalances', {'account': account})
         return self.__call__('returnAvailableAccountBalances')
 
     def returnMarginAccountSummary(self):
