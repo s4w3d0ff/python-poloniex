@@ -1,5 +1,4 @@
 # **An API wrapper for Poloniex.com written in Python**  
-##### _Tested on Python 2.7.12 & 3.5.2_  
 ![master](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)  
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 
