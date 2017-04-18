@@ -1,171 +1,183 @@
 #!/usr/bin/python
-import time, calendar, logging, os, json
-from multiprocessing.dummy import Process as Thread
-import poloniex
+import logging
+from time import time, sleep, strptime
+from calendar import timegm
+from multiprocessing.dummy import Process
+from poloniex import Poloniex
 
-W  = '\033[0m'  # white (normal)
-R  = lambda text: '\033[31m'+text+W # red
-G  = lambda text: '\033[32m'+text+W # green
-O  = lambda text: '\033[33m'+text+W # orange
-B  = lambda text: '\033[34m'+text+W # blue
-P  = lambda text: '\033[35m'+text+W # purp
-C  = lambda text: '\033[36m'+text+W # cyan
-GR = lambda text: '\033[37m'+text+W # gray
+logger = logging.getLogger(__name__)
+
+WT = '\033[0m'  # white (normal)
+RD = lambda text: '\033[31m' + text + WT  # red
+GR = lambda text: '\033[32m' + text + WT  # green
+OR = lambda text: '\033[33m' + text + WT  # orange
+BL = lambda text: '\033[34m' + text + WT  # blue
+PR = lambda text: '\033[35m' + text + WT  # purp
+CY = lambda text: '\033[36m' + text + WT  # cyan
+GY = lambda text: '\033[37m' + text + WT  # gray
+
+loantoshi = 0.000001
+
+
+def autoRenewAll(api, toggle=True):
+    """ Turns auto-renew on or off for all active loans """
+    if toggle:
+        toggle = 1
+    else:
+        toggle = 0
+    for loan in api.returnActiveLoans()['provided']:
+        if int(loan['autoRenew']) != toggle:
+            logger.info('Toggling autorenew for offer %s', loan['id'])
+            api.toggleAutoRenew(loan['id'])
+
 
 def UTCstr2epoch(datestr, fmat="%Y-%m-%d %H:%M:%S"):
-    return calendar.timegm(time.strptime(datestr, fmat))
+    """
+    - takes UTC date string
+    - returns epoch
+    """
+    return timegm(strptime(datestr, fmat))
+
 
 class Loaner(object):
-    """ Object for control of threaded Loaner loop"""
-    def __init__(self, config):
-        if os.path.isfile(config):
-            with open(config) as f:
-                config = json.load(f)
-        self.polo = poloniex.Poloniex(config['key'], config['secret'])
-        self.coins = config['coins']
-        self.interval = config['interval']
-        self._running, self._thread = False, None
-        self.openLoanOffers = None
-        self.availBalance = None
+    """ Loanbot class [API REQUIRES KEY AND SECRET!]"""
 
-    def _run(self):
-        """
-        Main loop that is threaded (set Loaner._running to 'False' to stop loop)
-        """
-        while self._running:
-            try:
-                print 'return active'
-                self.openLoanOffers = self.polo.returnActiveLoans()
-                for coin in self.coins:
-                    # Check for old offers
-                    self.cancelOldOffers(coin)
-                print 'return balances'
-                self.availBalance = self.polo.returnBalances()
-                for coin in self.coins:
-                    # ALL the coins??
-                    if self.coins[coin]['allBal']:
-                        self.moveAll2Lending(coin)
-                print 'return balances (2)'
-                self.availBalance = self.polo.returnBalances()
-                for coin in self.coins:
-                    # Creat new offer
-                    print 'create loan offers'
-                    self.createLoanOffer(coin)
-                # wait the interval (or shutdown)
-                print 'sleep for %d seconds' % (self.interval*2)*0.5
-                for i in range(self.interval*2):
-                    if not self._running:
-                        break
-                    time.sleep(0.5)
-            except Exception as e:
-                logging.exception(e)
-                time.sleep(10)
+    def __init__(self,
+                 api,
+                 coins={'BTC': 0.01},
+                 maxage=60 * 30,
+                 offset=6,
+                 delay=60 * 10):
+        self.api, self.delay, self.coins, self.maxage, self.offset =\
+            api, delay, coins, maxage, offset
+        # Check auto renew is not enabled for current loans
+        autoRenewAll(self.api, toggle=False)
 
     def start(self):
-        """ Start Loaner.thread"""
-        self._thread = Thread(target=self._run)
-        self._thread.daemon = True
+        """ Start the thread """
+        self.__process = Process(target=self.run)
+        self.__process.daemon = True
         self._running = True
-        self._thread.start()
-        logging.info(P('LOANER:')+C(' started'))
+        self.__process.start()
 
     def stop(self):
-        """ Stop Loaner.thread"""
+        """ Stop the thread """
         self._running = False
-        self._thread.join()
-        logging.info(P('LOANER:')+R(' stopped'))
-    
-    def moveAll2Lending(self, coin):
-        if 'exchange' in self.availBalance:
-            if coin in self.availBalance['exchange']:
-                result = self.polo.transferBalance(
-                    coin,
-                    self.availBalance['exchange'][coin],
-                    'exchange',
-                    'lending'
-                    )
-                if 'error' in result:
-                    raise RuntimeError(P('LOANER:')+' %s' % R(result['error']))
-                else:
-                    logging.info(P('LOANER:')+' %s' % result['message'])
-        if 'margin' in self.availBalance:
-            if coin in self.availBalance['margin']:
-                result = self.polo.transferBalance(
-                    coin, self.availBalance['margin'][coin], 'margin', 'lending'
-                    )
-                if 'error' in result:
-                    raise RuntimeError(P('LOANER:')+' %s' % R(result['error']))
-                else:
-                    logging.info(P('LOANER:')+' %s' % result['message'])
-
-    def getLoanOfferAge(self, coin, order):
-        # epoch of loan order 
-        opnTime = UTCstr2epoch(order['date'])
-        # current epoch
-        curTime = time.time()
-        # age of open order = now-timeopened
-        orderAge = (curTime-opnTime)
-        logging.info(P('LOANER:')+' %s order %s has been open %s mins' % (
-                C(coin), G(str(order['id'])), C(str(orderAge/60))
-                ))
-        return orderAge
-
-    def cancelOldOffers(self, coin):
-        if coin in self.openLoanOffers:
-            for offer in self.openLoanOffers[coin]:
-                age = self.getLoanOfferAge(coin, offer)
-                # check if it is beyond max age
-                if age > self.coins[coin]['maxAge']:
-                    result = self.polo.cancelLoanOffer(offer['id'])
-                    if 'error' in result:
-                        raise RuntimeError(P('LOANER:')+' %s' % R(result['error']))
-                    else:
-                        logging.info(P('LOANER:')+' %s [ID: %s]' % (
-                            C(result['message']), G(str(offer['id']))
-                            ))
-
-    def createLoanOffer(self, coin):
-        if 'lending' in self.availBalance:
-            if coin in self.availBalance['lending']:
-                # and amount is more than min
-                if float(self.availBalance['lending'][coin]) > self.coins[coin]['minAmount']:
-                    # get lowset rate
-                    topRate = float(
-                            self.polo.returnLoanOrders(coin)['offers'][0]['rate']
-                            )
-                    # create loan
-                    result = self.polo.createLoanOrder(
-                            coin,
-                            self.availBalance['lending'][coin],
-                            topRate+(self.coins[coin]['offset']*0.000001),
-                            autoRenew = 1
-                            )
-                    if 'error' in result:
-                        raise RuntimeError(P('LOANER:')+' %s' % R(result['error']))
-                    else:
-                        logging.info(P('LOANER:')+' %s %s [Amount: %s Rate: %s]' % (
-                                C(coin),
-                                result['message'].lower(),
-                                O(str(self.availBalance['lending'][coin])),
-                                O(str(100*(topRate+(self.coins[coin]['offset']*0.000001)))+'%')
-                                ))
-
-if __name__ == "__main__":
-    import argparse
-    import sys
-    logging.basicConfig(
-            format='[%(asctime)s]%(message)s',
-            datefmt=G("%H:%M:%S"),
-            level=logging.INFO
-            )
-    parser = argparse.ArgumentParser(description='A Simple Poloniex Loanbot!')
-    parser.add_argument('config')
-    args = parser.parse_args()
-    bot = Loaner(args.config)
-    bot.start()
-    while 1:
         try:
-            time.sleep(0.5)
+            self.__process.join()
+        except Exception as e:
+            logger.exception(e)
+
+    def getLoanOfferAge(self, order):
+        return time() - UTCstr2epoch(order['date'])
+
+    def cancelOldOffers(self):
+        logger.info('Getting open loan offers')
+        offers = self.api.returnOpenLoanOffers()
+        for coin in self.coins:
+            logger.info('Checking for "stale" %s loans...', OR(coin))
+            if coin not in offers:
+                logger.info('No open offers found.')
+                continue
+            for offer in offers[coin]:
+                if self.getLoanOfferAge(offer) > self.maxage:
+                    logger.info('Canceling %s offer %s',
+                                OR(coin), GY(offer['id']))
+                    logger.info(self.api.cancelLoanOffer(offer['id']))
+
+    def createLoanOffers(self):
+        logger.info('Getting account balances')
+        bals = self.api.returnAvailableAccountBalances()
+        if not 'lending' in bals:
+            return logger.info('No coins found in lending account')
+        for coin in self.coins:
+            if coin not in bals['lending']:
+                logger.info("No available %s in lending", OR(coin))
+                continue
+            amount = bals['lending'][coin]
+            if float(amount) < self.coins[coin]:
+                logger.info("Not enough %s:%s, below set minimum: %s",
+                            OR(coin),
+                            RD(str(amount)),
+                            BL(str(self.coins[coin])))
+                continue
+            orders = self.api.returnLoanOrders(coin)['offers']
+            topRate = float(orders[0]['rate'])
+            price = topRate + (self.offset * loantoshi)
+            logger.info('Creating %s %s loan offer at %s',
+                        RD(str(amount)), OR(coin), GR(str(price)))
+            logger.info(self.api.createLoanOffer(
+                coin, amount, price, autoRenew=0))
+
+    def run(self):
+        """ Main loop, cancels 'stale' loan offers, turns auto-renew off on
+        active loans, and creates new loan offers at optimum price """
+        while self._running:
+            try:
+                # Check for old offers
+                self.cancelOldOffers()
+                # Create new offer (if can)
+                self.createLoanOffers()
+                # show active
+                active = self.api.returnActiveLoans()['provided']
+                logger.info(GR('Active Loans:----------------'))
+                for i in active:
+                    logger.info('%s|%s:%s-[rate:%s]-[fees:%s]',
+                                BL(i['date']),
+                                OR(i['currency']),
+                                RD(i['amount']),
+                                GY(str(float(i['rate']) * 100) + '%'),
+                                GR(i['fees'])
+                                )
+
+            except Exception as e:
+                logger.exception(e)
+
+            finally:
+                # sleep with one eye open...
+                for i in range(int(self.delay)):
+                    if not self._running:
+                        break
+                    sleep(1)
+
+if __name__ == '__main__':
+    from sys import argv
+    logging.basicConfig(
+        format='[%(asctime)s]%(message)s',
+        datefmt=GR("%H:%M:%S"),
+        level=logging.INFO
+    )
+    logging.getLogger('requests').setLevel(logging.ERROR)
+    key, secret = argv[1:3]
+
+    #################-Configure Below-##################################
+    ########################
+    # This dict defines what coins the bot should worry about
+    # The dict 'key' is the coin to lend, 'value' is the minimum amount to lend
+    coins = {
+        'DASH': 1,
+        'DOGE': 1000.0,
+        'BTC': 0.1,
+        'LTC': 1,
+        'ETH': 1}
+
+    # Maximum age (in secs) to let an open offer sit
+    maxage = 60 * 30  # 30 min
+
+    # number of loantoshis to offset from lowest asking rate
+    offset = 6  # (6 * 0.000001)+lowestask
+
+    # number of seconds between loops
+    delay = 60 * 10  # 10 min
+
+    ########################
+    #################-Stop Configuring-#################################
+    loaner = Loaner(Poloniex(key, secret, jsonNums=float),
+                    coins, maxage, offset, delay)
+    loaner.start()
+    while loaner._running:
+        try:
+            sleep(1)
         except:
-            bot.stop()
-            sys.exit()
+            loaner.stop()
+            break
