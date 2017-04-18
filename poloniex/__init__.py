@@ -115,7 +115,7 @@ class Poloniex(object):
         if coach is True:
             coach = Coach()
         self.logger = logger
-        self.coach, self._nonce = coach, int(time() * 1000)
+        self.coach, self._nonce = coach, int(time() * 100000)
         # json number datatypes
         self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
