@@ -1,27 +1,15 @@
-# **An API wrapper for Poloniex.com written in Python**  
-![master](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)  
+![python](https://img.shields.io/badge/python-2.7%20%26%203-blue.svg) ![licence](https://img.shields.io/badge/licence-GPL%20v2-blue.svg) ![master](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)  
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 
-## Install:
+## Install latest release:
 Python 2:
 ```
-pip install git+https://github.com/s4w3d0ff/python-poloniex.git
+pip install https://github.com/s4w3d0ff/python-poloniex/archive/v0.3.5.zip
 ```
 
 Python 3:
 ```
-pip3 install git+https://github.com/s4w3d0ff/python-poloniex.git
-```
-
-## Uninstall:
-Python 2:
-```
-pip uninstall poloniex
-```
-
-Python 3:
-```
-pip3 uninstall poloniex
+pip3 install https://github.com/s4w3d0ff/python-poloniex/archive/v0.3.5.zip
 ```
 
 ### Features:
@@ -35,7 +23,7 @@ pip3 uninstall poloniex
 - `poloniex.coach`, `poloniex.retry`, and `poloniex` have self named loggers.
 
 ## Usage:
-### Basic Public Setup (no ApiKey/Secret):
+### Basic Public Setup (no api Key/Secret):
 ```python
 from poloniex import Poloniex
 polo = Poloniex()
