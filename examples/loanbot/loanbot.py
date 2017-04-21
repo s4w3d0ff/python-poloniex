@@ -82,7 +82,7 @@ class Loaner(object):
             for offer in offers[coin]:
                 if self.getLoanOfferAge(offer) > self.maxage:
                     logger.info('Canceling %s offer %s',
-                                OR(coin), GY(offer['id']))
+                                OR(coin), GY(str(offer['id'])))
                     logger.info(self.api.cancelLoanOffer(offer['id']))
 
     def createLoanOffers(self):

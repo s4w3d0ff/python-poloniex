@@ -115,7 +115,7 @@ class Poloniex(object):
         if coach is True:
             coach = Coach()
         self.logger = logger
-        self.coach, self._nonce = coach, int(time() * 1000)
+        self.coach, self._nonce = coach, int(time() * 100000)
         # json number datatypes
         self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
@@ -451,15 +451,15 @@ class Poloniex(object):
         """ Cancels order <orderId> """
         return self.__call__('cancelOrder', {'orderNumber': str(orderId)})
 
-    def moveOrder(self, orderId, rate, amount, orderType=False):
+    def moveOrder(self, orderId, rate, amount=False, orderType=False):
         """ Moves an order by <orderId> to <rate> for <amount> """
 
         req = {
             'orderNumber': str(orderId),
-            'rate': str(rate),
-            'amount': str(amount)
+            'rate': str(rate)
         }
-
+        if amount:
+            req['amount'] = str(amount)
         # order type specified?
         if orderType:
             possTypes = ['immediateOrCancel', 'postOnly']
