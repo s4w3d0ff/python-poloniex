@@ -30,7 +30,7 @@ from hmac import new as _new
 from hashlib import sha512 as _sha512
 import logging
 import pprint
-from time import time
+from time import sleep, time
 
 # Third Party
 from dotmap import DotMap
@@ -122,6 +122,8 @@ class Poloniex(object):
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
 
+        self.logIgnore = log_ignore
+
         if loglevel:
             logging.basicConfig(level=loglevel)
             self.logger = logging.getLogger(__name__)
@@ -183,12 +185,14 @@ class Poloniex(object):
 
     @property
     def nonce(self):
-        r = repr(time() * 1000).replace('.', '')
+        r = repr(time()).replace('.', '')
         i = int(r)
         return i
 
     # -----------------Meat and Potatos---------------------------------------
-    @retry(requests.exceptions.RequestException)
+
+    # https://pypi.python.org/pypi/retry/
+    @retry(requests.exceptions.RequestException, max_delay=30, backoff=5)
     def __call__(self, command, args={}):
         """
         Main Api Function
@@ -249,8 +253,7 @@ class Poloniex(object):
 
                 struct = _loads(text, parse_float=unicode)
                 struct = self.retval_wrapper(
-                    struct,
-                    **self.retval_wrapper_args
+                    struct
                 )
 
                 return struct
@@ -260,6 +263,7 @@ class Poloniex(object):
         # public?
         elif command in PUBLIC_COMMANDS:
             try:
+                args['nonce'] = self.nonce
                 ret = _get(
                     'https://poloniex.com/public?' + _urlencode(args),
                     timeout=self.timeout)
@@ -275,7 +279,7 @@ class Poloniex(object):
  <args>{1}</args>
  <result>{2}</result>
 </{0}>
-""".format(command, args, text, command))
+                        """.format(command, args, text, command))
 
                 struct = _loads(text, parse_float=unicode)
                 struct = self.retval_wrapper(struct)
@@ -393,6 +397,7 @@ class Poloniex(object):
 
     def returnOpenOrders(self, pair='all'):
         """ Returns your open orders for [pair='all'] """
+        self.logger.debug('returnOpenOrders on pair %s', pair)
         return self.__call__('returnOpenOrders', {
                              'currencyPair': str(pair).upper()})
 

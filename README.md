@@ -12,12 +12,15 @@ version
 Instead of setting the nonce, it is dynamically provided on each access.
 This eliminates the "stale nonce" errors I was occasionally getting.
 
-### Simpler and clearer API throttle prevention
+Also, instead of simply calling `int(time() * 1000)` I do the following:
 
-Poloniex only allows 6 API calls per second. Compare [the coach logic
-in this codebase](https://github.com/metaperl/python-poloniex/blob/master/poloniex/coach.py) with that in [what I forked from](https://github.com/s4w3d0ff/python-poloniex/blob/master/poloniex/coach.py).
+        r = repr(time()).replace('.', '')
+        i = int(r)
+        return i
 
-My comments on this were [filed as issue 65](https://github.com/s4w3d0ff/python-poloniex/issues/65).
+This makes avoids truncation and rounding errors that can occur by
+calling `int()`.
+
 
 ### Automatic Retry of HTTP timeouts
 

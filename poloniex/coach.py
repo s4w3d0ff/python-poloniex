@@ -24,7 +24,7 @@ class Coach(object):
     Coaches the api wrapper, makes sure it doesn't get all hyped up on Mt.Dew
     Poloniex default call limit is 6 calls per 1 sec.
     """
-    def __init__(self, timeFrame=1.0, callLimit=6):
+    def __init__(self, timeFrame=1.0, callLimit=3):
         """
         timeFrame = float time in secs [default = 1.0]
         callLimit = int max amount of calls per 'timeFrame' [default = 6]
