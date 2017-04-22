@@ -101,6 +101,7 @@ class Poloniex(object):
             self, Key=False, Secret=False,
             timeout=3, coach=True, loglevel=False, extend=False,
             retval_wrapper=DotMap,
+            nolog='returnCompleteBalances returnTicker',
             retval_wrapper_args={'_dynamic': False}
     ):
         """
@@ -132,6 +133,7 @@ class Poloniex(object):
         self.retval_wrapper = retval_wrapper
         self.retval_wrapper_args = retval_wrapper_args
 
+        self.nolog = nolog
         # Call coach
         self.apicoach = Coach()
         # Grab keys, set timeout, ditch coach?
@@ -181,7 +183,9 @@ class Poloniex(object):
 
     @property
     def nonce(self):
-        return int(time() * 1000)
+        r = repr(time() * 1000).replace('.', '')
+        i = int(r)
+        return i
 
     # -----------------Meat and Potatos---------------------------------------
     @retry(requests.exceptions.RequestException)
@@ -234,8 +238,9 @@ class Poloniex(object):
             # return decoded json
             try:
                 text = ret.text
-                self.logger.debug(
-                    """
+                if command not in self.nolog:
+                    self.logger.debug(
+                        """
 <{0}>
  <args>{1}</args>
  <RESULT>{2}</RESULT>
@@ -263,7 +268,8 @@ class Poloniex(object):
                 raise e
             try:
                 text = ret.text
-                self.logger.debug(
+                if command not in self.nolog:
+                    self.logger.debug(
                     """
 <{0}>
  <args>{1}</args>
