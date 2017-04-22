@@ -23,6 +23,7 @@
 #    You should have received a copy of the GNU General Public License along
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 # python 2
 try:
     from urllib import urlencode as _urlencode
@@ -115,12 +116,12 @@ class Poloniex(object):
         if coach is True:
             coach = Coach()
         self.logger = logger
-        self.coach, self._nonce = coach, int(time() * 100000)
+        self.coach = coach
+        self._nonce = int("{:.6f}".format(time()).replace('.', ''))
         # json number datatypes
         self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
-        self.Key, self.Secret, self.timeout = \
-            Key, Secret, timeout
+        self.Key, self.Secret, self.timeout = Key, Secret, timeout
         # Set time labels
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
             60, 60 * 60, 60 * 60 * 24, 60 * 60 * 24 * \
@@ -300,7 +301,8 @@ class Poloniex(object):
     def returnAvailableAccountBalances(self, account=False):
         """ Returns available account balances """
         if account:
-            return self.__call__('returnAvailableAccountBalances', {'account': account})
+            return self.__call__('returnAvailableAccountBalances',
+                                 {'account': account})
         return self.__call__('returnAvailableAccountBalances')
 
     def returnMarginAccountSummary(self):
