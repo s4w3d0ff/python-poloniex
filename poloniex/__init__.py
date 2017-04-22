@@ -122,8 +122,6 @@ class Poloniex(object):
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
 
-        self.logIgnore = log_ignore
-
         if loglevel:
             logging.basicConfig(level=loglevel)
             self.logger = logging.getLogger(__name__)
