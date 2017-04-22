@@ -1,4 +1,5 @@
-![python](https://img.shields.io/badge/python-2.7%20%26%203-blue.svg) ![licence](https://img.shields.io/badge/licence-GPL%20v2-blue.svg) ![master](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)  
+![python](https://img.shields.io/badge/python-2.7%20%26%203-blue.svg) [![licence](https://img.shields.io/badge/licence-GPL%20v2-blue.svg)](https://github.com/s4w3d0ff/python-poloniex/blob/master/LICENSE)  
+[![GitHub release](https://img.shields.io/github/release/s4w3d0ff/python-poloniex.svg)](https://github.com/s4w3d0ff/python-poloniex/releases) ![master](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)  
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 
 ## Install latest release:
