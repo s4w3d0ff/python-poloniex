@@ -12,15 +12,10 @@ version
 Instead of setting the nonce, it is dynamically provided on each access.
 This eliminates the "stale nonce" errors I was occasionally getting.
 
-Also, instead of simply calling `int(time() * 1000)` I do the following:
+Also, instead of simply calling `int(time() * 1000)` I make sure that the value is zero padded so that the resulting long integer has enough places.
 
-        r = repr(time()).replace('.', '')
-        i = int(r)
-        return i
-
-This makes avoids truncation and rounding errors that can occur by
-calling `int()`.
-
+This avoids errors that occur when the result of `time()` does not have as
+many places as the call before.
 
 ### Automatic Retry of HTTP timeouts
 

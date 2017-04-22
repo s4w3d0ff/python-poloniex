@@ -183,9 +183,8 @@ class Poloniex(object):
 
     @property
     def nonce(self):
-        r = repr(time()).replace('.', '')
-        i = int(r)
-        return i
+        r = "{:.6f}".format(time()).replace('.', '')
+        return r
 
     # -----------------Meat and Potatos---------------------------------------
 
