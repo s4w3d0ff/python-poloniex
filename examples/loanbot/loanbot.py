@@ -151,9 +151,9 @@ if __name__ == '__main__':
     logging.basicConfig(
         format='[%(asctime)s]%(message)s',
         datefmt=GR("%H:%M:%S"),
-        level=logging.DEBUG
+        level=logging.INFO
     )
-    logging.getLogger('requests').setLevel(logging.INFO)
+    logging.getLogger('requests').setLevel(logging.ERROR)
     key, secret = argv[1:3]
 
     #################-Configure Below-##################################
