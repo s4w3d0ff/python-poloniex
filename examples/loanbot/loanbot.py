@@ -27,7 +27,7 @@ def autoRenewAll(api, toggle=True):
         toggle = 0
     for loan in api.returnActiveLoans()['provided']:
         if int(loan['autoRenew']) != toggle:
-            logger.info('Toggling autorenew for offer %s', loan['id'])
+            logger.info('Toggling autorenew for offer %s', str(loan['id']))
             api.toggleAutoRenew(loan['id'])
 
 
@@ -72,41 +72,47 @@ class Loaner(object):
         return time() - UTCstr2epoch(order['date'])
 
     def cancelOldOffers(self):
-        logger.info('Getting open loan offers')
+        logger.info(GR("Checking Open Loan Offers:----------------"))
         offers = self.api.returnOpenLoanOffers()
         for coin in self.coins:
-            logger.info('Checking for "stale" %s loans...', OR(coin))
             if coin not in offers:
-                logger.info('No open offers found.')
+                logger.debug("No open %s offers found.", coin)
                 continue
             for offer in offers[coin]:
+                logger.info("%s|%s:%s-[rate:%s]",
+                            BL(offer['date']),
+                            OR(coin),
+                            RD(offer['amount']),
+                            GY(str(float(offer['rate']) * 100) + '%')
+                            )
                 if self.getLoanOfferAge(offer) > self.maxage:
-                    logger.info('Canceling %s offer %s',
+                    logger.info("Canceling %s offer %s",
                                 OR(coin), GY(str(offer['id'])))
-                    logger.info(self.api.cancelLoanOffer(offer['id']))
+                    logger.debug(self.api.cancelLoanOffer(offer['id']))
 
     def createLoanOffers(self):
-        logger.info('Getting account balances')
+        logger.info(GR("Checking for coins to lend:---------------"))
         bals = self.api.returnAvailableAccountBalances()
         if not 'lending' in bals:
-            return logger.info('No coins found in lending account')
+            return logger.info(RD("No coins found in lending account"))
         for coin in self.coins:
             if coin not in bals['lending']:
-                logger.info("No available %s in lending", OR(coin))
+                logger.debug("No available %s in lending", OR(coin))
                 continue
             amount = bals['lending'][coin]
+            logging.info("%s:%s", coin, str(amount))
             if float(amount) < self.coins[coin]:
-                logger.info("Not enough %s:%s, below set minimum: %s",
-                            OR(coin),
-                            RD(str(amount)),
-                            BL(str(self.coins[coin])))
+                logger.debug("Not enough %s:%s, below set minimum: %s",
+                             OR(coin),
+                             RD(str(amount)),
+                             BL(str(self.coins[coin])))
                 continue
             orders = self.api.returnLoanOrders(coin)['offers']
             topRate = float(orders[0]['rate'])
             price = topRate + (self.offset * loantoshi)
             logger.info('Creating %s %s loan offer at %s',
-                        RD(str(amount)), OR(coin), GR(str(price)))
-            logger.info(self.api.createLoanOffer(
+                        RD(str(amount)), OR(coin), GR(str(price * 100) + '%'))
+            logger.debug(self.api.createLoanOffer(
                 coin, amount, price, autoRenew=0))
 
     def run(self):
@@ -120,7 +126,7 @@ class Loaner(object):
                 self.createLoanOffers()
                 # show active
                 active = self.api.returnActiveLoans()['provided']
-                logger.info(GR('Active Loans:----------------'))
+                logger.info(GR('Active Loans:-----------------------------'))
                 for i in active:
                     logger.info('%s|%s:%s-[rate:%s]-[fees:%s]',
                                 BL(i['date']),
@@ -159,16 +165,16 @@ if __name__ == '__main__':
         'DOGE': 1000.0,
         'BTC': 0.1,
         'LTC': 1,
-        'ETH': 1}
+        'ETH': 0.1}
 
     # Maximum age (in secs) to let an open offer sit
-    maxage = 60 * 30  # 30 min
+    maxage = 60 * 3  # 3 min
 
     # number of loantoshis to offset from lowest asking rate
     offset = 6  # (6 * 0.000001)+lowestask
 
     # number of seconds between loops
-    delay = 60 * 10  # 10 min
+    delay = 60 * 1  # 1 min
 
     ########################
     #################-Stop Configuring-#################################
