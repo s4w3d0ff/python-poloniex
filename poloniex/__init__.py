@@ -98,17 +98,17 @@ class Poloniex(object):
     """The Poloniex Object!"""
 
     def __init__(
-            self, Key=False, Secret=False,
+            self, key=False, secret=False,
             timeout=1, coach=True, jsonNums=False):
         """
-        Key = str api key supplied by Poloniex
-        Secret = str secret hash supplied by Poloniex
+        key = str api key supplied by Poloniex
+        secret = str secret hash supplied by Poloniex
         timeout = int time in sec to wait for an api response
             (otherwise 'requests.exceptions.Timeout' is raised)
         coach = bool to indicate if the api coach should be used
         jsonNums = datatype to use when parsing json ints and floats
 
-        # Time Placeholders # (MONTH == 30*DAYS)
+        # Time Placeholders: (MONTH == 30*DAYS)
 
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
@@ -121,7 +121,7 @@ class Poloniex(object):
         # json number datatypes
         self.jsonNums = jsonNums
         # Grab keys, set timeout, ditch coach?
-        self.Key, self.Secret, self.timeout = Key, Secret, timeout
+        self.key, self.secret, self.timeout = key, secret, timeout
         # Set time labels
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
             60, 60 * 60, 60 * 60 * 24, 60 * 60 * 24 * \
@@ -135,14 +135,12 @@ class Poloniex(object):
     # -----------------Meat and Potatos---------------------------------------
     @retry(delays=retryDelays, exception=RequestException)
     def __call__(self, command, args={}):
-        """
-        Main Api Function
+        """ Main Api Function
         - encodes and sends <command> with optional [args] to Poloniex api
         - raises 'poloniex.PoloniexError' if an api key or secret is missing
             (and the command is 'private'), if the <command> is not valid, or
             if an error is returned from poloniex.com
-        - returns decoded json api message
-        """
+        - returns decoded json api message """
         global PUBLIC_COMMANDS, PRIVATE_COMMANDS
 
         # check in with the coach
@@ -155,8 +153,8 @@ class Poloniex(object):
         # private?
         if command in PRIVATE_COMMANDS:
             # check for keys
-            if not self.Key or not self.Secret:
-                raise PoloniexError("A Key and Secret needed!")
+            if not self.key or not self.secret:
+                raise PoloniexError("An Api Key and Secret needed!")
             # set nonce
             args['nonce'] = self.nonce
             # encode arguments for url
@@ -205,61 +203,33 @@ class Poloniex(object):
 
     # --PUBLIC COMMANDS-------------------------------------------------------
     def returnTicker(self):
-        """ Returns the ticker for all markets """
+        """ Returns the ticker for all markets. """
         return self.__call__('returnTicker')
 
     def return24hVolume(self):
-        """ Returns the volume data for all markets """
+        """ Returns the 24-hour volume for all markets,
+        plus totals for primary currencies. """
         return self.__call__('return24hVolume')
 
-    def returnCurrencies(self):
-        """ Returns additional market info for all markets """
-        return self.__call__('returnCurrencies')
-
-    def returnLoanOrders(self, coin):
-        """ Returns loan order book for <coin> """
-        return self.__call__('returnLoanOrders', {
-                             'currency': str(coin).upper()})
-
-    def returnOrderBook(self, pair='all', depth=20):
-        """
-        Returns orderbook for [pair='all']
-        at a depth of [depth=20] orders
+    def returnOrderBook(self, currencyPair='all', depth=20):
+        """ Returns the order book for a given market as well as a sequence
+        number for use with the Push API and an indicator specifying whether the
+        market is frozen. (defaults to 'all' markets, at a 'depth' of 20 orders)
         """
         return self.__call__('returnOrderBook', {
-            'currencyPair': str(pair).upper(),
+            'currencyPair': str(currencyPair).upper(),
             'depth': str(depth)
         })
 
-    def returnChartData(self, pair, period=False, start=False, end=False):
-        """
-        Returns chart data for <pair> with a candle period of
-        [period=self.DAY] starting from [start=time()-self.YEAR]
-        and ending at [end=time()]
-        """
-        if period not in [300, 900, 1800, 7200, 14400, 86400]:
-            period = self.DAY
-        if not start:
-            start = time() - self.MONTH
-        if not end:
-            end = time()
-        return self.__call__('returnChartData', {
-            'currencyPair': str(pair).upper(),
-            'period': str(period),
-            'start': str(start),
-            'end': str(end)
-        })
-
     @retry(delays=retryDelays, exception=RequestException)
-    def marketTradeHist(self, pair, start=False, end=False):
-        """
-        Returns public trade history for <pair>
-        starting at <start> and ending at [end=time()]
-        """
+    def marketTradeHist(self, currencyPair, start=False, end=False):
+        """ Returns the past 200 trades for a given market, or up to 50,000
+        trades between a range specified in UNIX timestamps by the "start" and
+        "end" parameters. """
         if self.coach:
             self.coach.wait()
         args = {'command': 'returnTradeHistory',
-                'currencyPair': str(pair).upper()}
+                'currencyPair': str(currencyPair).upper()}
         if start:
             args['start'] = start
         if end:
@@ -279,57 +249,64 @@ class Poloniex(object):
             raise PoloniexError(jsonout['error'])
         return jsonout
 
+    def returnChartData(self, currencyPair, period=False,
+                        start=False, end=False):
+        """ Returns candlestick chart data. Parameters are "currencyPair",
+        "period" (candlestick period in seconds; valid values are 300, 900,
+        1800, 7200, 14400, and 86400), "start", and "end". "Start" and "end"
+        are given in UNIX timestamp format and used to specify the date range
+        for the data returned (default date range is start='1 day ago' to
+        end='now') """
+        if period not in [300, 900, 1800, 7200, 14400, 86400]:
+            raise PoloniexError("%s invalid candle period" % str(period))
+        if not start:
+            start = time() - self.DAY
+        if not end:
+            end = time()
+        return self.__call__('returnChartData', {
+            'currencyPair': str(currencyPair).upper(),
+            'period': str(period),
+            'start': str(start),
+            'end': str(end)
+        })
+
+    def returnCurrencies(self):
+        """ Returns information about all currencies. """
+        return self.__call__('returnCurrencies')
+
+    def returnLoanOrders(self, currency):
+        """ Returns the list of loan offers and demands for a given currency,
+        specified by the "currency" parameter """
+        return self.__call__('returnLoanOrders', {
+                             'currency': str(currency).upper()})
+
     # --PRIVATE COMMANDS------------------------------------------------------
-    def generateNewAddress(self, coin):
-        """ Creates a new deposit address for <coin> """
-        return self.__call__('generateNewAddress', {
-                             'currency': coin})
-
-    def returnTradeHistory(self, pair='all', start=False, end=False):
-        """ Returns private trade history for <pair> """
-        args = {'currencyPair': str(pair).upper()}
-        if start:
-            args['start'] = start
-        if end:
-            args['end'] = end
-        return self.__call__('returnTradeHistory', args)
-
     def returnBalances(self):
-        """ Returns coin balances """
+        """ Returns all of your available balances."""
         return self.__call__('returnBalances')
 
-    def returnAvailableAccountBalances(self, account=False):
-        """ Returns available account balances """
-        if account:
-            return self.__call__('returnAvailableAccountBalances',
-                                 {'account': account})
-        return self.__call__('returnAvailableAccountBalances')
-
-    def returnMarginAccountSummary(self):
-        """ Returns margin account summary """
-        return self.__call__('returnMarginAccountSummary')
-
-    def getMarginPosition(self, pair='all'):
-        """ Returns margin position for [pair='all'] """
-        return self.__call__('getMarginPosition', {
-                             'currencyPair': str(pair).upper()})
-
     def returnCompleteBalances(self, account='all'):
-        """ Returns complete balances """
+        """ Returns all of your balances, including available balance, balance
+        on orders, and the estimated BTC value of your balance. By default,
+        this call is limited to your exchange account; set the "account"
+        parameter to "all" to include your margin and lending accounts. """
         return self.__call__('returnCompleteBalances',
                              {'account': str(account)})
 
     def returnDepositAddresses(self):
-        """ Returns deposit addresses """
+        """ Returns all of your deposit addresses. """
         return self.__call__('returnDepositAddresses')
 
-    def returnOpenOrders(self, pair='all'):
-        """ Returns your open orders for [pair='all'] """
-        return self.__call__('returnOpenOrders', {
-                             'currencyPair': str(pair).upper()})
+    def generateNewAddress(self, currency):
+        """ Generates a new deposit address for the currency specified by the
+        "currency" parameter. """
+        return self.__call__('generateNewAddress', {
+                             'currency': currency})
 
     def returnDepositsWithdrawals(self, start=False, end=False):
-        """ Returns deposit/withdraw history """
+        """ Returns your deposit and withdrawal history within a range,
+        specified by the "start" and "end" parameters, both of which should be
+        given as UNIX timestamps. (defaults to 1 month)"""
         if not start:
             start = time() - self.MONTH
         if not end:
@@ -337,23 +314,237 @@ class Poloniex(object):
         args = {'start': str(start), 'end': str(end)}
         return self.__call__('returnDepositsWithdrawals', args)
 
-    def returnTradableBalances(self):
-        """ Returns tradable balances """
-        return self.__call__('returnTradableBalances')
+    def returnOpenOrders(self, currencyPair='all'):
+        """ Returns your open orders for a given market, specified by the
+        "currencyPair" parameter, e.g. "BTC_XCP". Set "currencyPair" to
+        "all" to return open orders for all markets. """
+        return self.__call__('returnOpenOrders', {
+                             'currencyPair': str(currencyPair).upper()})
 
-    def returnActiveLoans(self):
-        """ Returns active loans """
-        return self.__call__('returnActiveLoans')
+    def returnTradeHistory(self, currencyPair='all', start=False, end=False):
+        """ Returns your trade history for a given market, specified by the
+        "currencyPair" parameter. You may specify "all" as the currencyPair to
+        receive your trade history for all markets. You may optionally specify
+        a range via "start" and/or "end" POST parameters, given in UNIX
+        timestamp format; if you do not specify a range, it will be limited to
+        one day. """
+        args = {'currencyPair': str(currencyPair).upper()}
+        if start:
+            args['start'] = start
+        if end:
+            args['end'] = end
+        return self.__call__('returnTradeHistory', args)
 
-    def returnOpenLoanOffers(self):
-        """ Returns open loan offers """
-        return self.__call__('returnOpenLoanOffers')
+    def returnOrderTrades(self, orderNumber):
+        """ Returns all trades involving a given order, specified by the
+        "orderNumber" parameter. If no trades for the order have occurred
+        or you specify an order that does not belong to you, you will receive
+        an error. """
+        return self.__call__('returnOrderTrades', {
+                             'orderNumber': str(orderNumber)})
+
+    def buy(self, currencyPair, rate, amount, orderType=False):
+        """ Places a limit buy order in a given market. Required parameters are
+        "currencyPair", "rate", and "amount". You may optionally set "orderType"
+        to "fillOrKill", "immediateOrCancel" or "postOnly". A fill-or-kill order
+        will either fill in its entirety or be completely aborted. An
+        immediate-or-cancel order can be partially or completely filled, but
+        any portion of the order that cannot be filled immediately will be
+        canceled rather than left on the order book. A post-only order will
+        only be placed if no portion of it fills immediately; this guarantees
+        you will never pay the taker fee on any part of the order that fills.
+        If successful, the method will return the order number. """
+        args = {
+            'currencyPair': str(currencyPair).upper(),
+            'rate': str(rate),
+            'amount': str(amount),
+        }
+        # order type specified?
+        if orderType:
+            possTypes = ['fillOrKill', 'immediateOrCancel', 'postOnly']
+            # check type
+            if not orderType in possTypes:
+                raise PoloniexError('Invalid orderType')
+            args[orderType] = 1
+
+        return self.__call__('buy', args)
+
+    def sell(self, currencyPair, rate, amount, orderType=False):
+        """ Places a sell order in a given market. Parameters and output are
+        the same as for the buy method. """
+        args = {
+            'currencyPair': str(currencyPair).upper(),
+            'rate': str(rate),
+            'amount': str(amount),
+        }
+        # order type specified?
+        if orderType:
+            possTypes = ['fillOrKill', 'immediateOrCancel', 'postOnly']
+            # check type
+            if not orderType in possTypes:
+                raise PoloniexError('Invalid orderType')
+            args[orderType] = 1
+
+        return self.__call__('sell', args)
+
+    def cancelOrder(self, orderNumber):
+        """ Cancels an order you have placed in a given market. Required
+        parameter is "orderNumber". """
+        return self.__call__('cancelOrder', {'orderNumber': str(orderNumber)})
+
+    def moveOrder(self, orderNumber, rate, amount=False, orderType=False):
+        """ Cancels an order and places a new one of the same type in a single
+        atomic transaction, meaning either both operations will succeed or both
+        will fail. Required parameters are "orderNumber" and "rate"; you may
+        optionally specify "amount" if you wish to change the amount of the new
+        order. "postOnly" or "immediateOrCancel" may be specified as the
+        "orderType" param for exchange orders, but will have no effect on
+        margin orders. """
+
+        args = {
+            'orderNumber': str(orderNumber),
+            'rate': str(rate)
+        }
+        if amount:
+            args['amount'] = str(amount)
+        # order type specified?
+        if orderType:
+            possTypes = ['immediateOrCancel', 'postOnly']
+            # check type
+            if not orderType in possTypes:
+                raise PoloniexError('Invalid orderType: %s' % str(orderType))
+            args[orderType] = 1
+
+        return self.__call__('moveOrder', args)
+
+    def withdraw(self, currency, amount, address, paymentId=False):
+        """ Immediately places a withdrawal for a given currency, with no email
+        confirmation. In order to use this method, the withdrawal privilege
+        must be enabled for your API key. Required parameters are
+        "currency", "amount", and "address". For XMR withdrawals, you may
+        optionally specify "paymentId". """
+        args = {
+            'currency': str(currency).upper(),
+            'amount': str(amount),
+            'address': str(address)
+        }
+        if paymentId:
+            args['paymentId'] = str(paymentId)
+        return self.__call__('withdraw', args)
 
     def returnFeeInfo(self):
-        """ Returns current trading fees and trailing 30-day volume in BTC """
+        """ If you are enrolled in the maker-taker fee schedule, returns your
+        current trading fees and trailing 30-day volume in BTC. This
+        information is updated once every 24 hours. """
         return self.__call__('returnFeeInfo')
 
+    def returnAvailableAccountBalances(self, account=False):
+        """ Returns your balances sorted by account. You may optionally specify
+        the "account" parameter if you wish to fetch only the balances of
+        one account. Please note that balances in your margin account may not
+        be accessible if you have any open margin positions or orders. """
+        if account:
+            return self.__call__('returnAvailableAccountBalances',
+                                 {'account': account})
+        return self.__call__('returnAvailableAccountBalances')
+
+    def returnTradableBalances(self):
+        """ Returns your current tradable balances for each currency in each
+        market for which margin trading is enabled. Please note that these
+        balances may vary continually with market conditions. """
+        return self.__call__('returnTradableBalances')
+
+    def transferBalance(self, currency, amount, fromAccount, toAccount):
+        """ Transfers funds from one account to another (e.g. from your
+        exchange account to your margin account). Required parameters are
+        "currency", "amount", "fromAccount", and "toAccount" """
+        return self.__call__('transferBalance', {
+            'currency': str(currency).upper(),
+            'amount': str(amount),
+            'fromAccount': str(fromAccount),
+            'toAccount': str(toAccount)
+        })
+
+    def returnMarginAccountSummary(self):
+        """ Returns a summary of your entire margin account. This is the same
+        information you will find in the Margin Account section of the Margin
+        Trading page, under the Markets list """
+        return self.__call__('returnMarginAccountSummary')
+
+    def marginBuy(self, currencyPair, rate, amount, lendingRate=2):
+        """ Places a margin buy order in a given market. Required parameters are
+        "currencyPair", "rate", and "amount". You may optionally specify a
+        maximum lending rate using the "lendingRate" parameter (defaults to 2).
+        If successful, the method will return the order number and any trades
+        immediately resulting from your order. """
+        return self.__call__('marginBuy', {
+            'currencyPair': str(currencyPair).upper(),
+            'rate': str(rate),
+            'amount': str(amount),
+            'lendingRate': str(lendingRate)
+        })
+
+    def marginSell(self, currencyPair, rate, amount, lendingRate=2):
+        """ Places a margin sell order in a given market. Parameters and output
+        are the same as for the marginBuy method. """
+        return self.__call__('marginSell', {
+            'currencyPair': str(currencyPair).upper(),
+            'rate': str(rate),
+            'amount': str(amount),
+            'lendingRate': str(lendingRate)
+        })
+
+    def getMarginPosition(self, currencyPair='all'):
+        """ Returns information about your margin position in a given market,
+        specified by the "currencyPair" parameter. You may set
+        "currencyPair" to "all" if you wish to fetch all of your margin
+        positions at once. If you have no margin position in the specified
+        market, "type" will be set to "none". "liquidationPrice" is an
+        estimate, and does not necessarily represent the price at which an
+        actual forced liquidation will occur. If you have no liquidation price,
+        the value will be -1. (defaults to 'all')"""
+        return self.__call__('getMarginPosition', {
+                             'currencyPair': str(currencyPair).upper()})
+
+    def closeMarginPosition(self, currencyPair):
+        """ Closes your margin position in a given market (specified by the
+        "currencyPair" parameter) using a market order. This call will also
+        return success if you do not have an open position in the specified
+        market. """
+        return self.__call__(
+            'closeMarginPosition', {'currencyPair': str(currencyPair).upper()})
+
+    def createLoanOffer(self, currency, amount,
+                        lendingRate, autoRenew=0, duration=2):
+        """ Creates a loan offer for a given currency. Required parameters are
+        "currency", "amount", "lendingRate", "duration" (num of days, defaults
+        to 2), "autoRenew" (0 or 1, defaults to 0 'off'). """
+        return self.__call__('createLoanOffer', {
+            'currency': str(currency).upper(),
+            'amount': str(amount),
+            'duration': str(duration),
+            'autoRenew': str(autoRenew),
+            'lendingRate': str(lendingRate)
+        })
+
+    def cancelLoanOffer(self, orderNumber):
+        """ Cancels a loan offer specified by the "orderNumber" parameter. """
+        return self.__call__(
+            'cancelLoanOffer', {'orderNumber': str(orderNumber)})
+
+    def returnOpenLoanOffers(self):
+        """ Returns your open loan offers for each currency. """
+        return self.__call__('returnOpenLoanOffers')
+
+    def returnActiveLoans(self):
+        """ Returns your active loans for each currency."""
+        return self.__call__('returnActiveLoans')
+
     def returnLendingHistory(self, start=False, end=False, limit=False):
+        """ Returns your lending history within a time range specified by the
+        "start" and "end" parameters as UNIX timestamps. "limit" may also
+        be specified to limit the number of rows returned. (defaults to the last
+        months history)"""
         if not start:
             start = time() - self.MONTH
         if not end:
@@ -363,134 +554,9 @@ class Poloniex(object):
             args['limit'] = str(limit)
         return self.__call__('returnLendingHistory', args)
 
-    def returnOrderTrades(self, orderId):
-        """ Returns any trades made from <orderId> """
-        return self.__call__('returnOrderTrades', {
-                             'orderNumber': str(orderId)})
-
-    def createLoanOffer(self, coin, amount, rate, autoRenew=0, duration=2):
-        """ Creates a loan offer for <coin> for <amount> at <rate> """
-        return self.__call__('createLoanOffer', {
-            'currency': str(coin).upper(),
-            'amount': str(amount),
-            'duration': str(duration),
-            'autoRenew': str(autoRenew),
-            'lendingRate': str(rate)
-        })
-
-    def cancelLoanOffer(self, orderId):
-        """ Cancels the loan offer with <orderId> """
-        return self.__call__('cancelLoanOffer', {'orderNumber': str(orderId)})
-
-    def toggleAutoRenew(self, orderId):
-        """ Toggles the 'autorenew' feature on loan <orderId> """
-        return self.__call__('toggleAutoRenew', {'orderNumber': str(orderId)})
-
-    def closeMarginPosition(self, pair):
-        """ Closes the margin position on <pair> """
-        return self.__call__('closeMarginPosition', {
-                             'currencyPair': str(pair).upper()})
-
-    def marginBuy(self, pair, rate, amount, lendingRate=2):
-        """ Creates <pair> margin buy order at <rate> for <amount> """
-        return self.__call__('marginBuy', {
-            'currencyPair': str(pair).upper(),
-            'rate': str(rate),
-            'amount': str(amount),
-            'lendingRate': str(lendingRate)
-        })
-
-    def marginSell(self, pair, rate, amount, lendingRate=2):
-        """ Creates <pair> margin sell order at <rate> for <amount> """
-        return self.__call__('marginSell', {
-            'currencyPair': str(pair).upper(),
-            'rate': str(rate),
-            'amount': str(amount),
-            'lendingRate': str(lendingRate)
-        })
-
-    def buy(self, pair, rate, amount, orderType=False):
-        """ Creates buy order for <pair> at <rate> for
-            <amount> with optional orderType """
-
-        req = {
-            'currencyPair': str(pair).upper(),
-            'rate': str(rate),
-            'amount': str(amount),
-        }
-
-        # order type specified?
-        if orderType:
-            possTypes = ['fillOrKill', 'immediateOrCancel', 'postOnly']
-            # check type
-            if not orderType in possTypes:
-                raise ValueError('Invalid orderType')
-            req[orderType] = 1
-
-        return self.__call__('buy', req)
-
-    def sell(self, pair, rate, amount, orderType=False):
-        """ Creates sell order for <pair> at <rate> for
-            <amount> with optional orderType """
-
-        req = {
-            'currencyPair': str(pair).upper(),
-            'rate': str(rate),
-            'amount': str(amount),
-        }
-
-        # order type specified?
-        if orderType:
-            possTypes = ['fillOrKill', 'immediateOrCancel', 'postOnly']
-            # check type
-            if not orderType in possTypes:
-                raise ValueError('Invalid orderType')
-            req[orderType] = 1
-
-        return self.__call__('sell', req)
-
-    def cancelOrder(self, orderId):
-        """ Cancels order <orderId> """
-        return self.__call__('cancelOrder', {'orderNumber': str(orderId)})
-
-    def moveOrder(self, orderId, rate, amount=False, orderType=False):
-        """ Moves an order by <orderId> to <rate> for <amount> """
-
-        req = {
-            'orderNumber': str(orderId),
-            'rate': str(rate)
-        }
-        if amount:
-            req['amount'] = str(amount)
-        # order type specified?
-        if orderType:
-            possTypes = ['immediateOrCancel', 'postOnly']
-            # check type
-            if not orderType in possTypes:
-                raise ValueError('Invalid orderType')
-            req[orderType] = 1
-
-        return self.__call__('moveOrder', req)
-
-    def withdraw(self, coin, amount, address, paymentId=False):
-        """ Withdraws <coin> <amount> to <address> """
-        req = {
-            'currency': str(coin).upper(),
-            'amount': str(amount),
-            'address': str(address)
-        }
-        if paymentId:
-            req['paymentId'] = str(paymentId)
-        return self.__call__('withdraw', req)
-
-    def transferBalance(self, coin, amount, fromac, toac):
-        """
-        Transfers coins between accounts (exchange, margin, lending)
-        - moves <coin> <amount> from <fromac> to <toac>
-        """
-        return self.__call__('transferBalance', {
-            'currency': str(coin).upper(),
-            'amount': str(amount),
-            'fromAccount': str(fromac),
-            'toAccount': str(toac)
-        })
+    def toggleAutoRenew(self, orderNumber):
+        """ Toggles the autoRenew setting on an active loan, specified by the
+        "orderNumber" parameter. If successful, "message" will indicate
+        the new autoRenew setting. """
+        return self.__call__(
+            'toggleAutoRenew', {'orderNumber': str(orderNumber)})
