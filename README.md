@@ -7,16 +7,16 @@ Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 ## Install latest release:
 Python 2:
 ```
-pip install https://github.com/s4w3d0ff/python-poloniex/archive/v0.3.6.zip
+pip install https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.1.zip
 ```
 
 Python 3:
 ```
-pip3 install https://github.com/s4w3d0ff/python-poloniex/archive/v0.3.6.zip
+pip3 install https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.1.zip
 ```
 
 ### Features:
-- The first 2 args in the `poloniex.Poloniex` object (`Key` and `Secret`) are _optional_ when used for _public api commands_.
+- The first 2 args in the `poloniex.Poloniex` object (`key` and `secret`) are _optional_ when used for _public api commands_.
 - Api commands have been 'mapped' into methods within the `Poloniex` class for your convenience.
 - Raises `poloniex.PoloniexError` if the command supplied does not exist, if the api keys are not defined and attempting to access a private api command, or if Poloniex.com returns an api error.
 - The `poloniex.Poloniex(timeout=1)` attribute/arg adjusts the number of seconds to wait for a response from poloniex, else `requests.exceptions.Timeout` is raised (which will be caught by 'poloniex.retry' and attempt the call again).
@@ -47,8 +47,8 @@ print(polo.marketTradeHist('BTC_ETH'))
 import poloniex
 polo = poloniex.Poloniex('your-Api-Key-Here-xxxx','yourSecretKeyHere123456789')
 # or
-polo.Key = 'your-Api-Key-Here-xxxx'
-polo.Secret = 'yourSecretKeyHere123456789'
+polo.key = 'your-Api-Key-Here-xxxx'
+polo.secret = 'yourSecretKeyHere123456789'
 ```
 Get all your balances
 ```python
@@ -64,7 +64,7 @@ from poloniex import Poloniex, Coach
 myCoach = Coach()
 
 public = Poloniex(coach=myCoach)
-private = Poloniex(Key, Secret, coach=myCoach)
+private = Poloniex(key, secret, coach=myCoach)
 # now make calls using both 'private' and 'public' and myCoach will handle both
 ```
 
