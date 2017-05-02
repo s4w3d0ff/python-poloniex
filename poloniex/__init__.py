@@ -161,14 +161,14 @@ class Poloniex(object):
             postData = _urlencode(args)
             # sign postData with our Secret
             sign = _new(
-                self.Secret.encode('utf-8'),
+                self.secret.encode('utf-8'),
                 postData.encode('utf-8'),
                 _sha512)
             # post request
             ret = _post(
                 'https://poloniex.com/tradingApi',
                 data=args,
-                headers={'Sign': sign.hexdigest(), 'Key': self.Key},
+                headers={'Sign': sign.hexdigest(), 'Key': self.key},
                 timeout=self.timeout)
             # decode json
             if not self.jsonNums:
