@@ -16,4 +16,4 @@ python loanbot.py 'your-api-key' 'your5uper5ectetH4ash'
   - it then prints the current active loans
 
 ### Configuring:
-  See lines [#153-#174](https://github.com/s4w3d0ff/python-poloniex/blob/master/examples/loanbot/loanbot.py#L153-#L174)
+  See lines [#158-#180](https://github.com/s4w3d0ff/python-poloniex/blob/master/examples/loanbot/loanbot.py#L153-#L174)
