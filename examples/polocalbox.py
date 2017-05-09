@@ -35,6 +35,7 @@ class Subscribe2Trollbox(ApplicationSession):
 			"Wizwa": 1,
 			"OldManKidd": 1,
 			"Quantum": 1,
+			"Popcorntime": 1,
 			"busoni@poloniex": 1,
 			"Thoth": 1,
 			"wausboot": 1,
@@ -42,13 +43,16 @@ class Subscribe2Trollbox(ApplicationSession):
 			"qubix": 1,
 			"Oldgamejunk": 1,
 			"Chewpacabra": 1,
+			"orio": 1,
 			"j33hopper": 1,
 			"VenomGhost": 1,
 			"ultim8um": 1,
 			"TheDjentleman": 1,
+			"GambitKnight": 1,
 			"Bigolas": 1,
 			"Watchtower": 1
 		}
+
 		self.friends = [] # :.(
 		def onTroll(*args):
 			try:
