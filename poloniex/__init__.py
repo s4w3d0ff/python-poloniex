@@ -57,7 +57,8 @@ PUBLIC_COMMANDS = [
     'returnTradeHistory',
     'returnChartData',
     'returnCurrencies',
-    'returnLoanOrders']
+    'returnLoanOrders',
+    'getTrollboxMessages'] # not documented
 
 PRIVATE_COMMANDS = [
     'returnBalances',
@@ -279,6 +280,11 @@ class Poloniex(object):
         specified by the "currency" parameter """
         return self.__call__('returnLoanOrders', {
                              'currency': str(currency).upper()})
+    
+    def getTrollboxMessages(self, messages=30):
+        """ Returns the list trollbox messages """
+        return self.__call__('getTrollboxMessages', {
+                             'messages': str(messages)})
 
     # --PRIVATE COMMANDS------------------------------------------------------
     def returnBalances(self):
