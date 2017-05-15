@@ -172,16 +172,7 @@ class Poloniex(object):
                 headers={'Sign': sign.hexdigest(), 'Key': self.key},
                 timeout=self.timeout)
             # decode json
-            if not self.jsonNums:
-                jsonout = _loads(ret.text, parse_float=str)
-            else:
-                jsonout = _loads(ret.text,
-                                 parse_float=self.jsonNums,
-                                 parse_int=self.jsonNums)
-            # check if poloniex returned an error
-            if 'error' in jsonout:
-                raise PoloniexError(jsonout['error'])
-            return jsonout
+            return self.parseJson(ret.text)
 
         # public?
         elif command in PUBLIC_COMMANDS:
@@ -189,18 +180,27 @@ class Poloniex(object):
                 'https://poloniex.com/public?' + _urlencode(args),
                 timeout=self.timeout)
             # decode json
-            if not self.jsonNums:
-                jsonout = _loads(ret.text, parse_float=str)
-            else:
-                jsonout = _loads(ret.text,
-                                 parse_float=self.jsonNums,
-                                 parse_int=self.jsonNums)
-            # check if poloniex returned an error
-            if 'error' in jsonout:
-                raise PoloniexError(jsonout['error'])
-            return jsonout
+            return self.parseJson(ret.text)
         else:
             raise PoloniexError("Invalid Command!: %s" % command)
+
+    def parseJson(self, data):
+        self.logger.debug(data)
+        try:
+            if not self.jsonNums:
+                jsonout = _loads(data, parse_float=str)
+            else:
+                jsonout = _loads(data,
+                                 parse_float=self.jsonNums,
+                                 parse_int=self.jsonNums)
+        except Exception as e:
+            # dont think this is needed...
+            #self.logger.exception(e)
+            raise e
+        # check if poloniex returned an error
+        if 'error' in jsonout:
+            raise PoloniexError(jsonout['error'])
+        return jsonout
 
     # --PUBLIC COMMANDS-------------------------------------------------------
     def returnTicker(self):
@@ -239,16 +239,8 @@ class Poloniex(object):
             'https://poloniex.com/public?' + _urlencode(args),
             timeout=self.timeout)
         # decode json
-        if not self.jsonNums:
-            jsonout = _loads(ret.text, parse_float=str)
-        else:
-            jsonout = _loads(ret.text,
-                             parse_float=self.jsonNums,
-                             parse_int=self.jsonNums)
-        # check if poloniex returned an error
-        if 'error' in jsonout:
-            raise PoloniexError(jsonout['error'])
-        return jsonout
+        return self.parseJson(ret.text)
+
 
     def returnChartData(self, currencyPair, period=False,
                         start=False, end=False):
