@@ -100,7 +100,7 @@ class Poloniex(object):
 
     def __init__(
             self, key=False, secret=False,
-            timeout=1, coach=True, jsonNums=False):
+            timeout=10, coach=True, jsonNums=False):
         """
         key = str api key supplied by Poloniex
         secret = str secret hash supplied by Poloniex
