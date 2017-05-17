@@ -54,7 +54,7 @@ PUBLIC_COMMANDS = [
     'returnTicker',
     'return24hVolume',
     'returnOrderBook',
-    'returnTradeHistory',
+    'marketTradeHist',
     'returnChartData',
     'returnCurrencies',
     'returnLoanOrders']
