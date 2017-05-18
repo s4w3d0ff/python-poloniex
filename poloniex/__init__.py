@@ -186,17 +186,12 @@ class Poloniex(object):
 
     def parseJson(self, data):
         self.logger.debug(data)
-        try:
-            if not self.jsonNums:
-                jsonout = _loads(data, parse_float=str)
-            else:
-                jsonout = _loads(data,
-                                 parse_float=self.jsonNums,
-                                 parse_int=self.jsonNums)
-        except Exception as e:
-            # dont think this is needed...
-            #self.logger.exception(e)
-            raise e
+        if not self.jsonNums:
+            jsonout = _loads(data, parse_float=str)
+        else:
+            jsonout = _loads(data,
+                             parse_float=self.jsonNums,
+                             parse_int=self.jsonNums)
         # check if poloniex returned an error
         if 'error' in jsonout:
             raise PoloniexError(jsonout['error'])
