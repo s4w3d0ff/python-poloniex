@@ -46,25 +46,22 @@ class Loaner(object):
                  api,
                  coins={'BTC': 0.01},
                  maxage=60 * 30,
-                 offset=6,
                  delay=60 * 10):
-        self.api, self.delay, self.coins, self.maxage, self.offset =\
-            api, delay, coins, maxage, offset
-        # Check auto renew is not enabled for current loans
-        autoRenewAll(self.api, toggle=False)
+        self.api, self.delay, self.coins, self.maxage =\
+            api, delay, coins, maxage
 
     def start(self):
         """ Start the thread """
-        self.__process = Process(target=self.run)
-        self.__process.daemon = True
+        self._process = Process(target=self.run)
+        self._process.daemon = True
         self._running = True
-        self.__process.start()
+        self._process.start()
 
     def stop(self):
         """ Stop the thread """
         self._running = False
         try:
-            self.__process.join()
+            self._process.join()
         except Exception as e:
             logger.exception(e)
 
@@ -97,27 +94,28 @@ class Loaner(object):
             return logger.info(RD("No coins found in lending account"))
         for coin in self.coins:
             if coin not in bals['lending']:
-                logger.debug("No available %s in lending", OR(coin))
                 continue
             amount = bals['lending'][coin]
-            logging.info("%s:%s", coin, str(amount))
             if float(amount) < self.coins[coin]:
-                logger.debug("Not enough %s:%s, below set minimum: %s",
-                             OR(coin),
-                             RD(str(amount)),
-                             BL(str(self.coins[coin])))
+                logger.info("Not enough %s:%s, below set minimum: %s",
+                            OR(coin),
+                            RD(str(amount)),
+                            BL(str(self.coins[coin])))
                 continue
+            else:
+                logging.info("%s:%s", OR(coin), GR(str(amount)))
             orders = self.api.returnLoanOrders(coin)['offers']
-            topRate = float(orders[0]['rate'])
-            price = topRate + (self.offset * loantoshi)
+            price = sum([float(o['rate']) for o in orders]) / len(orders)
             logger.info('Creating %s %s loan offer at %s',
                         RD(str(amount)), OR(coin), GR(str(price * 100) + '%'))
-            logger.debug(self.api.createLoanOffer(
-                coin, amount, price, autoRenew=0))
+            r = self.api.createLoanOffer(coin, amount, price, autoRenew=0)
+            logger.info('%s', GR(r["message"]))
 
     def run(self):
         """ Main loop, cancels 'stale' loan offers, turns auto-renew off on
         active loans, and creates new loan offers at optimum price """
+        # Check auto renew is not enabled for current loans
+        autoRenewAll(self.api, toggle=False)
         while self._running:
             try:
                 # Check for old offers
@@ -151,7 +149,7 @@ if __name__ == '__main__':
     logging.basicConfig(
         format='[%(asctime)s]%(message)s',
         datefmt=GR("%H:%M:%S"),
-        level=logging.INFO
+        level=logging.DEBUG
     )
     logging.getLogger('requests').setLevel(logging.ERROR)
     key, secret = argv[1:3]
@@ -165,21 +163,18 @@ if __name__ == '__main__':
         'DOGE': 1000.0,
         'BTC': 0.1,
         'LTC': 1,
-        'ETH': 0.1}
+        'ETH': 1}
 
     # Maximum age (in secs) to let an open offer sit
-    maxage = 60 * 3  # 3 min
-
-    # number of loantoshis to offset from lowest asking rate
-    offset = 6  # (6 * 0.000001)+lowestask
+    maxage = 60 * 10  # 10 min
 
     # number of seconds between loops
-    delay = 60 * 1  # 1 min
+    delay = 60 * 5  # 5 min
 
     ########################
     #################-Stop Configuring-#################################
-    loaner = Loaner(Poloniex(key, secret, jsonNums=float),
-                    coins, maxage, offset, delay)
+    loaner = Loaner(Poloniex(key, secret, timeout=120, jsonNums=float),
+                    coins, maxage, delay)
     loaner.start()
     while loaner._running:
         try:

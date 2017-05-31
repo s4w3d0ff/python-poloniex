@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # core
 from multiprocessing import Process
+import logging
 # pip
 from pymongo import MongoClient
 from twisted.internet import reactor
@@ -9,6 +10,8 @@ from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
 # git
 from poloniex import Poloniex
+
+logger = logging.getLogger(__name__)
 
 
 class WAMPTicker(ApplicationSession):
@@ -19,14 +22,22 @@ class WAMPTicker(ApplicationSession):
         # open/create poloniex database, ticker collection/table
         self.db = MongoClient().poloniex['ticker']
         self.db.drop()
-        initTick = Poloniex().returnTicker()
+        self.populateTicker()
+        yield self.subscribe(self.onTick, 'ticker')
+        logger.info('Subscribed to Ticker')
+
+    def populateTicker(self):
+        initTick = self.api.returnTicker()
         for market in initTick:
             initTick[market]['_id'] = market
-            self.db.insert_one(initTick[market])
-        yield self.subscribe(self.onTick, 'ticker')
-        print('Subscribed to Ticker')
+            self.db.update_one(
+                {'_id': market},
+                {'$set': initTick[market]},
+                upsert=True)
+        logger.info('Populated markets database with ticker data')
 
     def onTick(self, *data):
+        logger.debug(data)
         self.db.update_one(
             {"_id": data[0]},
             {"$set": {'last': data[1],
@@ -38,9 +49,8 @@ class WAMPTicker(ApplicationSession):
                       'isFrozen': data[7],
                       'high24hr': data[8],
                       'low24hr': data[9]
-                      }
-             }
-        )
+                      }},
+            upsert=True)
 
     def onDisconnect(self):
         # stop reactor if disconnected
