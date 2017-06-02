@@ -1,10 +1,13 @@
 ```
 # install wrapper
 pip install git+https://github.com/s4w3d0ff/python-poloniex.git
+
 # clone repo
 git clone https://github.com/s4w3d0ff/python-poloniex.git
+
 # enter loanbot dir
 cd python-poloniex/examples/loanbot
+
 # run bot
 python loanbot.py 'your-api-key' 'your5uper5ectetH4ash'
 ```
