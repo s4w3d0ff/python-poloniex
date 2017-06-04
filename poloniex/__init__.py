@@ -52,7 +52,7 @@ retryDelays = (0, 2, 5, 30)
 # Possible Commands
 PUBLIC_COMMANDS = [
     'returnTicker',
-    'return24hVolume',
+    'return24Volume',
     'returnOrderBook',
     'marketTradeHist',
     'returnChartData',
