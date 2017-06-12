@@ -150,7 +150,7 @@ class Poloniex(object):
                         raise
                     else:
                         # log exception and wait
-                        logger.debug(problem)
+                        logger.exception(problem)
                         logger.info("-- delaying for %ds", delay)
                         sleep(delay)
         return retrying
@@ -164,7 +164,7 @@ class Poloniex(object):
             if an error is returned from poloniex.com
         - returns decoded json api message """
         # get command type
-        cmdType = self.checkcmd(command)
+        cmdType = self.checkCmd(command)
 
         # pass the command
         args['command'] = command
@@ -200,7 +200,7 @@ class Poloniex(object):
             ret = _post(**payload)
 
             # return data
-            return self.parseJson(ret.text)
+            return self.handleReturned(ret.text)
 
         # public?
         if cmdType == 'Public':
@@ -215,7 +215,7 @@ class Poloniex(object):
             ret = _get(**payload)
 
             # return data
-            return self.parseJson(ret.text)
+            return self.handleReturned(ret.text)
 
     @property
     def nonce(self):
@@ -223,7 +223,7 @@ class Poloniex(object):
         self._nonce += 42
         return self._nonce
 
-    def checkcmd(self, command):
+    def checkCmd(self, command):
         """ Returns if the command is private of public, raises PoloniexError
         if command is not found """
         global PUBLIC_COMMANDS, PRIVATE_COMMANDS
@@ -237,8 +237,8 @@ class Poloniex(object):
 
         raise PoloniexError("Invalid Command!: %s" % command)
 
-    def parseJson(self, data):
-        """ Handles custom parsing of json numbers"""
+    def handleReturned(self, data):
+        """ Handles returned data from poloniex"""
         self.logger.debug(data)
         if not self.jsonNums:
             out = _loads(data, parse_float=str)
@@ -246,19 +246,22 @@ class Poloniex(object):
             out = _loads(data,
                          parse_float=self.jsonNums,
                          parse_int=self.jsonNums)
+
         # check if poloniex returned an error
         if 'error' in out:
+
             # update nonce if we fell behind
             if "Nonce must be greater" in out['error']:
                 self._nonce = int(
                     out['error'].split('.')[0].split()[-1])
-                raise RequestException(
-                    'PoloniexError' + out['error'])
+                # raise RequestException so we try again
+                raise RequestException('PoloniexError ' + out['error'])
 
+            # conncetion timeout from poloniex
             if "Please try again." in out['error']:
                 # raise RequestException so we try again
-                raise RequestException(
-                    'PoloniexError' + out['error'])
+                raise RequestException('PoloniexError ' + out['error'])
+
             # raise other poloniex errors, ending retry loop
             else:
                 raise PoloniexError(out['error'])
@@ -301,7 +304,7 @@ class Poloniex(object):
             'https://poloniex.com/public?' + _urlencode(args),
             timeout=self.timeout)
         # decode json
-        return self.parseJson(ret.text)
+        return self.handleReturned(ret.text)
 
     def returnChartData(self, currencyPair, period=False,
                         start=False, end=False):
