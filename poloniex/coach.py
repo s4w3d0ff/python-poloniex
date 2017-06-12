@@ -37,7 +37,7 @@ class Coach(object):
         self.timeFrame = timeFrame
         self.semaphore = Semaphore(callLimit)
 
-    def __call__(self):
+    def wait(self):
         """ Makes sure our api calls don't go past the api call limit """
         self.semaphore.acquire()  # blocking call
         # delayed release
