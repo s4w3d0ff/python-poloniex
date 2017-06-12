@@ -21,7 +21,6 @@ import logging
 from time import time, sleep
 from threading import Semaphore, Timer
 from collections import deque
-logger = logging.getLogger(__name__)
 
 
 class Coach(object):
@@ -30,7 +29,7 @@ class Coach(object):
     Poloniex default call limit is 6 calls per 1 sec.
     """
 
-    def __init__(self, timeFrame=1.0, callLimit=6):
+    def __init__(self, timeFrame=1.0, callLimit=6, delays=(0, 1, 5, 30)):
         """
         timeFrame = float time in secs [default = 1.0]
         callLimit = int max amount of calls per 'timeFrame' [default = 6]
