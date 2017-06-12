@@ -50,6 +50,8 @@ from .coach import Coach
 # logger
 logger = logging.getLogger(__name__)
 
+retryDelays = (0, 1, 2, 3)
+
 # Possible Commands
 PUBLIC_COMMANDS = [
     'returnTicker',
@@ -101,7 +103,7 @@ class Poloniex(object):
 
     def __init__(
             self, key=False, secret=False,
-            timeout=None, coach=True, jsonNums=False, retryDelays=(0, 1, 2, 3)):
+            timeout=None, coach=True, jsonNums=False):
         """
         key = str api key supplied by Poloniex
         secret = str secret hash supplied by Poloniex
@@ -124,15 +126,36 @@ class Poloniex(object):
         self.jsonNums = jsonNums
         # grab keys, set timeout
         self.key, self.secret, self.timeout = key, secret, timeout
-        # set retry delay sequence
-        self.retryDelays = retryDelays
         # set time labels
         self.MINUTE, self.HOUR, self.DAY = 60, 60 * 60, 60 * 60 * 24
         self.WEEK, self.MONTH = self.DAY * 7, self.DAY * 30
         self.YEAR = self.DAY * 365
 
     # -----------------Meat and Potatos---------------------------------------
-    @self.retry
+    def retry(func):
+        """ retry decorator """
+        @wraps(func)
+        def retrying(*args, **kwargs):
+            problems = []
+            for delay in chain(retryDelays, [None]):
+                try:
+                    # attempt call
+                    return func(*args, **kwargs)
+
+                # we need to try again
+                except RequestException as problem:
+                    problems.append(problem)
+                    if delay is None:
+                        logger.error(problems)
+                        raise
+                    else:
+                        # log exception and wait
+                        logger.debug(problem)
+                        logger.info("-- delaying for %ds", delay)
+                        sleep(delay)
+        return retrying
+
+    @retry
     def __call__(self, command, args={}):
         """ Main Api Function
         - encodes and sends <command> with optional [args] to Poloniex api
@@ -241,29 +264,6 @@ class Poloniex(object):
                 raise PoloniexError(out['error'])
         return out
 
-    def retry(self, func):
-        """ retry decorator """
-        @wraps(func)
-        def retrying(*args, **kwargs):
-            problems = []
-            for delay in chain(self.retryDelays, [None]):
-                try:
-                    # attempt call
-                    return func(*args, **kwargs)
-
-                # we need to try again
-                except RequestException as problem:
-                    problems.append(problem)
-                    if delay is None:
-                        logger.error(problems)
-                        raise
-                    else:
-                        # log exception and wait
-                        logger.debug(problem)
-                        logger.info("-- delaying for %ds", delay)
-                        sleep(delay)
-        return retrying
-
     # --PUBLIC COMMANDS-------------------------------------------------------
     def returnTicker(self):
         """ Returns the ticker for all markets. """
@@ -284,7 +284,7 @@ class Poloniex(object):
             'depth': str(depth)
         })
 
-    @self.retry
+    @retry
     def marketTradeHist(self, currencyPair, start=False, end=False):
         """ Returns the past 200 trades for a given market, or up to 50,000
         trades between a range specified in UNIX timestamps by the "start" and
