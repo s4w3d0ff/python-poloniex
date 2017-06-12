@@ -3,10 +3,9 @@
 # BTC: 15D8VaZco22GTLVrFMAehXyif6EGf8GMYV
 # TODO:
 #   [x] PEP8
-#   [ ] Add better logger access
-#   [ ] Find out if request module has the equivalent to urlencode
+#   [x] Add better logger access
+#   [ ] Improve logging output
 #   [ ] Add Push Api application wrapper
-#   [ ] Convert docstrings to sphinx
 #
 #    Copyright (C) 2016  https://github.com/s4w3d0ff
 #
@@ -35,19 +34,21 @@ except:
 from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
-from time import time
+from time import time, sleep
+from itertools import chain
+from functools import wraps
 import logging
+
 # 3rd party
 from requests.exceptions import RequestException
 from requests import post as _post
 from requests import get as _get
+
 # local
 from .coach import Coach
-from .retry import retry
+
 # logger
 logger = logging.getLogger(__name__)
-
-retryDelays = (0, 2, 5, 30)
 
 # Possible Commands
 PUBLIC_COMMANDS = [
@@ -57,8 +58,7 @@ PUBLIC_COMMANDS = [
     'marketTradeHist',
     'returnChartData',
     'returnCurrencies',
-    'returnLoanOrders',
-    'getTrollboxMessages'] # not documented
+    'returnLoanOrders']
 
 PRIVATE_COMMANDS = [
     'returnBalances',
@@ -92,6 +92,7 @@ PRIVATE_COMMANDS = [
 
 
 class PoloniexError(Exception):
+    """ Exception for handling poloniex api errors """
     pass
 
 
@@ -100,7 +101,7 @@ class Poloniex(object):
 
     def __init__(
             self, key=False, secret=False,
-            timeout=None, coach=True, jsonNums=False):
+            timeout=None, coach=True, jsonNums=False, retryDelays=(0, 1, 2, 3)):
         """
         key = str api key supplied by Poloniex
         secret = str secret hash supplied by Poloniex
@@ -110,31 +111,28 @@ class Poloniex(object):
         jsonNums = datatype to use when parsing json ints and floats
 
         # Time Placeholders: (MONTH == 30*DAYS)
-
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
-        # Call coach, set nonce
-        if coach is True:
-            coach = Coach()
+        # set logger and coach
         self.logger = logger
         self.coach = coach
+        if self.coach is True:
+            self.coach = Coach()
+        # create nonce
         self._nonce = int("{:.6f}".format(time()).replace('.', ''))
         # json number datatypes
         self.jsonNums = jsonNums
-        # Grab keys, set timeout, ditch coach?
+        # grab keys, set timeout
         self.key, self.secret, self.timeout = key, secret, timeout
-        # Set time labels
-        self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR = \
-            60, 60 * 60, 60 * 60 * 24, 60 * 60 * 24 * \
-            7, 60 * 60 * 24 * 30, 60 * 60 * 24 * 365
-
-    @property
-    def nonce(self):
-        self._nonce += 42
-        return self._nonce
+        # set retry delay sequence
+        self.retryDelays = retryDelays
+        # set time labels
+        self.MINUTE, self.HOUR, self.DAY = 60, 60 * 60, 60 * 60 * 24
+        self.WEEK, self.MONTH = self.DAY * 7, self.DAY * 30
+        self.YEAR = self.DAY * 365
 
     # -----------------Meat and Potatos---------------------------------------
-    @retry(delays=retryDelays, exception=RequestException)
+    @self.retry
     def __call__(self, command, args={}):
         """ Main Api Function
         - encodes and sends <command> with optional [args] to Poloniex api
@@ -142,60 +140,129 @@ class Poloniex(object):
             (and the command is 'private'), if the <command> is not valid, or
             if an error is returned from poloniex.com
         - returns decoded json api message """
-        global PUBLIC_COMMANDS, PRIVATE_COMMANDS
-
-        # check in with the coach
-        if self.coach:
-            self.coach.wait()
+        # get command type
+        cmdType = self.checkcmd(command)
 
         # pass the command
         args['command'] = command
+        payload = {}
+        # add timeout
+        payload['timeout'] = self.timeout
 
         # private?
+        if cmdType == 'Private':
+            payload['url'] = 'https://poloniex.com/tradingApi'
+
+            # wait for coach
+            if self.coach:
+                self.coach.wait()
+
+            # set nonce
+            args['nonce'] = self.nonce
+
+            # add args to payload
+            payload['data'] = args
+
+            # sign data with our Secret
+            sign = _new(
+                self.secret.encode('utf-8'),
+                _urlencode(args).encode('utf-8'),
+                _sha512)
+
+            # add headers to payload
+            payload['headers'] = {'Sign': sign.hexdigest(),
+                                  'Key': self.key}
+
+            # send the call
+            ret = _post(**payload)
+
+            # return data
+            return self.parseJson(ret.text)
+
+        # public?
+        if cmdType == 'Public':
+            # encode url
+            payload['url'] = 'https://poloniex.com/public?' + _urlencode(args)
+
+            # wait for coach
+            if self.coach:
+                self.coach.wait()
+
+            # send the call
+            ret = _get(**payload)
+
+            # return data
+            return self.parseJson(ret.text)
+
+    @property
+    def nonce(self):
+        """ Increments the nonce"""
+        self._nonce += 42
+        return self._nonce
+
+    def checkcmd(self, command):
+        """ Returns if the command is private of public, raises PoloniexError
+        if command is not found """
+        global PUBLIC_COMMANDS, PRIVATE_COMMANDS
         if command in PRIVATE_COMMANDS:
             # check for keys
             if not self.key or not self.secret:
                 raise PoloniexError("An Api Key and Secret needed!")
-            # set nonce
-            args['nonce'] = self.nonce
-            # encode arguments for url
-            postData = _urlencode(args)
-            # sign postData with our Secret
-            sign = _new(
-                self.secret.encode('utf-8'),
-                postData.encode('utf-8'),
-                _sha512)
-            # post request
-            ret = _post(
-                'https://poloniex.com/tradingApi',
-                data=args,
-                headers={'Sign': sign.hexdigest(), 'Key': self.key},
-                timeout=self.timeout)
-            # decode json
-            return self.parseJson(ret.text)
+            return 'Private'
+        if command in PUBLIC_COMMANDS:
+            return 'Public'
 
-        # public?
-        elif command in PUBLIC_COMMANDS:
-            ret = _get(
-                'https://poloniex.com/public?' + _urlencode(args),
-                timeout=self.timeout)
-            # decode json
-            return self.parseJson(ret.text)
-        else:
-            raise PoloniexError("Invalid Command!: %s" % command)
+        raise PoloniexError("Invalid Command!: %s" % command)
 
     def parseJson(self, data):
+        """ Handles custom parsing of json numbers"""
         self.logger.debug(data)
         if not self.jsonNums:
-            jsonout = _loads(data, parse_float=str)
+            out = _loads(data, parse_float=str)
         else:
-            jsonout = _loads(data,
-                             parse_float=self.jsonNums,
-                             parse_int=self.jsonNums)
+            out = _loads(data,
+                         parse_float=self.jsonNums,
+                         parse_int=self.jsonNums)
         # check if poloniex returned an error
-        if 'error' in jsonout:
-            raise PoloniexError(jsonout['error'])
-        return jsonout
+        if 'error' in out:
+            # update nonce if we fell behind
+            if "Nonce must be greater" in out['error']:
+                self._nonce = int(
+                    out['error'].split('.')[0].split()[-1])
+                raise RequestException(
+                    'PoloniexError' + out['error'])
+
+            if "Please try again." in out['error']:
+                # raise RequestException so we try again
+                raise RequestException(
+                    'PoloniexError' + out['error'])
+            # raise other poloniex errors, ending retry loop
+            else:
+                raise PoloniexError(out['error'])
+        return out
+
+    def retry(self, func):
+        """ retry decorator """
+        @wraps(func)
+        def retrying(*args, **kwargs):
+            problems = []
+            for delay in chain(self.retryDelays, [None]):
+                try:
+                    # attempt call
+                    return func(*args, **kwargs)
+
+                # we need to try again
+                except RequestException as problem:
+                    problems.append(problem)
+                    if delay is None:
+                        logger.error(problems)
+                        raise
+                    else:
+                        # log exception and wait
+                        logger.debug(problem)
+                        logger.info("-- delaying for %ds", delay)
+                        sleep(delay)
+        return retrying
 
     # --PUBLIC COMMANDS-------------------------------------------------------
     def returnTicker(self):
@@ -217,7 +284,7 @@ class Poloniex(object):
             'depth': str(depth)
         })
 
-    @retry(delays=retryDelays, exception=RequestException)
+    @self.retry
     def marketTradeHist(self, currencyPair, start=False, end=False):
         """ Returns the past 200 trades for a given market, or up to 50,000
         trades between a range specified in UNIX timestamps by the "start" and
@@ -235,7 +302,6 @@ class Poloniex(object):
             timeout=self.timeout)
         # decode json
         return self.parseJson(ret.text)
-
 
     def returnChartData(self, currencyPair, period=False,
                         start=False, end=False):
@@ -267,11 +333,6 @@ class Poloniex(object):
         specified by the "currency" parameter """
         return self.__call__('returnLoanOrders', {
                              'currency': str(currency).upper()})
-    
-    def getTrollboxMessages(self, messages=30):
-        """ Returns the list trollbox messages """
-        return self.__call__('getTrollboxMessages', {
-                             'messages': str(messages)})
 
     # --PRIVATE COMMANDS------------------------------------------------------
     def returnBalances(self):
