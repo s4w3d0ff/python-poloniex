@@ -7,6 +7,7 @@ import logging
 from pymongo import MongoClient
 from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks
+from twisted.internet.ssl import CertificateOptions
 from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
 # git
 from poloniex import Poloniex
@@ -67,8 +68,9 @@ class Ticker(object):
         # thread namespace
         self._appProcess = None
         self._appRunner = ApplicationRunner(
-            u"wss://api.poloniex.com:443", u"realm1"
-        )
+            u"wss://api.poloniex.com:443",
+            u"realm1",
+            ssl=CertificateOptions())
 
     def __call__(self, market='USDT_BTC'):
         """ returns ticker from mongodb """
