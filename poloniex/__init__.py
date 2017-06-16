@@ -240,7 +240,6 @@ class Poloniex(object):
     def handleReturned(self, data):
         """ Handles returned data from poloniex"""
         try:
-
             if not self.jsonNums:
                 out = _loads(data, parse_float=str)
             else:
@@ -262,7 +261,7 @@ class Poloniex(object):
                 raise RequestException('PoloniexError ' + out['error'])
 
             # conncetion timeout from poloniex
-            if "Please try again." in out['error']:
+            if "please try again" in out['error'].lower():
                 # raise RequestException so we try again
                 raise RequestException('PoloniexError ' + out['error'])
 
