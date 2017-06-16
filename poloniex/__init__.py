@@ -239,13 +239,17 @@ class Poloniex(object):
 
     def handleReturned(self, data):
         """ Handles returned data from poloniex"""
-        self.logger.debug(data)
-        if not self.jsonNums:
-            out = _loads(data, parse_float=str)
+        try:
+
+            if not self.jsonNums:
+                out = _loads(data, parse_float=str)
+            else:
+                out = _loads(data,
+                             parse_float=self.jsonNums,
+                             parse_int=self.jsonNums)
         else:
-            out = _loads(data,
-                         parse_float=self.jsonNums,
-                         parse_int=self.jsonNums)
+            self.logger.error(data)
+            raise PoloniexError('Invalid json response returned')
 
         # check if poloniex returned an error
         if 'error' in out:
