@@ -35,8 +35,8 @@ from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
 from time import time, sleep
-from itertools import chain
-from functools import wraps
+from itertools import chain as _chain
+from functools import wraps as _wraps
 import logging
 
 # 3rd party
@@ -134,10 +134,10 @@ class Poloniex(object):
     # -----------------Meat and Potatos---------------------------------------
     def retry(func):
         """ retry decorator """
-        @wraps(func)
+        @_wraps(func)
         def retrying(*args, **kwargs):
             problems = []
-            for delay in chain(retryDelays, [None]):
+            for delay in _chain(retryDelays, [None]):
                 try:
                     # attempt call
                     return func(*args, **kwargs)
