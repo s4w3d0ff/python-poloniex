@@ -35,8 +35,8 @@ from json import loads as _loads
 from hmac import new as _new
 from hashlib import sha512 as _sha512
 from time import time, sleep
-from itertools import chain
-from functools import wraps
+from itertools import chain as _chain
+from functools import wraps as _wraps
 import logging
 
 # 3rd party
@@ -134,10 +134,10 @@ class Poloniex(object):
     # -----------------Meat and Potatos---------------------------------------
     def retry(func):
         """ retry decorator """
-        @wraps(func)
+        @_wraps(func)
         def retrying(*args, **kwargs):
             problems = []
-            for delay in chain(retryDelays, [None]):
+            for delay in _chain(retryDelays, [None]):
                 try:
                     # attempt call
                     return func(*args, **kwargs)
@@ -239,13 +239,16 @@ class Poloniex(object):
 
     def handleReturned(self, data):
         """ Handles returned data from poloniex"""
-        self.logger.debug(data)
-        if not self.jsonNums:
-            out = _loads(data, parse_float=str)
-        else:
-            out = _loads(data,
-                         parse_float=self.jsonNums,
-                         parse_int=self.jsonNums)
+        try:
+            if not self.jsonNums:
+                out = _loads(data, parse_float=str)
+            else:
+                out = _loads(data,
+                             parse_float=self.jsonNums,
+                             parse_int=self.jsonNums)
+        except:
+            self.logger.error(data)
+            raise PoloniexError('Invalid json response returned')
 
         # check if poloniex returned an error
         if 'error' in out:
@@ -258,7 +261,7 @@ class Poloniex(object):
                 raise RequestException('PoloniexError ' + out['error'])
 
             # conncetion timeout from poloniex
-            if "Please try again." in out['error']:
+            if "please try again" in out['error'].lower():
                 # raise RequestException so we try again
                 raise RequestException('PoloniexError ' + out['error'])
 

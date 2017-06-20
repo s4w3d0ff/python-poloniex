@@ -11,24 +11,29 @@ import poloniex
 
 queue = Queue()
 
+
 class TickPitcher(ApplicationSession):
     """ WAMP application """
     @inlineCallbacks
     def onJoin(self, details):
         yield self.subscribe(self.onTick, 'ticker')
         print('Subscribed to Ticker')
+
     def onTick(self, *tick):
         queue.put(tick)
+
     def onDisconnect(self):
         if reactor.running:
             reactor.stop()
 
+
 class Ticker(object):
+
     def __init__(self):
         self.ticker = poloniex.Poloniex().returnTicker()
         self._appRunner = ApplicationRunner(
-                    u"wss://api.poloniex.com:443", u"realm1"
-                    )
+            u"wss://api.poloniex.com:443", u"realm1"
+        )
         self._appProcess, self._tickThread = None, None
         self._running = False
 
@@ -44,26 +49,26 @@ class Ticker(object):
                 continue
             else:
                 self.ticker[tick[0]] = {
-                    'last':tick[1],
-                    'lowestAsk':tick[2],
-                    'highestBid':tick[3],
-                    'percentChange':tick[4],
-                    'baseVolume':tick[5],
-                    'quoteVolume':tick[6],
-                    'isFrozen':tick[7],
-                    'high24hr':tick[8],
-                    'low24hr':tick[9],
-                    'id':self.ticker[tick[0]]['id']
-                    }
+                    'last': tick[1],
+                    'lowestAsk': tick[2],
+                    'highestBid': tick[3],
+                    'percentChange': tick[4],
+                    'baseVolume': tick[5],
+                    'quoteVolume': tick[6],
+                    'isFrozen': tick[7],
+                    'high24hr': tick[8],
+                    'low24hr': tick[9],
+                    'id': self.ticker[tick[0]]['id']
+                }
         print("Done catching...")
 
     def start(self):
         """ Start the ticker """
         print("Starting ticker")
         self._appProcess = Process(
-                target=self._appRunner.run,
-                args=(TickPitcher,)
-                )
+            target=self._appRunner.run,
+            args=(TickPitcher,)
+        )
         self._appProcess.daemon = True
         self._appProcess.start()
         self._running = True
