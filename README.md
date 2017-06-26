@@ -1,5 +1,5 @@
 ![python](https://img.shields.io/badge/python-2.7%20%26%203-blue.svg) [![licence](https://img.shields.io/badge/licence-GPL%20v2-blue.svg)](https://github.com/s4w3d0ff/python-poloniex/blob/master/LICENSE)  
-[![release](https://img.shields.io/github/release/s4w3d0ff/python-poloniex.svg) ![release build](https://travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=v0.4.4)](https://github.com/s4w3d0ff/python-poloniex/releases)  
+[![release](https://img.shields.io/github/release/s4w3d0ff/python-poloniex.svg) ![release build](https://travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=v0.4.5)](https://github.com/s4w3d0ff/python-poloniex/releases)  
 [![master](https://img.shields.io/badge/branch-master-blue.svg) ![master build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)](https://github.com/s4w3d0ff/python-poloniex/tree/master)  
 [![dev](https://img.shields.io/badge/branch-dev-blue.svg) ![dev build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=dev)](https://github.com/s4w3d0ff/python-poloniex/tree/dev)  
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
@@ -7,12 +7,12 @@ Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 ## Install latest release:
 Python 2:
 ```
-pip install https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.4.zip
+pip install https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.5.zip
 ```
 
 Python 3:
 ```
-pip3 install https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.4.zip
+pip3 install https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.5.zip
 ```
 
 ### Features:
