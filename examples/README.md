@@ -1,6 +1,6 @@
 # Examples
 
-#### _Most examples require the poloniex module and/or autobahn installed._
+#### _Most examples require this poloniex module and/or autobahn installed._
 
 ## WAMP Push Api Setup 
 See http://autobahn.ws/python/installation.html for more details on other systems.
@@ -19,11 +19,6 @@ sudo bash -c 'apt-get update && apt-get upgrade'
 pip3 install service_identity
 pip3 install autobahn[twisted]
 ```
-```
-git clone https://github.com/s4w3d0ff/python-poloniex.git && cd python-poloniex/examples
-python polocalbox.py
-# or
-python3 polocalbox.py
-```
+
 >NOTE: There is also another wonderful api wrapper that wraps the WAMP polo api using asyncio:  
 >[https://github.com/absortium/poloniex-api](https://github.com/absortium/poloniex-api)
