@@ -514,16 +514,19 @@ class Poloniex(object):
         balances may vary continually with market conditions. """
         return self.__call__('returnTradableBalances')
 
-    def transferBalance(self, currency, amount, fromAccount, toAccount):
+    def transferBalance(self, currency, amount, fromAccount, toAccount, confirmed=False):
         """ Transfers funds from one account to another (e.g. from your
         exchange account to your margin account). Required parameters are
         "currency", "amount", "fromAccount", and "toAccount" """
-        return self.__call__('transferBalance', {
+        args = {
             'currency': str(currency).upper(),
             'amount': str(amount),
             'fromAccount': str(fromAccount),
             'toAccount': str(toAccount)
-        })
+        }
+        if confirmed:
+            args['confirmed'] = 1
+        return self.__call__('transferBalance', args)
 
     def returnMarginAccountSummary(self):
         """ Returns a summary of your entire margin account. This is the same
