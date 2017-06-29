@@ -1,5 +1,4 @@
-[![python](https://img.shields.io/badge/python-2.7%20%26%203-blue.svg)![licence](https://img.shields.io/badge/licence-GPL%20v2-blue.svg)](https://github.com/s4w3d0ff/python-poloniex/blob/master/LICENSE) [![release](https://img.shields.io/github/release/s4w3d0ff/python-poloniex.svg)![release build](https://travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=v0.4.5)](https://github.com/s4w3d0ff/python-poloniex/releases)
-
+[![python](https://img.shields.io/badge/python-2.7%20%26%203-blue.svg)![licence](https://img.shields.io/badge/licence-GPL%20v2-blue.svg)](https://github.com/s4w3d0ff/python-poloniex/blob/master/LICENSE) [![release](https://img.shields.io/github/release/s4w3d0ff/python-poloniex.svg)![release build](https://travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=v0.4.5)](https://github.com/s4w3d0ff/python-poloniex/releases)  
 [![master](https://img.shields.io/badge/branch-master-blue.svg)![master build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)](https://github.com/s4w3d0ff/python-poloniex/tree/master) [![dev](https://img.shields.io/badge/branch-dev-blue.svg)![dev build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=dev)](https://github.com/s4w3d0ff/python-poloniex/tree/dev)  
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 
@@ -16,7 +15,7 @@ pip3 install https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.5.zip
 
 ## Usage:
 See the [wiki](https://github.com/s4w3d0ff/python-poloniex/wiki) or `help(poloniex)` for more.
-### Basic Public Setup (no api Key/Secret):
+#### Basic Public Setup (no api Key/Secret):
 ```python
 from poloniex import Poloniex
 polo = Poloniex()
@@ -32,7 +31,7 @@ print(polo.returnTicker()['BTC_ETH'])
 print(polo.marketTradeHist('BTC_ETH'))
 ```
 
-### Basic Private Setup (Api key/secret required):
+#### Basic Private Setup (Api key/secret required):
 ```python
 import poloniex
 polo = poloniex.Poloniex('your-Api-Key-Here-xxxx','yourSecretKeyHere123456789')
