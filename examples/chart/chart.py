@@ -116,25 +116,13 @@ class Chart(object):
                                            start=time() - self.api.YEAR)
         # we have data in db already
         else:
-            # get time since last candle
-            since = time() - int(last['_id'])
-            logger.debug(int(last['_id']))
-            logger.debug(since)
-            # if time since is less than candle period, we dont need to update
-            if since < self.period:
-                logger.debug('Too soon to update candles')
-                # return candle data
-                return old[-size:]
-            # time since is greater than candle period
-            logger.debug('Getting new data')
-            # get only the data we need
             new = self.api.returnChartData(self.pair,
                                            period=self.period,
-                                           start=int(last['_id']) + self.period)
+                                           start=int(last['_id']))
         # add new candles
         updateSize = len(new)
         logger.info('Updating %s with %s new entrys!',
-                    self.pair + str(self.period), str(updateSize))
+                    self.pair + '-' + str(self.period), str(updateSize))
         # show progress
         for i in range(updateSize):
             print("\r%s/%s" % (str(i + 1), str(updateSize)), end=" complete ")
@@ -182,4 +170,4 @@ if __name__ == '__main__':
     api = Poloniex(jsonNums=float)
     df = Chart(api, 'BTC_ETH').dataFrame()
     df.dropna(inplace=True)
-    print(df.tail(40))
+    print(df.tail(3)[['open', 'close', 'percentChange']])
