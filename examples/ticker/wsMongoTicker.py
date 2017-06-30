@@ -77,8 +77,8 @@ class wsTicker(object):
                 {'$set': tick[market]},
                 upsert=True)
         print('Populated markets database with ticker data')
-        ws.send(json.dumps({'command': 'subscribe',
-                            'channel': 1002}))
+        self.ws.send(json.dumps({'command': 'subscribe',
+                                 'channel': 1002}))
 
     def start(self):
         self.t = Thread(target=self.ws.run_forever)
