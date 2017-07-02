@@ -1,6 +1,6 @@
 # Poloniex API wrapper tested on Python 2.7.6 & 3.4.3
 # https://github.com/s4w3d0ff/python-poloniex
-# BTC: 15D8VaZco22GTLVrFMAehXyif6EGf8GMYV
+# BTC: 1A7K4kgXLSSzvDRjvoGwomvhrNU4CKezEp
 # TODO:
 #   [x] PEP8
 #   [x] Add better logger access
