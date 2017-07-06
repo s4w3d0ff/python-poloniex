@@ -6,3 +6,13 @@ pandas
 numpy
 pymongo
 ```
+
+bokehPlotter.py - same as chart.py with an added `graph` method that plots the data (with indicators) using bokeh
+
+Requires:
+```
+pandas
+numpy
+pymongo
+bokeh
+```
