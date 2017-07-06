@@ -19,3 +19,4 @@
   You can simply star/fork [this repository at github.com](https://github.com/s4w3d0ff/python-poloniex/), and/or donate to the following:
 
   BTC: `1A7K4kgXLSSzvDRjvoGwomvhrNU4CKezEp`
+  LTC: `LWShTeRrZpYS4aJhb6JdP3R9tNFMnZiDo2`
