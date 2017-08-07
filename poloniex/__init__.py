@@ -2,9 +2,9 @@
 # https://github.com/s4w3d0ff/python-poloniex
 # BTC: 1A7K4kgXLSSzvDRjvoGwomvhrNU4CKezEp
 # TODO:
-#   [x] PEP8
-#   [x] Add better logger access
-#   [ ] Improve logging output
+#   [x] PEP8ish
+#   [ ] Add better logger access
+#   [x] Improve logging output
 #   [ ] Add Push Api application wrapper
 #
 #    Copyright (C) 2016  https://github.com/s4w3d0ff
@@ -98,6 +98,11 @@ class PoloniexError(Exception):
     pass
 
 
+class RetryException(PoloniexError):
+    """ Exception for retry decorator """
+    pass
+
+
 class Poloniex(object):
     """The Poloniex Object!"""
 
@@ -132,7 +137,7 @@ class Poloniex(object):
         self.YEAR = self.DAY * 365
 
     # -----------------Meat and Potatos---------------------------------------
-    def retry(func):
+    def _retry(func):
         """ retry decorator """
         @_wraps(func)
         def retrying(*args, **kwargs):
@@ -146,16 +151,17 @@ class Poloniex(object):
                 except RequestException as problem:
                     problems.append(problem)
                     if delay is None:
-                        logger.error(problems)
-                        raise
+                        logger.debug(problems)
+                        raise RetryException(
+                            'retryDelays exhausted ' + str(problem))
                     else:
                         # log exception and wait
-                        logger.exception(problem)
+                        logger.debug(problem)
                         logger.info("-- delaying for %ds", delay)
                         sleep(delay)
         return retrying
 
-    @retry
+    @_retry
     def __call__(self, command, args={}):
         """ Main Api Function
         - encodes and sends <command> with optional [args] to Poloniex api
@@ -164,7 +170,7 @@ class Poloniex(object):
             if an error is returned from poloniex.com
         - returns decoded json api message """
         # get command type
-        cmdType = self.checkCmd(command)
+        cmdType = self._checkCmd(command)
 
         # pass the command
         args['command'] = command
@@ -200,7 +206,7 @@ class Poloniex(object):
             ret = _post(**payload)
 
             # return data
-            return self.handleReturned(ret.text)
+            return self._handleReturned(ret.text)
 
         # public?
         if cmdType == 'Public':
@@ -215,7 +221,7 @@ class Poloniex(object):
             ret = _get(**payload)
 
             # return data
-            return self.handleReturned(ret.text)
+            return self._handleReturned(ret.text)
 
     @property
     def nonce(self):
@@ -223,7 +229,7 @@ class Poloniex(object):
         self._nonce += 42
         return self._nonce
 
-    def checkCmd(self, command):
+    def _checkCmd(self, command):
         """ Returns if the command is private of public, raises PoloniexError
         if command is not found """
         global PUBLIC_COMMANDS, PRIVATE_COMMANDS
@@ -237,7 +243,7 @@ class Poloniex(object):
 
         raise PoloniexError("Invalid Command!: %s" % command)
 
-    def handleReturned(self, data):
+    def _handleReturned(self, data):
         """ Handles returned data from poloniex"""
         try:
             if not self.jsonNums:
@@ -290,7 +296,7 @@ class Poloniex(object):
             'depth': str(depth)
         })
 
-    @retry
+    @_retry
     def marketTradeHist(self, currencyPair, start=False, end=False):
         """ Returns the past 200 trades for a given market, or up to 50,000
         trades between a range specified in UNIX timestamps by the "start" and
@@ -307,7 +313,7 @@ class Poloniex(object):
             'https://poloniex.com/public?' + _urlencode(args),
             timeout=self.timeout)
         # decode json
-        return self.handleReturned(ret.text)
+        return self._handleReturned(ret.text)
 
     def returnChartData(self, currencyPair, period=False,
                         start=False, end=False):
@@ -514,7 +520,8 @@ class Poloniex(object):
         balances may vary continually with market conditions. """
         return self.__call__('returnTradableBalances')
 
-    def transferBalance(self, currency, amount, fromAccount, toAccount, confirmed=False):
+    def transferBalance(self, currency, amount,
+                        fromAccount, toAccount, confirmed=False):
         """ Transfers funds from one account to another (e.g. from your
         exchange account to your margin account). Required parameters are
         "currency", "amount", "fromAccount", and "toAccount" """
