@@ -206,7 +206,7 @@ class Poloniex(object):
             ret = _post(**payload)
 
             # return data
-            return self.handleReturned(ret.text)
+            return self._handleReturned(ret.text)
 
         # public?
         if cmdType == 'Public':
