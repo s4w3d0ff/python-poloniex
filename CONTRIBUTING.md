@@ -4,11 +4,11 @@
 
 #### Have a feature you want implemented?
 
-  Open an [issue](https://github.com/s4w3d0ff/python-poloniex/issues) stating what feature you wish to implement, [pull requests](https://github.com/s4w3d0ff/python-poloniex/pulls) are encouraged and will speed up the implication.   
+  Open an [issue](https://github.com/s4w3d0ff/python-poloniex/issues) stating what feature you wish to implement, [pull requests](https://github.com/s4w3d0ff/python-poloniex/pulls) are encouraged and will speed up implementation.   
 
 #### Found a bug that needs fixing?
 
-  If you know how to fix it, a [pull requests](https://github.com/s4w3d0ff/python-poloniex/pulls) is encouraged, otherwise open an issue and provide details on the events leading up to the bug, and include a traceback of the error.  
+  If you know how to fix it, a [pull request](https://github.com/s4w3d0ff/python-poloniex/pulls) is encouraged, otherwise open an issue providing details on the events leading up to the bug, including a traceback of the error.  
 
 #### Want to improve documentation?
 
