@@ -9,6 +9,10 @@ requires: `pandas pymongo`
 Uses the undocumented websocket api to save pushed data in a local mongodb  
 requires: `websocket-client pymongo`
 
+#### wsDictTicker.py
+Same as wsMongoTicker but saves the data in a dict instead of mongodb  
+requires: `websocket-client`
+
 #### mongoTicker.py (buggy)
 Uses WAMP api to save ticker data in a local mongodb  
 requires: `autobahn twisted pymongo`
