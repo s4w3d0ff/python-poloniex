@@ -108,7 +108,7 @@ class Poloniex(object):
 
     def __init__(
             self, key=False, secret=False,
-            timeout=None, coach=True, jsonNums=False):
+            timeout=None, coach=True, jsonNums=False, proxies=None):
         """
         key = str api key supplied by Poloniex
         secret = str secret hash supplied by Poloniex
@@ -120,9 +120,10 @@ class Poloniex(object):
         # Time Placeholders: (MONTH == 30*DAYS)
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
-        # set logger and coach
+        # set logger, coach, and proxies
         self.logger = logger
         self.coach = coach
+        self.proxies = proxies
         if self.coach is True:
             self.coach = Coach()
         # create nonce
@@ -201,7 +202,10 @@ class Poloniex(object):
             # add headers to payload
             payload['headers'] = {'Sign': sign.hexdigest(),
                                   'Key': self.key}
-
+            # add proxies if needed
+            if self.proxies:
+                payload['proxies'] = self.proxies
+      
             # send the call
             ret = _post(**payload)
 
@@ -216,7 +220,9 @@ class Poloniex(object):
             # wait for coach
             if self.coach:
                 self.coach.wait()
-
+            # add proxies if needed
+            if self.proxies:
+                payload['proxies'] = self.proxies
             # send the call
             ret = _get(**payload)
 
