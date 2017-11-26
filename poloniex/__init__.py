@@ -388,7 +388,7 @@ class Poloniex(object):
                              'currencyPair': str(currencyPair).upper()})
 
     def returnTradeHistory(
-        self, currencyPair='all', start=False, end=False, limit=10000
+        self, currencyPair='all', start=False, end=False, limit=None
     ):
         """ Returns your trade history for a given market, specified by the
         "currencyPair" POST parameter. You may specify "all" as the
