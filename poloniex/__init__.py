@@ -41,8 +41,7 @@ import logging
 
 # 3rd party
 from requests.exceptions import RequestException
-from requests import post as _post
-from requests import get as _get
+from requests import Session
 
 # local
 from .coach import Coach
@@ -120,6 +119,8 @@ class Poloniex(object):
         # Time Placeholders: (MONTH == 30*DAYS)
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
+        # session
+        self.session = Session()
         # set logger and coach
         self.logger = logger
         self.coach = coach
@@ -203,7 +204,7 @@ class Poloniex(object):
                                   'Key': self.key}
 
             # send the call
-            ret = _post(**payload)
+            ret = self.session.post(**payload)
 
             # return data
             return self._handleReturned(ret.text)
@@ -218,7 +219,7 @@ class Poloniex(object):
                 self.coach.wait()
 
             # send the call
-            ret = _get(**payload)
+            ret = self.session.get(**payload)
 
             # return data
             return self._handleReturned(ret.text)
@@ -309,7 +310,7 @@ class Poloniex(object):
             args['start'] = start
         if end:
             args['end'] = end
-        ret = _get(
+        ret = self.session.get(
             'https://poloniex.com/public?' + _urlencode(args),
             timeout=self.timeout)
         # decode json
