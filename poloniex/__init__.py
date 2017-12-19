@@ -108,7 +108,7 @@ class Poloniex(object):
 
     def __init__(
             self, key=False, secret=False,
-            timeout=None, coach=True, jsonNums=False):
+            timeout=None, coach=True, jsonNums=False, proxies=None):
         """
         key = str api key supplied by Poloniex
         secret = str secret hash supplied by Poloniex
@@ -120,9 +120,10 @@ class Poloniex(object):
         # Time Placeholders: (MONTH == 30*DAYS)
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
-        # set logger and coach
+        # set logger, coach, and proxies
         self.logger = logger
         self.coach = coach
+        self.proxies = proxies
         if self.coach is True:
             self.coach = Coach()
         # create nonce
@@ -201,7 +202,10 @@ class Poloniex(object):
             # add headers to payload
             payload['headers'] = {'Sign': sign.hexdigest(),
                                   'Key': self.key}
-
+            # add proxies if needed
+            if self.proxies:
+                payload['proxies'] = self.proxies
+      
             # send the call
             ret = _post(**payload)
 
@@ -216,7 +220,9 @@ class Poloniex(object):
             # wait for coach
             if self.coach:
                 self.coach.wait()
-
+            # add proxies if needed
+            if self.proxies:
+                payload['proxies'] = self.proxies
             # send the call
             ret = _get(**payload)
 
@@ -387,18 +393,25 @@ class Poloniex(object):
         return self.__call__('returnOpenOrders', {
                              'currencyPair': str(currencyPair).upper()})
 
-    def returnTradeHistory(self, currencyPair='all', start=False, end=False):
+    def returnTradeHistory(
+        self, currencyPair='all', start=False, end=False, limit=None
+    ):
         """ Returns your trade history for a given market, specified by the
-        "currencyPair" parameter. You may specify "all" as the currencyPair to
-        receive your trade history for all markets. You may optionally specify
-        a range via "start" and/or "end" POST parameters, given in UNIX
-        timestamp format; if you do not specify a range, it will be limited to
-        one day. """
+        "currencyPair" POST parameter. You may specify "all" as the
+        currencyPair to receive your trade history for all markets. You may
+        optionally specify a range via "start" and/or "end" POST parameters,
+        given in UNIX timestamp format; if you do not specify a range, it will
+        be limited to one day. You may optionally limit the number of entries
+        returned using the "limit" parameter, up to a maximum of 10,000. If the
+        "limit" parameter is not specified, no more than 500 entries will be
+        returned.  """
         args = {'currencyPair': str(currencyPair).upper()}
         if start:
             args['start'] = start
         if end:
             args['end'] = end
+        if limit:
+            args['limit'] = limit
         return self.__call__('returnTradeHistory', args)
 
     def returnOrderTrades(self, orderNumber):
