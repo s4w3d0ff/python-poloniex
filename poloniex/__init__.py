@@ -210,7 +210,7 @@ class Poloniex(object):
             ret = _post(**payload)
 
             # return data
-            return self._handleReturned(ret.text)
+            return self._handleReturned(ret)
 
         # public?
         if cmdType == 'Public':
@@ -227,7 +227,7 @@ class Poloniex(object):
             ret = _get(**payload)
 
             # return data
-            return self._handleReturned(ret.text)
+            return self._handleReturned(ret)
 
     @property
     def nonce(self):
@@ -253,18 +253,22 @@ class Poloniex(object):
         """ Handles returned data from poloniex"""
         try:
             if not self.jsonNums:
-                out = _loads(data, parse_float=str)
+                out = _loads(data.text, parse_float=str)
             else:
-                out = _loads(data,
+                out = _loads(data.text,
                              parse_float=self.jsonNums,
                              parse_int=self.jsonNums)
         except:
-            self.logger.error(data)
-            raise PoloniexError('Invalid json response returned')
+            self.logger.error(data.text)
+            #Cloudfare reported a bad gateway or gateway timeout error.
+            if hasattr(data,'status_code') and (data.status_code == 502 or data.status_code == 504 or data.status_code in range(520, 527, 1)):
+                raise RequestException('PoloniexError ')
+            else:
+                raise PoloniexError('Invalid json response returned')
 
         # check if poloniex returned an error
         if 'error' in out:
-
+            self.logger.error(out['error'])
             # update nonce if we fell behind
             if "Nonce must be greater" in out['error']:
                 self._nonce = int(
@@ -319,7 +323,7 @@ class Poloniex(object):
             'https://poloniex.com/public?' + _urlencode(args),
             timeout=self.timeout)
         # decode json
-        return self._handleReturned(ret.text)
+        return self._handleReturned(ret)
 
     def returnChartData(self, currencyPair, period=False,
                         start=False, end=False):
