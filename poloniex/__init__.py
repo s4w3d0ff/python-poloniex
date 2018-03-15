@@ -107,8 +107,8 @@ class Poloniex(object):
     """The Poloniex Object!"""
 
     def __init__(
-            self, key=False, secret=False,
-            timeout=None, coach=True, jsonNums=False, proxies=None):
+            self, *args, key=False, secret=False,
+            timeout=None, coach=True, jsonNums=False, proxies=None, **kwargs):
         """
         key = str api key supplied by Poloniex
         secret = str secret hash supplied by Poloniex
@@ -120,6 +120,7 @@ class Poloniex(object):
         # Time Placeholders: (MONTH == 30*DAYS)
         self.MINUTE, self.HOUR, self.DAY, self.WEEK, self.MONTH, self.YEAR
         """
+        super().__init__(args, kwargs)
         # set logger, coach, and proxies
         self.logger = logger
         self.coach = coach
