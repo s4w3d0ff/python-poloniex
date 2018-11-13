@@ -5,7 +5,7 @@ properties([
     parameters([
         string(
             name: 'GIT_CRED',
-            defaultValue: '78ec71e2-657d-49f8-8cb6-c4d588069cf9',
+            defaultValue: 'github',
             description: 'credentials id (ssh key for access to github)'
         ),
         string(
@@ -26,7 +26,7 @@ properties([
     [
         $class: 'org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty',
         triggers: [[
-            gitHubAuthId: '78ec71e2-657d-49f8-8cb6-c4d588069cf9' 
+            gitHubAuthId: 'github' 
             $class: 'org.jenkinsci.plugins.ghprb.GhprbTrigger',
             orgslist: "mdanylyuk",
             useGitHubHooks: true,
