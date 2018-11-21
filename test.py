@@ -32,10 +32,10 @@ class TestPolo(unittest.TestCase):
             self.polo.returnBalances()
         # invalid command
         with self.assertRaises(poloniex.PoloniexError):
-            self.polo('foo')
+            self.polo('fooифк')
         # catch errors returned from poloniex.com
         with self.assertRaises(poloniex.PoloniexError):
-            self.polo.returnOrderBook(currencyPair='atestfoo')
+            self.polo.returnOrderBook(currencyPair='atestfooифк')
 
 
 if __name__ == '__main__':
