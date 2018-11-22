@@ -1,2 +1,2 @@
-git+ssh://git@github.com/granduke/Urim.git@v0.1.0
+git+ssh://git@github.com/granduke/Urim.git@v1.4.8
 git+ssh://git@github.com/granduke/patricia-common.git@v0.4.5
