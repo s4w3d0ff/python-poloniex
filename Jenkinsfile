@@ -10,8 +10,13 @@ def notificationSlack (String buildStatus = 'STARTED') {
     def color
     def channel='jenkins'
     def message
+    
+    if (buildStatus == 'SUCCESS') {
+        color = 'good'
+        message = "*Urim:* Build: `${env.GIT_BRANCH}:${env.BUILD_NUMBER}` success. Logs: [<${env.RUN_CHANGES_DISPLAY_URL}|Changes>] [<${env.BUILD_URL}/console|Console>]"
+    }
 
-    if (buildStatus == 'UNSTABLE') {
+    else if (buildStatus == 'UNSTABLE') {
         color = 'warning'
         message = "*Urim:* Build: `${env.GIT_BRANCH}:${env.BUILD_NUMBER}` unstable. Logs: [<${env.RUN_CHANGES_DISPLAY_URL}|Changes>] [<${env.BUILD_URL}/console|Console>]"
     }
