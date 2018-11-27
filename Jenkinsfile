@@ -8,7 +8,7 @@ def notificationSlack (String buildStatus = 'STARTED') {
     buildStatus = buildStatus ?: 'SUCCESS'
 
     def color
-    def channel=['jenkins'.'general']
+    def channel=['jenkins','general']
     def message
     
     if (buildStatus == 'SUCCESS') {
