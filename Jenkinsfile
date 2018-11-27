@@ -79,7 +79,7 @@ node ('master'){
                     triggerPhrase: ".*build-ci.*",
                     skipPhrase: ".*skip-ci.*",
                     //uncomment next option if need to use trigger only with trigger phrase (now trigger run after creating PR, trigger phrase, commints)
-//                    onlyTriggerPhrase: true,
+                    onlyTriggerPhrase: true,
                     useGitHubHooks: true,
                     permitAll: true,
                     autoCloseFailedPullRequests: false,
