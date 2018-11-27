@@ -46,16 +46,6 @@ node ('master'){
             trim: true
         ),
         string(
-                    name: 'GIT_REPO_URIM',
-                    defaultValue: 'mdanylyuk/python-1',
-                    description: '[owner]/[repo]'
-                ),
-        string(
-                    name: 'GIT_REPO_PATRICIA_COMMON',
-                    defaultValue: 'mdanylyuk/python-patterns',
-                    description: '[owner]/[repo]'
-                ),
-        string(
             name: 'IMAGE_NAME',
             defaultValue: 'mdanylyuk',
             description: 'docker build tag',
@@ -117,34 +107,14 @@ node ('master'){
             $class: 'GitSCM',
             doGenerateSubmoduleConfigurations: false,
             submoduleCfg: [],
-            branches: [[name: "origin/master"]],
+            branches: [[name: "*/${env.GIT_BRANCH}"]],
             extensions: [[$class: 'WipeWorkspace']],
             userRemoteConfigs: [[
                 credentialsId: "github",
                 url: "git@github.com:mdanylyuk/python-poloniex.git"
             ]]
         ])
-        // Download patricia-common
-            checkout([ 
-                $class: 'GitSCM',
-                branches: [[name: "*/master"]],
-                extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'patricia-common']],
-                userRemoteConfigs: [[
-                    credentialsId: "github",
-                    url: "git@github.com:${GIT_REPO_PATRICIA_COMMON}.git"
-                ]]
-            ])
-            // Download Urim
-            checkout([ 
-                $class: 'GitSCM',
-                branches: [[name: "*/master"]],
-                extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'Urim']],
-                userRemoteConfigs: [[
-                    credentialsId: "github",
-                    url: "git@github.com:${GIT_REPO_URIM}.git"
-                ]]
-            ])
-    }
+   }
    /*stage ('Pre-Build') {
             sh '''
             echo "" | tee Dockerfile
