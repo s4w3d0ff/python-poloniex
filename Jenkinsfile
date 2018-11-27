@@ -107,7 +107,7 @@ node ('master'){
             $class: 'GitSCM',
             doGenerateSubmoduleConfigurations: false,
             submoduleCfg: [],
-            branches: [[name: "*/${env.GIT_BRANCH}"]],
+            branches: [[name: "origin/${ghprbSourceBranch}"]],
             extensions: [[$class: 'WipeWorkspace']],
             userRemoteConfigs: [[
                 credentialsId: "github",
