@@ -171,8 +171,7 @@ node ('master'){
             RUN rm -rf *@tmp \\
                 && echo "git+file:///root/urim/patricia-common/@$(grep requirements.txt -e 'patricia-common' | cut -d ""@"" -f3)" >> requirements.txt \\
                 && echo "git+file:///root/urim/Urim/@$(grep requirements.txt -e 'Urim' | cut -d ""@"" -f3)" >> requirements.txt \\
-                && sed -i '/git+ssh:/d' requirements.txt \\
-                tox" | tee Dockerfile
+                && sed -i '/git+ssh:/d' requirements.txt" | tee Dockerfile
             '''
         }
     stage ('Build') {
