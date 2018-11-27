@@ -115,7 +115,7 @@ node ('master'){
             branches: [[name: "origin/master"]],
             extensions: [[$class: 'WipeWorkspace']],
             userRemoteConfigs: [[
-                credentialsId: "${GIT_CRED}",
+                credentialsId: "github",
                 url: "git@github.com:${GIT_REPO}.git"
             ]]
         ])
@@ -125,7 +125,7 @@ node ('master'){
                 branches: [[name: "*/master"]],
                 extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'patricia-common']],
                 userRemoteConfigs: [[
-                    credentialsId: "${GIT_CRED}",
+                    credentialsId: "github",
                     url: "git@github.com:${GIT_REPO_PATRICIA_COMMON}.git"
                 ]]
             ])
@@ -135,7 +135,7 @@ node ('master'){
                 branches: [[name: "*/master"]],
                 extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'Urim']],
                 userRemoteConfigs: [[
-                    credentialsId: "${GIT_CRED}",
+                    credentialsId: "github",
                     url: "git@github.com:${GIT_REPO_URIM}.git"
                 ]]
             ])
