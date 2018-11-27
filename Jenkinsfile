@@ -121,7 +121,7 @@ node ('master'){
             extensions: [[$class: 'WipeWorkspace']],
             userRemoteConfigs: [[
                 credentialsId: "github",
-                url: "git@github.com:${GIT_REPO}.git"
+                url: "git@github.com:mdanylyuk/python-poloniex.git"
             ]]
         ])
         // Download patricia-common
