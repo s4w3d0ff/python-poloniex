@@ -5,12 +5,12 @@ Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'
 ## Install latest release:
 Python 2:
 ```
-pip install https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.7.zip
+pip install https://github.com/s4w3d0ff/python-poloniex/archive/v0.5.0.zip
 ```
 
 Python 3:
 ```
-pip3 install https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.7.zip
+pip3 install https://github.com/s4w3d0ff/python-poloniex/archive/v0.5.0.zip
 ```
 
 ## Usage:
