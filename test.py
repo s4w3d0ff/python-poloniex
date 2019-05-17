@@ -37,6 +37,13 @@ class TestPolo(unittest.TestCase):
         with self.assertRaises(poloniex.PoloniexError):
             self.polo.returnOrderBook(currencyPair='atestfoo')
 
+    def test_Websocket(self):
+        self.polo = poloniex.PoloniexSocketed()
+        self.polo.startws(['24hvolume'])
+        self.assertTrue(self.polo._t._running)
+        self.polo.stopws(['24hvolume'])
+        self.assertFalse(self.polo._t._running)
+
 
 if __name__ == '__main__':
     unittest.main()
