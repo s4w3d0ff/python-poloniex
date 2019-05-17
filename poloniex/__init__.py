@@ -37,12 +37,14 @@ from hashlib import sha512 as _sha512
 from time import time, sleep
 from itertools import chain as _chain
 from functools import wraps as _wraps
+from threading import Thread
 import logging
 
 # 3rd party
 from requests.exceptions import RequestException
 from requests import post as _post
 from requests import get as _get
+from websocket import WebSocketApp
 
 # local
 from .coach import Coach
@@ -74,6 +76,7 @@ PRIVATE_COMMANDS = [
     'returnTradableBalances',
     'returnOpenLoanOffers',
     'returnOrderTrades',
+    'returnOrderStatus',
     'returnActiveLoans',
     'returnLendingHistory',
     'createLoanOffer',
@@ -205,7 +208,7 @@ class Poloniex(object):
             # add proxies if needed
             if self.proxies:
                 payload['proxies'] = self.proxies
-      
+
             # send the call
             ret = _post(**payload)
 
@@ -421,6 +424,13 @@ class Poloniex(object):
         an error. """
         return self.__call__('returnOrderTrades', {
                              'orderNumber': str(orderNumber)})
+
+    def returnOrderStatus(self, orderNumber):
+        """ Returns the status of a given order, specified by the "orderNumber"
+        POST parameter. If the specified orderNumber is not open, or it is not
+        yours, you will receive an error. """
+        return self.__call__('returnOrderStatus', {
+                     'orderNumber': str(orderNumber)})
 
     def buy(self, currencyPair, rate, amount, orderType=False):
         """ Places a limit buy order in a given market. Required parameters are
@@ -643,3 +653,137 @@ class Poloniex(object):
         the new autoRenew setting. """
         return self.__call__(
             'toggleAutoRenew', {'orderNumber': str(orderNumber)})
+
+
+class PoloniexSocketed(Poloniex):
+    def __init__(self, *args, **kwargs):
+        super(PoloniexSocketed, self).__init__(*args, **kwargs)
+        self.socket = WebSocketApp(url="wss://api2.poloniex.com/",
+                                   on_open=self.on_open,
+                                   on_message=self.on_message,
+                                   on_error=self.on_error,
+                                   on_close=self.on_close)
+        self.channels = {
+            '1000': {'id': 'account',
+                     'sub': False,
+                     'callback': self.on_account},
+            '1002': {'id': 'ticker',
+                     'sub': False,
+                     'callback': self.on_ticker},
+            '1003': {'id': '24hvolume',
+                     'sub': False,
+                     'callback': self.on_volume},
+            '1010': {'id': 'heartbeat',
+                     'sub': False,
+                     'callback': self.on_heartbeat},
+            }
+        # wish there was a cleaner way of doing this...
+        initTick = self.returnTicker()
+        for market in initTick:
+            self.channels[str(initTick[market]['id'])] = {'id': market,
+                                                          'sub': False,
+                                                          'callback': self.on_market}
+
+    def handle_sub(self, message):
+        chan = str(message[0])
+        if not chan == '1010':
+            # Subscribed
+            if message[1] == 1:
+                self.channels[chan]['sub'] = True
+                logger.debug('Subscribed to %s', self.channels[chan]['id'])
+            # Unsubscribed
+            if message[1] == 0:
+                self.channels[chan]['sub'] = False
+                logger.debug('Unsubscribed to %s', self.channels[chan]['id'])
+        return chan
+
+    def on_open(self, *ws):
+        print('opened')
+        for chan in self.channels:
+            if self.channels[chan]['sub']:
+                self.subscribe(chan)
+
+    def on_message(self, data):
+        message = json.loads(data)
+        # catch errors
+        if 'error' in message:
+            return logger.error(message['error'])
+        # handle sub/unsub
+        chan = self.handle_sub(message)
+        # activate chan callback
+        self.socket._callback(self.channels[chan]['callback'], message)
+
+    def on_error(self, error):
+        logger.error(error)
+
+    def on_close(self, msg):
+        logger.info('Websocket Closed')
+
+    def on_ticker(self, msg):
+        logger.info(msg)
+
+    def on_account(self, msg):
+        logger.info(msg)
+
+    def on_market(self, msg):
+        logger.info(msg)
+
+    def on_volume(self, msg):
+        logger.info(msg)
+
+    def on_heartbeat(self, msg):
+        logger.debug(msg)
+
+    def subscribe(self, chan):
+        if chan == '1000':
+            payload = {'nonce': self.nonce}
+            sign = _new(
+                self.secret.encode('utf-8'),
+                _urlencode(payload).encode('utf-8'),
+                _sha512)
+            self.socket.send(json.dumps({'command': 'subscribe',
+                                  'channel': chan,
+                                  'sign': sign.hexdigest(),
+                                  'key': self.key,
+                                  'payload': payload}))
+        else:
+            self.socket.send(json.dumps({'command': 'subscribe', 'channel': chan}))
+
+    def unsubscribe(self, chan):
+        if chan == '1000':
+            payload = {'nonce': self.nonce}
+            sign = _new(self.secret.encode('utf-8'),
+                        _urlencode(payload).encode('utf-8'),
+                        _sha512)
+            self.socket.send(json.dumps({'command': 'unsubscribe',
+                                  'channel': chan,
+                                  'sign': sign.hexdigest(),
+                                  'key': self.key,
+                                  'payload': payload}))
+        else:
+            self.socket.send(json.dumps({'command': 'unsubscribe', 'channel': chan}))
+
+    def setCallback(self, chan, callback):
+        self.channels[chan]['callback'] = callback
+
+    def startws(self, subscribe=[]):
+        """ Run the websocket in a thread """
+        self._t = Thread(target=self.socket.run_forever)
+        self._t.daemon = True
+        self._t._running = True
+        for chan in self.channels:
+            if self.channels[chan]['id'] in subscribe:
+                self.channels[chan]['sub'] = True
+        self._t.start()
+        logger.info('Websocket thread started')
+
+
+    def stopws(self):
+        """ Stop/join the websocket thread """
+        self._t._running = False
+        try:
+            self.socket.close()
+        except Exception as e:
+            logger.exception(e)
+        self._t.join()
+        logger.info('Websocket thread stopped/joined')
