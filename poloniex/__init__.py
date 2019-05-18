@@ -698,10 +698,12 @@ class PoloniexSocketed(Poloniex):
             if message[1] == 1:
                 self.channels[chan]['sub'] = True
                 logger.debug('Subscribed to %s', self.channels[chan]['id'])
+                return False
             # Unsubscribed
             if message[1] == 0:
                 self.channels[chan]['sub'] = False
                 logger.debug('Unsubscribed to %s', self.channels[chan]['id'])
+                return False
         return chan
 
     def on_open(self, *ws):
@@ -716,8 +718,9 @@ class PoloniexSocketed(Poloniex):
             return logger.error(message['error'])
         # handle sub/unsub
         chan = self.handle_sub(message)
-        # activate chan callback
-        self.socket._callback(self.channels[chan]['callback'], message)
+        if chan:
+            # activate chan callback
+            self.socket._callback(self.channels[chan]['callback'], message)
 
     def on_error(self, error):
         logger.error(error)
