@@ -748,13 +748,13 @@ class PoloniexSocketed(Poloniex):
                 self.secret.encode('utf-8'),
                 _urlencode(payload).encode('utf-8'),
                 _sha512)
-            self.socket.send(json.dumps({'command': 'subscribe',
+            self.socket.send(_dumps({'command': 'subscribe',
                                   'channel': chan,
                                   'sign': sign.hexdigest(),
                                   'key': self.key,
                                   'payload': payload}))
         else:
-            self.socket.send(json.dumps({'command': 'subscribe', 'channel': chan}))
+            self.socket.send(_dumps({'command': 'subscribe', 'channel': chan}))
 
     def unsubscribe(self, chan):
         if chan == '1000':
@@ -762,13 +762,13 @@ class PoloniexSocketed(Poloniex):
             sign = _new(self.secret.encode('utf-8'),
                         _urlencode(payload).encode('utf-8'),
                         _sha512)
-            self.socket.send(json.dumps({'command': 'unsubscribe',
+            self.socket.send(_dumps({'command': 'unsubscribe',
                                   'channel': chan,
                                   'sign': sign.hexdigest(),
                                   'key': self.key,
                                   'payload': payload}))
         else:
-            self.socket.send(json.dumps({'command': 'unsubscribe', 'channel': chan}))
+            self.socket.send(_dumps({'command': 'unsubscribe', 'channel': chan}))
 
     def setCallback(self, chan, callback):
         self.channels[chan]['callback'] = callback
