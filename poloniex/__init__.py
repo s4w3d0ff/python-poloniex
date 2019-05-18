@@ -32,6 +32,7 @@ except:
     from urllib.parse import urlencode as _urlencode
 
 from json import loads as _loads
+from json import dumps as _dumps
 from hmac import new as _new
 from hashlib import sha512 as _sha512
 from time import time, sleep
@@ -710,7 +711,7 @@ class PoloniexSocketed(Poloniex):
                 self.subscribe(chan)
 
     def on_message(self, data):
-        message = json.loads(data)
+        message = _loads(data)
         # catch errors
         if 'error' in message:
             return logger.error(message['error'])
