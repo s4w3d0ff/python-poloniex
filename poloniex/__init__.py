@@ -705,7 +705,6 @@ class PoloniexSocketed(Poloniex):
         return chan
 
     def on_open(self, *ws):
-        print('opened')
         for chan in self.channels:
             if self.channels[chan]['sub']:
                 self.subscribe(chan)
