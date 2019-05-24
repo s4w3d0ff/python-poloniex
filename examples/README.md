@@ -1,24 +1,24 @@
 # Examples
+#### _Examples require [this poloniex module](https://github.com/s4w3d0ff/python-poloniex) to be installed._
 
-#### _Most examples require this poloniex module and/or autobahn installed._
+## Chart:
+Saves chart data in a mongodb collection and returns a pandas dataframe with basic indicators.
+### Requirements:
+pip:
+```
+pandas
+numpy
+pymongo
+```
+Chart examples require [mongod](https://www.mongodb.com/) running locally.
 
-## WAMP Push Api Setup 
-See http://autobahn.ws/python/installation.html for more details on other systems.
-### From fresh Ubuntu install (14.04, 16.04):
-##### Python 2.7
-```
-sudo apt-get install build-essential libssl-dev python-pip python-dev libffi-dev git
-sudo bash -c 'apt-get update && apt-get upgrade'
-pip install service_identity
-pip install autobahn[twisted]
-```
-##### Python 3
-```
-sudo apt-get install build-essential libssl-dev python3-pip python3-dev libffi-dev git
-sudo bash -c 'apt-get update && apt-get upgrade'
-pip3 install service_identity
-pip3 install autobahn[twisted]
-```
+## Loanbot:
+Helps your loan offers get filled and keeps them from going 'stale'
+### Requirements:
+Just [this git repository](https://github.com/s4w3d0ff/python-poloniex).
 
->NOTE: There is also another wonderful api wrapper that wraps the WAMP polo api using asyncio:  
->[https://github.com/absortium/poloniex-api](https://github.com/absortium/poloniex-api)
+
+## Websocket:
+Examples of how to use the websocket api to create tickers, stoplimits, etc.
+### Requirements:
+Just [this git repository](https://github.com/s4w3d0ff/python-poloniex) v0.5+.
