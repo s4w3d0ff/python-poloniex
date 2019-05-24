@@ -51,4 +51,5 @@ print("I have %s BTC!" % balance['BTC'])
 ```python
 print(polo.returnTradeHistory('BTC_ETH'))
 ```
-**Examples of WAMP applications using the websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
+
+**Examples of how to use websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
