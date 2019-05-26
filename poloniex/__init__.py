@@ -739,6 +739,7 @@ class PoloniexSocketed(Poloniex):
         chan = self._handle_sub(message)
         if chan:
             # activate chan callback
+            self.logger.debug(message)
             self.socket._callback(self.channels[chan]['callback'], message[2])
 
     def on_error(self, error):
@@ -748,19 +749,19 @@ class PoloniexSocketed(Poloniex):
         logger.info('Websocket Closed')
 
     def on_ticker(self, *args):
-        logger.info(msg)
+        logger.info(args)
 
     def on_account(self, *args):
-        logger.info(msg)
+        logger.info(args)
 
     def on_market(self, *args):
-        logger.info(msg)
+        logger.info(args)
 
     def on_volume(self, *args):
-        logger.info(msg)
+        logger.info(args)
 
     def on_heartbeat(self, *args):
-        logger.debug(msg)
+        logger.debug(args)
 
     def subscribe(self, chan):
         """ Sends the 'subscribe' command for <chan> """
