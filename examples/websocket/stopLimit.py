@@ -43,7 +43,7 @@ class CPolo(poloniex.PoloniexSocketed):
         self.stopOrders = {}
 
     def on_ticker(self, msg):
-        self._checkStops(msg[2])
+        self._checkStops(msg)
 
     def _checkStops(self, msg):
         mktid = str(msg[0])
@@ -70,12 +70,15 @@ if __name__ == '__main__':
     test.addStopLimit(market='BTC_LTC',
                       amount=0.5,
                       stop=float(tick['BTC_LTC']['lowestAsk'])+0.000001,
-                      limit=float(0.004)
-                      )
+                      limit=float(0.004),
+                      # remove or set 'test' to false to place real orders
+                      test=True)
+
     test.addStopLimit(market='BTC_LTC',
                       amount=-0.5,
                       stop=float(tick['BTC_LTC']['highestBid'])-0.000001,
-                      limit=float(0.004)
-                      )
+                      limit=float(0.004),
+                      # remove or set 'test' to false to place real orders
+                      test=True)
     test.startws(['ticker'])
     poloniex.sleep(120)

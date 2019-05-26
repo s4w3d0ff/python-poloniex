@@ -3,9 +3,9 @@
 # BTC: 1A7K4kgXLSSzvDRjvoGwomvhrNU4CKezEp
 # TODO:
 #   [x] PEP8ish
-#   [ ] Add better logger access
+#   [x] Add better logger access
 #   [x] Improve logging output
-#   [ ] Add Push Api application wrapper
+#   [x] Add websocket support
 #
 #    Copyright (C) 2016  https://github.com/s4w3d0ff
 #
@@ -248,7 +248,7 @@ class Poloniex(object):
         if command in PRIVATE_COMMANDS:
             # check for keys
             if not self.key or not self.secret:
-                raise PoloniexError("An Api Key and Secret needed!")
+                raise PoloniexError("An Api Key and Secret needed for command '%s'" % command)
             return 'Private'
         if command in PUBLIC_COMMANDS:
             return 'Public'
@@ -256,7 +256,12 @@ class Poloniex(object):
         raise PoloniexError("Invalid Command!: %s" % command)
 
     def _handleReturned(self, data):
-        """ Handles returned data from poloniex"""
+        """ Handles returned data from poloniex raising exceptions if needed """
+        # Cloudfare reported a bad gateway or gateway timeout error.
+        if hasattr(data,'status_code') and (data.status_code == 502 or data.status_code == 504 or data.status_code in range(520, 527, 1)):
+            # log and try again
+            self.logger.error(data.text)
+            raise RequestException('Poloniex Network Error %s' % str(data.status_code))
         try:
             if not self.jsonNums:
                 out = _loads(data.text, parse_float=str)
@@ -266,11 +271,7 @@ class Poloniex(object):
                              parse_int=self.jsonNums)
         except:
             self.logger.error(data.text)
-            #Cloudfare reported a bad gateway or gateway timeout error.
-            if hasattr(data,'status_code') and (data.status_code == 502 or data.status_code == 504 or data.status_code in range(520, 527, 1)):
-                raise RequestException('PoloniexError ')
-            else:
-                raise PoloniexError('Invalid json response returned')
+            raise PoloniexError('Invalid json response returned')
 
         # check if poloniex returned an error
         if 'error' in out:
@@ -282,7 +283,7 @@ class Poloniex(object):
                 # raise RequestException so we try again
                 raise RequestException('PoloniexError ' + out['error'])
 
-            # conncetion timeout from poloniex
+            # connection timeout from poloniex
             if "please try again" in out['error'].lower():
                 # raise RequestException so we try again
                 raise RequestException('PoloniexError ' + out['error'])
@@ -663,6 +664,7 @@ class Poloniex(object):
 
 
 class PoloniexSocketed(Poloniex):
+    """ Child class of Poloniex with support for the websocket api """
     def __init__(self, *args, **kwargs):
         super(PoloniexSocketed, self).__init__(*args, **kwargs)
         self.socket = WebSocketApp(url="wss://api2.poloniex.com/",
@@ -670,40 +672,51 @@ class PoloniexSocketed(Poloniex):
                                    on_message=self.on_message,
                                    on_error=self.on_error,
                                    on_close=self.on_close)
+        self._t = None
         self.channels = {
-            '1000': {'id': 'account',
+            '1000': {'name': 'account',
                      'sub': False,
                      'callback': self.on_account},
-            '1002': {'id': 'ticker',
+            '1002': {'name': 'ticker',
                      'sub': False,
                      'callback': self.on_ticker},
-            '1003': {'id': '24hvolume',
+            '1003': {'name': '24hvolume',
                      'sub': False,
                      'callback': self.on_volume},
-            '1010': {'id': 'heartbeat',
+            '1010': {'name': 'heartbeat',
                      'sub': False,
                      'callback': self.on_heartbeat},
             }
-        # wish there was a cleaner way of doing this...
-        initTick = self.returnTicker()
-        for market in initTick:
-            self.channels[str(initTick[market]['id'])] = {'id': market,
-                                                          'sub': False,
-                                                          'callback': self.on_market}
+        # add each market to channels list by id
+        # (wish there was a cleaner way of doing this...)
+        tick = self.returnTicker()
+        for market in tick:
+            self.channels[str(tick[market]['id'])] = {
+                'name': market,
+                'sub': False,
+                'callback': self.on_market
+            }
 
-    def handle_sub(self, message):
+    def _handle_sub(self, message):
+        """ Handles websocket un/subscribe messages """
         chan = str(message[0])
+        # skip heartbeats
         if not chan == '1010':
             # Subscribed
             if message[1] == 1:
+                # update self.channels[chan]['sub'] flag
                 self.channels[chan]['sub'] = True
-                logger.debug('Subscribed to %s', self.channels[chan]['id'])
+                logger.debug('Subscribed to %s', self.channels[chan]['name'])
+                # return False so no callback trigger
                 return False
             # Unsubscribed
             if message[1] == 0:
+                # update self.channels[chan]['sub'] flag
                 self.channels[chan]['sub'] = False
-                logger.debug('Unsubscribed to %s', self.channels[chan]['id'])
+                logger.debug('Unsubscribed to %s', self.channels[chan]['name'])
+                # return False so no callback trigger
                 return False
+        # return chan name
         return chan
 
     def on_open(self, *ws):
@@ -712,39 +725,51 @@ class PoloniexSocketed(Poloniex):
                 self.subscribe(chan)
 
     def on_message(self, data):
-        message = _loads(data)
+        if not self.jsonNums:
+            message = _loads(data, parse_float=str)
+        else:
+            message = _loads(data,
+                             parse_float=self.jsonNums,
+                             parse_int=self.jsonNums)
         # catch errors
         if 'error' in message:
             return logger.error(message['error'])
         # handle sub/unsub
-        chan = self.handle_sub(message)
+        chan = self._handle_sub(message)
         if chan:
             # activate chan callback
-            self.socket._callback(self.channels[chan]['callback'], message)
+            self.socket._callback(self.channels[chan]['callback'], message[2])
 
     def on_error(self, error):
         logger.error(error)
 
-    def on_close(self, msg):
+    def on_close(self, *args):
         logger.info('Websocket Closed')
 
-    def on_ticker(self, msg):
+    def on_ticker(self, *args):
         logger.info(msg)
 
-    def on_account(self, msg):
+    def on_account(self, *args):
         logger.info(msg)
 
-    def on_market(self, msg):
+    def on_market(self, *args):
         logger.info(msg)
 
-    def on_volume(self, msg):
+    def on_volume(self, *args):
         logger.info(msg)
 
-    def on_heartbeat(self, msg):
+    def on_heartbeat(self, *args):
         logger.debug(msg)
 
     def subscribe(self, chan):
-        if chan == '1000':
+        """ Sends the 'subscribe' command for <chan> """
+        # account chan?
+        if chan in ['1000', 1000]:
+            # sending commands to 'account' requires a key, secret and nonce
+            if not self.key or not self.secret:
+                raise PoloniexError(
+                    "self.key and self.secret needed for 'account' channel"
+                    )
             payload = {'nonce': self.nonce}
             sign = _new(
                 self.secret.encode('utf-8'),
@@ -759,7 +784,14 @@ class PoloniexSocketed(Poloniex):
             self.socket.send(_dumps({'command': 'subscribe', 'channel': chan}))
 
     def unsubscribe(self, chan):
-        if chan == '1000':
+        """ Sends the 'unsubscribe' command for <chan> """
+        # account chan?
+        if chan in ['1000', 1000]:
+            # sending commands to 'account' requires a key, secret and nonce
+            if not self.key or not self.secret:
+                raise PoloniexError(
+                    "self.key and self.secret needed for 'account' channel"
+                    )
             payload = {'nonce': self.nonce}
             sign = _new(self.secret.encode('utf-8'),
                         _urlencode(payload).encode('utf-8'),
@@ -773,23 +805,33 @@ class PoloniexSocketed(Poloniex):
             self.socket.send(_dumps({'command': 'unsubscribe', 'channel': chan}))
 
     def setCallback(self, chan, callback):
+        """ Sets the callback function for <chan> """
         self.channels[chan]['callback'] = callback
 
     def startws(self, subscribe=[]):
-        """ Run the websocket in a thread """
+        """
+        Run the websocket in a thread, use 'subscribe' arg to subscribe
+        to a channel on start
+        """
         self._t = Thread(target=self.socket.run_forever)
         self._t.daemon = True
         self._t._running = True
+        # set subscribes
         for chan in self.channels:
-            if self.channels[chan]['id'] in subscribe:
+            if self.channels[chan]['name'] in subscribe or chan in subscribe:
                 self.channels[chan]['sub'] = True
         self._t.start()
         logger.info('Websocket thread started')
 
 
-    def stopws(self):
+    def stopws(self, wait=0):
         """ Stop/join the websocket thread """
         self._t._running = False
+        # unsubscribe from subs
+        for chan in self.channels:
+            if self.channels[chan]['sub'] == True:
+                self.unsubscribe(chan)
+        sleep(wait)
         try:
             self.socket.close()
         except Exception as e:

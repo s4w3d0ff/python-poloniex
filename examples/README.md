@@ -22,3 +22,4 @@ Just [this git repository](https://github.com/s4w3d0ff/python-poloniex).
 Examples of how to use the websocket api to create tickers, stoplimits, etc.
 ### Requirements:
 Just [this git repository](https://github.com/s4w3d0ff/python-poloniex) v0.5+.
+`mongoTicker.py` requires pymongo and mongod running.
