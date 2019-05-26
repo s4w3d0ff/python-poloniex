@@ -739,7 +739,10 @@ class PoloniexSocketed(Poloniex):
         chan = self._handle_sub(message)
         if chan:
             # activate chan callback
-            self.socket._callback(self.channels[chan]['callback'], message[2])
+            # heartbeats are funky
+            if not chan == '1010':
+                message = message[2]
+            self.socket._callback(self.channels[chan]['callback'], message)
 
     def on_error(self, error):
         logger.error(error)
