@@ -1,5 +1,4 @@
 import poloniex
-from pprint import pprint
 
 class TickPolo(poloniex.PoloniexSocketed):
     def __init__(self, *args, **kwargs):
@@ -17,7 +16,7 @@ class TickPolo(poloniex.PoloniexSocketed):
 
     def ticker(self, market=None):
         '''returns ticker data saved from websocket '''
-        if not self._t or not self._t.running:
+        if not self._t or not self._running:
             self.logger.error('Websocket is not running!')
             return self.returnTicker()
         if market:
@@ -40,6 +39,7 @@ class TickPolo(poloniex.PoloniexSocketed):
                                   }
 
 if __name__ == '__main__':
+    from pprint import pprint
     polo = TickPolo()
     poloniex.logging.basicConfig()
     polo.logger.setLevel(poloniex.logging.DEBUG)

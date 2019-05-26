@@ -673,6 +673,7 @@ class PoloniexSocketed(Poloniex):
                                    on_error=self.on_error,
                                    on_close=self.on_close)
         self._t = None
+        self._running = False
         self.channels = {
             '1000': {'name': 'account',
                      'sub': False,
@@ -815,7 +816,7 @@ class PoloniexSocketed(Poloniex):
         """
         self._t = Thread(target=self.socket.run_forever)
         self._t.daemon = True
-        self._t._running = True
+        self._running = True
         # set subscribes
         for chan in self.channels:
             if self.channels[chan]['name'] in subscribe or chan in subscribe:
@@ -826,7 +827,7 @@ class PoloniexSocketed(Poloniex):
 
     def stopws(self, wait=0):
         """ Stop/join the websocket thread """
-        self._t._running = False
+        self._running = False
         # unsubscribe from subs
         for chan in self.channels:
             if self.channels[chan]['sub'] == True:

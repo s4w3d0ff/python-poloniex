@@ -18,7 +18,7 @@ class TickPolo(poloniex.PoloniexSocketed):
 
     def ticker(self, market=None):
         '''returns ticker data saved from websocket '''
-        if not self._t or not self._t.running:
+        if not self._t or not self._running:
             self.logger.error('Websocket is not running!')
             return self.returnTicker()
         if market:
