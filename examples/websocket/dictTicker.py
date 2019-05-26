@@ -26,6 +26,7 @@ class TickPolo(poloniex.PoloniexSocketed):
     def on_ticker(self, data):
         # save ticker updates to self.tick
         data = [float(dat) for dat in data]
+        self.logger.debug(data)
         self.tick[int(data[0])] = {'id': int(data[0]),
                                   'last': data[1],
                                   'lowestAsk': data[2],
