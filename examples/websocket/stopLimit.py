@@ -47,7 +47,7 @@ class CPolo(poloniex.PoloniexSocketed):
 
     def _checkStops(self, msg):
         mktid = str(msg[0])
-        mkt = self.channels[mktid]['id']
+        mkt = self.channels[mktid]['name']
         la = msg[2]
         hb = msg[3]
         for order in self.stopOrders:
