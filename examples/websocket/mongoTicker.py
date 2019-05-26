@@ -44,8 +44,8 @@ class TickPolo(poloniex.PoloniexSocketed):
 if __name__ == '__main__':
     polo = TickPolo()
     polo.startws(['ticker'])
-    for i in range(6):
+    for i in range(3):
         print(polo.ticker('BTC_LTC'))
-        poloniex.sleep(2)
+        poloniex.sleep(10)
     print(polo.ticker())
-    polo.stopws()
+    polo.stopws(3)

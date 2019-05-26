@@ -19,9 +19,12 @@ class StopLimit(object):
                 self.order = True
             else:
                 # sell amount at limit
-                self.order = self.sell(self.market, self.limit, abs(self.amount))
+                self.order = self.sell(self.market,
+                                       self.limit,
+                                       abs(self.amount))
 
-            self.logger.info('%s sell stop order triggered! (%s)', self.market, str(self.stop))
+            self.logger.info('%s sell stop order triggered! (%s)',
+                             self.market, str(self.stop))
         # buy
         if self.amount > 0 and self.stop <= float(lowAsk):
             # dont place order if we are testing
@@ -31,7 +34,8 @@ class StopLimit(object):
                 # buy amount at limit
                 self.order = self.buy(self.market, self.limit, self.amount)
 
-            self.logger.info('%s buy stop order triggered! (%s)', self.market, str(self.stop))
+            self.logger.info('%s buy stop order triggered! (%s)',
+                             self.market, str(self.stop))
 
     def __call__(self):
         return self.order
@@ -52,12 +56,13 @@ class CPolo(poloniex.PoloniexSocketed):
         hb = msg[3]
         for order in self.stopOrders:
             if str(self.stopOrders[order].market) == str(mkt) and not self.stopOrders[order]():
-                self.logger.debug('%s lowAsk=%s highBid=%s', mkt, str(la), str(hb))
+                self.logger.debug('%s lowAsk=%s highBid=%s',
+                                  mkt, str(la), str(hb))
                 self.stopOrders[order].check(la, hb)
 
     def addStopLimit(self, market, amount, stop, limit, test=False):
         self.logger.debug('%s stop limit set: [Amount]%.8f [Stop]%.8f [Limit]%.8f',
-                     market, amount, stop, limit)
+                          market, amount, stop, limit)
         self.stopOrders[market+str(stop)] = StopLimit(market, amount, stop, limit, test)
 
 
@@ -82,3 +87,4 @@ if __name__ == '__main__':
                       test=True)
     test.startws(['ticker'])
     poloniex.sleep(120)
+    test.stopws(3)

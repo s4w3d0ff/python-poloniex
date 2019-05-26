@@ -11,7 +11,9 @@ class TickPolo(poloniex.PoloniexSocketed):
         self._ids = {market: int(iniTick[market]['id']) for market in iniTick}
         # save ticker data as float instead of str
         for market in iniTick:
-            self.tick[self._ids[market]] = {item: float(iniTick[market][item]) for item in iniTick[market]}
+            self.tick[self._ids[market]] = {
+                item: float(iniTick[market][item]) for item in iniTick[market]
+                }
 
 
     def ticker(self, market=None):
@@ -44,7 +46,7 @@ if __name__ == '__main__':
     poloniex.logging.basicConfig()
     polo.logger.setLevel(poloniex.logging.DEBUG)
     polo.startws(['ticker'])
-    for i in range(6):
+    for i in range(3):
         pprint(polo.ticker('BTC_LTC'))
-        poloniex.sleep(20)
-    polo.stopws()
+        poloniex.sleep(10)
+    polo.stopws(3)
