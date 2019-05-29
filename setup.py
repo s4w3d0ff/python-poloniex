@@ -3,7 +3,7 @@ from setuptools import setup
 read_md = lambda f: open(f, 'r').read()
 
 setup(name='poloniexapi',
-      version='0.5.1',
+      version='0.5.2',
       description='Poloniex API wrapper for Python 2.7 and 3',
       long_description=read_md('README.md'),
       long_description_content_type='text/markdown',
