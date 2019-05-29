@@ -3,7 +3,6 @@ python:
 - '2.7'
 - '3.5'
 - '3.6'
-- '3.7'
 install: python setup.py install
 script: python test.py
 deploy:
