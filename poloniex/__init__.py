@@ -1,4 +1,4 @@
-# Poloniex API wrapper tested on Python 2.7.6 & 3.4+
+# Poloniex API wrapper tested on Python 2.7+ & 3.5+
 # https://github.com/s4w3d0ff/python-poloniex
 # BTC: 1A7K4kgXLSSzvDRjvoGwomvhrNU4CKezEp
 # TODO:
