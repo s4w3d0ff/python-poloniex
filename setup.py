@@ -1,10 +1,22 @@
 from setuptools import setup
-setup(name='poloniex',
+setup(name='poloniexapi',
       version='0.5.0',
       description='Poloniex API wrapper for Python 2.7 and 3',
       url='https://github.com/s4w3d0ff/python-poloniex',
       author='s4w3d0ff',
+      author_email="info@s4w3d0ff.host",
       license='GPL v2',
       packages=['poloniex'],
       install_requires=['requests', 'websocket_client'],
-      zip_safe=False)
+      zip_safe=False,
+      keywords=['poloniex', 'poloniexapi', 'exchange', 'api'],
+      classifiers = [
+            'Operating System :: MacOS :: MacOS X',
+            'Operating System :: Microsoft :: Windows',
+            'Operating System :: POSIX',
+            'Operating System :: UNIX',
+            'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+            'Programming Language :: Python :: 2',
+            'Programming Language :: Python :: 3'
+            ]
+      )
