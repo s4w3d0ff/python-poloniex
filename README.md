@@ -46,4 +46,20 @@ print("I have %s BTC!" % balance['BTC'])
 print(polo.returnTradeHistory('BTC_ETH'))
 ```
 
-**Examples of how to use websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
+#### Websocket Usage:
+```python
+import logging
+logging.basicConfig()
+
+class MySocket(poloniex.PoloniexSocketed):
+    def on_heartbeat(self, msg):
+        print(msg)
+    def on_volume(self, msg):
+        print(msg)
+
+sock = MySocket()
+sock.logger.setLevel(logging.DEBUG)
+sock.startws(subscribe=['24hvolume'])
+```
+
+**More examples of how to use websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
