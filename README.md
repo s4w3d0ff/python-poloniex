@@ -89,13 +89,13 @@ class MySocket(poloniex.PoloniexSocketed):
         """
         Triggers whenever we get a market ('currencyPair') message
         """
-        print(args)
+        print(msg)
 
     def on_account(self, msg):
         """
         Triggers whenever we get an account message
         """
-        print(args)
+        print(msg)
 
 sock = MySocket()
 # helps show what is going on
