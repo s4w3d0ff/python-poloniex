@@ -14,7 +14,7 @@ setup(name='poloniexapi',
       packages=['poloniex'],
       install_requires=['requests', 'websocket_client'],
       zip_safe=False,
-      keywords=['poloniex', 'poloniexapi', 'exchange', 'api'],
+      keywords=['poloniex', 'poloniexapi', 'exchange', 'api', 'cryptocoin', 'tradebot', 'polo', 'websocket', 'rest', 'push'],
       classifiers = [
             'Operating System :: MacOS :: MacOS X',
             'Operating System :: Microsoft :: Windows',
