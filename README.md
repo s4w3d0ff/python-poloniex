@@ -2,7 +2,7 @@
 [![master](https://img.shields.io/badge/branch-master-blue.svg)![master build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)](https://github.com/s4w3d0ff/python-poloniex/tree/master) [![dev](https://img.shields.io/badge/branch-dev-blue.svg)![dev build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=dev)](https://github.com/s4w3d0ff/python-poloniex/tree/dev)  
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'  
 > I (s4w3d0ff) am not affiliated with, nor paid by [Poloniex](https://poloniex.com). I found the linked python wrapper on the poloniex support page to be incomplete and buggy so I decided to write this wrapper and create a git repository. If you wish to contribute to the repository please read [CONTRIBUTING.md](https://github.com/s4w3d0ff/python-poloniex/blob/master/CONTRIBUTING.md). All and any help is appreciated.
-
+#### Features:
 - [x] Python 2.7 and 3.5+
 - [x] Pypi
 - [x] Travis
