@@ -1,6 +1,6 @@
 import poloniex
 
-class TickPolo(poloniex.PoloniexSocketed):
+class TickPolo(poloniex.Poloniex):
     def __init__(self, *args, **kwargs):
         super(TickPolo, self).__init__(*args, **kwargs)
         # tick holds ticker data

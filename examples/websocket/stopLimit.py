@@ -41,7 +41,7 @@ class StopLimit(object):
         return self.order
 
 
-class CPolo(poloniex.PoloniexSocketed):
+class CPolo(poloniex.Poloniex):
     def __init__(self, *args, **kwargs):
         super(CPolo, self).__init__(*args, **kwargs)
         self.stopOrders = {}
