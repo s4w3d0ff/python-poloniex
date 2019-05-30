@@ -107,7 +107,7 @@ class RetryException(PoloniexError):
     pass
 
 
-class Poloniex(object):
+class PoloniexBase(object):
     """The Poloniex Object!"""
 
     def __init__(
@@ -293,6 +293,28 @@ class Poloniex(object):
                 raise PoloniexError(out['error'])
         return out
 
+    @_retry
+    def marketTradeHist(self, currencyPair, start=False, end=False):
+        """ Returns the past 200 trades for a given market, or up to 50,000
+        trades between a range specified in UNIX timestamps by the "start" and
+        "end" parameters. """
+        if self.coach:
+            self.coach.wait()
+        args = {'command': 'returnTradeHistory',
+                'currencyPair': str(currencyPair).upper()}
+        if start:
+            args['start'] = start
+        if end:
+            args['end'] = end
+        ret = self.session.get(
+            'https://poloniex.com/public?' + _urlencode(args),
+            timeout=self.timeout)
+        # decode json
+        return self._handleReturned(ret)
+
+
+class PoloniexHelper(PoloniexBase):
+
     # --PUBLIC COMMANDS-------------------------------------------------------
     def returnTicker(self):
         """ Returns the ticker for all markets. """
@@ -312,25 +334,6 @@ class Poloniex(object):
             'currencyPair': str(currencyPair).upper(),
             'depth': str(depth)
         })
-
-    @_retry
-    def marketTradeHist(self, currencyPair, start=False, end=False):
-        """ Returns the past 200 trades for a given market, or up to 50,000
-        trades between a range specified in UNIX timestamps by the "start" and
-        "end" parameters. """
-        if self.coach:
-            self.coach.wait()
-        args = {'command': 'returnTradeHistory',
-                'currencyPair': str(currencyPair).upper()}
-        if start:
-            args['start'] = start
-        if end:
-            args['end'] = end
-        ret = self.session.get(
-            'https://poloniex.com/public?' + _urlencode(args),
-            timeout=self.timeout)
-        # decode json
-        return self._handleReturned(ret)
 
     def returnChartData(self, currencyPair, period=False,
                         start=False, end=False):
@@ -663,10 +666,10 @@ class Poloniex(object):
             'toggleAutoRenew', {'orderNumber': str(orderNumber)})
 
 
-class PoloniexSocketed(Poloniex):
+class Poloniex(PoloniexHelper):
     """ Child class of Poloniex with support for the websocket api """
     def __init__(self, *args, **kwargs):
-        super(PoloniexSocketed, self).__init__(*args, **kwargs)
+        super(Poloniex, self).__init__(*args, **kwargs)
         self.socket = WebSocketApp(url="wss://api2.poloniex.com/",
                                    on_open=self.on_open,
                                    on_message=self.on_message,
