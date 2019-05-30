@@ -72,12 +72,29 @@ class MySocket(poloniex.PoloniexSocketed):
         Triggers whenever we get a heartbeat message
         """
         print(msg)
-        
+
     def on_volume(self, msg):
+        """
+        Triggers whenever we get a ticker message
+        """
+        print(msg)
+    def on_ticker(self, msg):
         """
         Triggers whenever we get a 24hvolume message
         """
         print(msg)
+
+    def on_market(self, msg):
+        """
+        Triggers whenever we get a market ('currencyPair') message
+        """
+        print(args)
+
+    def on_account(self, msg):
+        """
+        Triggers whenever we get an account message
+        """
+        print(args)
 
 sock = MySocket()
 # helps show what is going on
