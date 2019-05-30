@@ -78,6 +78,7 @@ class MySocket(poloniex.PoloniexSocketed):
         Triggers whenever we get a ticker message
         """
         print(msg)
+        
     def on_ticker(self, msg):
         """
         Triggers whenever we get a 24hvolume message
