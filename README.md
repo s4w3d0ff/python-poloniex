@@ -3,11 +3,21 @@
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'  
 > I (s4w3d0ff) am not affiliated with, nor paid by [Poloniex](https://poloniex.com). I found the linked python wrapper on the poloniex support page to be incomplete and buggy so I decided to write this wrapper and create a git repository. If you wish to contribute to the repository please read [CONTRIBUTING.md](https://github.com/s4w3d0ff/python-poloniex/blob/master/CONTRIBUTING.md). All and any help is appreciated.
 
+- [x] Python 2.7 and 3.5+
+- [x] Pypi
+- [x] Travis
+- [x] Websocket api support
+- [x] Minimal amount of dependencies
+- [x] Internal checks to reduce external api errors
+- [x] Rate limiter to keep from going over call limits
+- [x] Retries failed api calls during connection issues
+
+### Install:
 ```
-pip install poloniexapi
+pip install --upgrade poloniexapi
 ```
 
-## Usage:
+### Usage:
 See the [wiki](https://github.com/s4w3d0ff/python-poloniex/wiki) or `help(poloniex)` for more.
 
 All api calls are done through an instance of `poloniex.Poloniex`. You can use the instance as follows:

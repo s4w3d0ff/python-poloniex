@@ -4,7 +4,7 @@ read_md = lambda f: open(f, 'r').read()
 
 setup(name='poloniexapi',
       version='0.5.3',
-      description='Poloniex API wrapper for Python 2.7 and 3',
+      description='Poloniex API wrapper for Python 2.7 and 3 with websocket support',
       long_description=read_md('README.md'),
       long_description_content_type='text/markdown',
       url='https://github.com/s4w3d0ff/python-poloniex',
