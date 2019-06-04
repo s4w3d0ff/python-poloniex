@@ -108,7 +108,7 @@ class RetryException(PoloniexError):
 
 
 class PoloniexBase(object):
-    """The Poloniex Object!"""
+    """The PoloniexBase Object!"""
 
     def __init__(
             self, key=False, secret=False,
@@ -313,7 +313,7 @@ class PoloniexBase(object):
         return self._handleReturned(ret)
 
 
-class PoloniexHelper(PoloniexBase):
+class Poloniex(PoloniexBase):
 
     # --PUBLIC COMMANDS-------------------------------------------------------
     def returnTicker(self):
@@ -666,10 +666,10 @@ class PoloniexHelper(PoloniexBase):
             'toggleAutoRenew', {'orderNumber': str(orderNumber)})
 
 
-class Poloniex(PoloniexHelper):
+class PoloniexSocketed(Poloniex):
     """ Child class of Poloniex with support for the websocket api """
     def __init__(self, *args, **kwargs):
-        super(Poloniex, self).__init__(*args, **kwargs)
+        super(PoloniexSocketed, self).__init__(*args, **kwargs)
         self.socket = WebSocketApp(url="wss://api2.poloniex.com/",
                                    on_open=self.on_open,
                                    on_message=self.on_message,
