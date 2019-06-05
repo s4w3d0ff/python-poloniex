@@ -9,12 +9,12 @@ class StopPoloniex(poloniex.PoloniexSocketed):
     def on_ticker(self, msg):
         data = [float(dat) for dat in msg]
         # check stop orders
-        mkt = self.channels[str(data[0])]['name']
+        mkt = self.channels[str(int(data[0]))]['name']
         la = data[2]
         hb = data[3]
         for id in self.stopOrders:
             # market matches and the order hasnt triggered yet
-            if str(self.stopOrders[id].market) == str(mkt) and not self.stopOrders[id]['order']:
+            if str(self.stopOrders[id]['market']) == str(mkt) and not self.stopOrders[id]['order']:
                 self.logger.debug('%s lowAsk=%s highBid=%s', mkt, str(la), str(hb))
                 self._check_stop(id, la, hb)
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                       amount=0.5,
                       stop=float(tick['BTC_LTC']['lowestAsk'])+0.000001,
                       limit=float(0.004),
-                      callback=callbk
+                      callback=callbk,
                       # remove or set 'test' to false to place real orders
                       test=True)
 
@@ -95,6 +95,7 @@ if __name__ == '__main__':
                       amount=-0.5,
                       stop=float(tick['BTC_LTC']['highestBid'])-0.000001,
                       limit=float(0.004),
+                      callback=callbk,
                       # remove or set 'test' to false to place real orders
                       test=True)
     test.startws(['ticker'])
