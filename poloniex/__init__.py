@@ -844,4 +844,4 @@ class PoloniexSocketed(Poloniex):
         except Exception as e:
             self.logger.exception(e)
         self._t.join()
-        logger.info('Websocket thread stopped/joined')
+        self.logger.info('Websocket thread stopped/joined')
