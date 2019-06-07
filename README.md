@@ -75,7 +75,7 @@ import logging
 
 logging.basicConfig()
 
-class MySocket(poloniex.Poloniex):
+class MySocket(poloniex.PoloniexSocketed):
 
     def on_heartbeat(self, msg):
         """
