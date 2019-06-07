@@ -710,14 +710,14 @@ class PoloniexSocketed(Poloniex):
             if message[1] == 1:
                 # update self.channels[chan]['sub'] flag
                 self.channels[chan]['sub'] = True
-                logger.debug('Subscribed to %s', self.channels[chan]['name'])
+                self.logger.debug('Subscribed to %s', self.channels[chan]['name'])
                 # return False so no callback trigger
                 return False
             # Unsubscribed
             if message[1] == 0:
                 # update self.channels[chan]['sub'] flag
                 self.channels[chan]['sub'] = False
-                logger.debug('Unsubscribed to %s', self.channels[chan]['name'])
+                self.logger.debug('Unsubscribed to %s', self.channels[chan]['name'])
                 # return False so no callback trigger
                 return False
         # return chan name
@@ -737,7 +737,7 @@ class PoloniexSocketed(Poloniex):
                              parse_int=self.jsonNums)
         # catch errors
         if 'error' in message:
-            return logger.error(message['error'])
+            return self.logger.error(message['error'])
         # handle sub/unsub
         chan = self._handle_sub(message)
         if chan:
@@ -748,25 +748,25 @@ class PoloniexSocketed(Poloniex):
             self.socket._callback(self.channels[chan]['callback'], message)
 
     def on_error(self, error):
-        logger.error(error)
+        self.logger.error(error)
 
     def on_close(self, *args):
-        logger.info('Websocket Closed')
+        self.logger.debug('Websocket Closed')
 
-    def on_ticker(self, *args):
-        logger.info(args)
+    def on_ticker(self, args):
+        self.logger.debug(args)
 
-    def on_account(self, *args):
-        logger.info(args)
+    def on_account(self, args):
+        self.logger.debug(args)
 
-    def on_market(self, *args):
-        logger.info(args)
+    def on_market(self, args):
+        self.logger.debug(args)
 
-    def on_volume(self, *args):
-        logger.info(args)
+    def on_volume(self, args):
+        self.logger.debug(args)
 
-    def on_heartbeat(self, *args):
-        logger.debug(args)
+    def on_heartbeat(self, args):
+        self.logger.debug(args)
 
     def subscribe(self, chan):
         """ Sends the 'subscribe' command for <chan> """
@@ -828,7 +828,7 @@ class PoloniexSocketed(Poloniex):
             if self.channels[chan]['name'] in subscribe or chan in subscribe:
                 self.channels[chan]['sub'] = True
         self._t.start()
-        logger.info('Websocket thread started')
+        self.logger.info('Websocket thread started')
 
 
     def stopws(self, wait=0):
@@ -842,6 +842,6 @@ class PoloniexSocketed(Poloniex):
         try:
             self.socket.close()
         except Exception as e:
-            logger.exception(e)
+            self.logger.exception(e)
         self._t.join()
         logger.info('Websocket thread stopped/joined')
