@@ -108,7 +108,7 @@ class RetryException(PoloniexError):
 
 
 class PoloniexBase(object):
-    """The Poloniex Object!"""
+    """The PoloniexBase Object!"""
 
     def __init__(
             self, key=False, secret=False,
@@ -313,7 +313,7 @@ class PoloniexBase(object):
         return self._handleReturned(ret)
 
 
-class PoloniexHelper(PoloniexBase):
+class Poloniex(PoloniexBase):
 
     # --PUBLIC COMMANDS-------------------------------------------------------
     def returnTicker(self):
@@ -666,10 +666,10 @@ class PoloniexHelper(PoloniexBase):
             'toggleAutoRenew', {'orderNumber': str(orderNumber)})
 
 
-class Poloniex(PoloniexHelper):
+class PoloniexSocketed(Poloniex):
     """ Child class of Poloniex with support for the websocket api """
     def __init__(self, *args, **kwargs):
-        super(Poloniex, self).__init__(*args, **kwargs)
+        super(PoloniexSocketed, self).__init__(*args, **kwargs)
         self.socket = WebSocketApp(url="wss://api2.poloniex.com/",
                                    on_open=self.on_open,
                                    on_message=self.on_message,
@@ -710,14 +710,14 @@ class Poloniex(PoloniexHelper):
             if message[1] == 1:
                 # update self.channels[chan]['sub'] flag
                 self.channels[chan]['sub'] = True
-                logger.debug('Subscribed to %s', self.channels[chan]['name'])
+                self.logger.debug('Subscribed to %s', self.channels[chan]['name'])
                 # return False so no callback trigger
                 return False
             # Unsubscribed
             if message[1] == 0:
                 # update self.channels[chan]['sub'] flag
                 self.channels[chan]['sub'] = False
-                logger.debug('Unsubscribed to %s', self.channels[chan]['name'])
+                self.logger.debug('Unsubscribed to %s', self.channels[chan]['name'])
                 # return False so no callback trigger
                 return False
         # return chan name
@@ -737,7 +737,7 @@ class Poloniex(PoloniexHelper):
                              parse_int=self.jsonNums)
         # catch errors
         if 'error' in message:
-            return logger.error(message['error'])
+            return self.logger.error(message['error'])
         # handle sub/unsub
         chan = self._handle_sub(message)
         if chan:
@@ -748,25 +748,25 @@ class Poloniex(PoloniexHelper):
             self.socket._callback(self.channels[chan]['callback'], message)
 
     def on_error(self, error):
-        logger.error(error)
+        self.logger.error(error)
 
     def on_close(self, *args):
-        logger.info('Websocket Closed')
+        self.logger.debug('Websocket Closed')
 
-    def on_ticker(self, *args):
-        logger.info(args)
+    def on_ticker(self, args):
+        self.logger.debug(args)
 
-    def on_account(self, *args):
-        logger.info(args)
+    def on_account(self, args):
+        self.logger.debug(args)
 
-    def on_market(self, *args):
-        logger.info(args)
+    def on_market(self, args):
+        self.logger.debug(args)
 
-    def on_volume(self, *args):
-        logger.info(args)
+    def on_volume(self, args):
+        self.logger.debug(args)
 
-    def on_heartbeat(self, *args):
-        logger.debug(args)
+    def on_heartbeat(self, args):
+        self.logger.debug(args)
 
     def subscribe(self, chan):
         """ Sends the 'subscribe' command for <chan> """
@@ -776,17 +776,20 @@ class Poloniex(PoloniexHelper):
             if not self.key or not self.secret:
                 raise PoloniexError(
                     "self.key and self.secret needed for 'account' channel"
-                    )
+                )
             payload = {'nonce': self.nonce}
+            payload_encoded = _urlencode(payload)
             sign = _new(
                 self.secret.encode('utf-8'),
-                _urlencode(payload).encode('utf-8'),
+                payload_encoded.encode('utf-8'),
                 _sha512)
-            self.socket.send(_dumps({'command': 'subscribe',
-                                  'channel': chan,
-                                  'sign': sign.hexdigest(),
-                                  'key': self.key,
-                                  'payload': payload}))
+
+            self.socket.send(_dumps({
+                'command': 'subscribe',
+                'channel': chan,
+                'sign': sign.hexdigest(),
+                'key': self.key,
+                'payload': payload_encoded}))
         else:
             self.socket.send(_dumps({'command': 'subscribe', 'channel': chan}))
 
@@ -798,16 +801,20 @@ class Poloniex(PoloniexHelper):
             if not self.key or not self.secret:
                 raise PoloniexError(
                     "self.key and self.secret needed for 'account' channel"
-                    )
+                )
             payload = {'nonce': self.nonce}
-            sign = _new(self.secret.encode('utf-8'),
-                        _urlencode(payload).encode('utf-8'),
-                        _sha512)
-            self.socket.send(_dumps({'command': 'unsubscribe',
-                                  'channel': chan,
-                                  'sign': sign.hexdigest(),
-                                  'key': self.key,
-                                  'payload': payload}))
+            payload_encoded = _urlencode(payload)
+            sign = _new(
+                self.secret.encode('utf-8'),
+                payload_encoded.encode('utf-8'),
+                _sha512)
+
+            self.socket.send(_dumps({
+                'command': 'unsubscribe',
+                'channel': chan,
+                'sign': sign.hexdigest(),
+                'key': self.key,
+                'payload': payload_encoded}))
         else:
             self.socket.send(_dumps({'command': 'unsubscribe', 'channel': chan}))
 
@@ -828,7 +835,7 @@ class Poloniex(PoloniexHelper):
             if self.channels[chan]['name'] in subscribe or chan in subscribe:
                 self.channels[chan]['sub'] = True
         self._t.start()
-        logger.info('Websocket thread started')
+        self.logger.info('Websocket thread started')
 
 
     def stopws(self, wait=0):
@@ -842,6 +849,6 @@ class Poloniex(PoloniexHelper):
         try:
             self.socket.close()
         except Exception as e:
-            logger.exception(e)
+            self.logger.exception(e)
         self._t.join()
-        logger.info('Websocket thread stopped/joined')
+        self.logger.info('Websocket thread stopped/joined')

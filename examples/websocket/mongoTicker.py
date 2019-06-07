@@ -1,7 +1,7 @@
 import poloniex
 from pymongo import MongoClient  # pip install pymongo
 
-class TickPolo(poloniex.Poloniex):
+class TickPolo(poloniex.PoloniexSocketed):
     def __init__(self, *args, **kwargs):
         super(TickPolo, self).__init__(*args, **kwargs)
         self.db = MongoClient().poloniex['ticker']

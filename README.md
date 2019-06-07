@@ -1,4 +1,4 @@
-[![python](https://img.shields.io/badge/python-2.7%20%26%203-blue.svg)![licence](https://img.shields.io/badge/licence-GPL%20v2-blue.svg)](https://github.com/s4w3d0ff/python-poloniex/blob/master/LICENSE) [![release](https://img.shields.io/github/release/s4w3d0ff/python-poloniex.svg)![release build](https://travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=v0.5.4)](https://github.com/s4w3d0ff/python-poloniex/releases)  
+[![python](https://img.shields.io/badge/python-2.7%20%26%203-blue.svg)![licence](https://img.shields.io/badge/licence-GPL%20v2-blue.svg)](https://github.com/s4w3d0ff/python-poloniex/blob/master/LICENSE) [![release](https://img.shields.io/github/release/s4w3d0ff/python-poloniex.svg)![release build](https://travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=v0.5.5)](https://github.com/s4w3d0ff/python-poloniex/releases)  
 [![master](https://img.shields.io/badge/branch-master-blue.svg)![master build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)](https://github.com/s4w3d0ff/python-poloniex/tree/master) [![dev](https://img.shields.io/badge/branch-dev-blue.svg)![dev build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=dev)](https://github.com/s4w3d0ff/python-poloniex/tree/dev)  
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'  
 > I (s4w3d0ff) am not affiliated with, nor paid by [Poloniex](https://poloniex.com). I found the linked python wrapper on the poloniex support page to be incomplete and buggy so I decided to write this wrapper and create a git repository. If you wish to contribute to the repository please read [CONTRIBUTING.md](https://github.com/s4w3d0ff/python-poloniex/blob/master/CONTRIBUTING.md). All and any help is appreciated.
@@ -68,14 +68,17 @@ print(polo.marketTradeHist('BTC_ETH'))
 print(polo.returnTradeHistory('BTC_ETH'))
 ```
 
+You can also not use the 'helper' methods at all and use `poloniex.PoloniexBase` which only has `returnMarketHist`, `__call__` to make rest api calls.
+
 #### Websocket Usage:
-Right now, the easiest way to use the websocket api is making a child class like so:
+To connect to the websocket api just create a child class of `PoloniexSocketed` like so:
 ```python
+import poloniex
 import logging
 
 logging.basicConfig()
 
-class MySocket(poloniex.Poloniex):
+class MySocket(poloniex.PoloniexSocketed):
 
     def on_heartbeat(self, msg):
         """
@@ -85,13 +88,13 @@ class MySocket(poloniex.Poloniex):
 
     def on_volume(self, msg):
         """
-        Triggers whenever we get a ticker message
+        Triggers whenever we get a 24hvolume message
         """
         print(msg)
 
     def on_ticker(self, msg):
         """
-        Triggers whenever we get a 24hvolume message
+        Triggers whenever we get a ticker message
         """
         print(msg)
 
@@ -112,6 +115,36 @@ sock = MySocket()
 sock.logger.setLevel(logging.DEBUG)
 # start the websocket thread and subsribe to '24hvolume'
 sock.startws(subscribe=['24hvolume'])
+# give the socket some time init
+poloniex.sleep(5)
+# this won't work:
+#sock.subscribe('ticker')
+# use channel id to un/sub
+sock.subscribe('1002')
+poloniex.sleep(1)
+# unsub from ticker
+sock.unsubscribe('1002')
+poloniex.sleep(4)
+sock.stopws()
+
+```
+
+```
+INFO:poloniex:Websocket thread started
+DEBUG:poloniex:Subscribed to 24hvolume
+[1010]
+DEBUG:poloniex:Subscribed to ticker
+[241, '86.59997298', '86.68262835', '85.69590501', '0.01882321', '22205.56419338', '258.30264061', 0, '87.31843098', '82.81638725']
+...
+...
+[254, '5.89427014', '6.14542299', '5.92000026', '-0.03420118', '9978.11197201', '1649.83975863', 0, '6.19642428', '5.74631502']
+DEBUG:poloniex:Unsubscribed to ticker
+[1010]
+[1010]
+[1010]
+['2019-06-07 04:16', 2331, {'BTC': '2182.115', 'ETH': '490.635', 'XMR': '368.983', 'USDT': '7751402.061', 'USDC': '5273463.730'}]
+DEBUG:poloniex:Websocket Closed
+INFO:poloniex:Websocket thread stopped/joined
 ```
 
 **More examples of how to use websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
