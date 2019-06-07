@@ -85,13 +85,13 @@ class MySocket(poloniex.PoloniexSocketed):
 
     def on_volume(self, msg):
         """
-        Triggers whenever we get a ticker message
+        Triggers whenever we get a 24hvolume message
         """
         print(msg)
 
     def on_ticker(self, msg):
         """
-        Triggers whenever we get a 24hvolume message
+        Triggers whenever we get a ticker message
         """
         print(msg)
 
