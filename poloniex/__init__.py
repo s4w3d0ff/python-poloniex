@@ -776,17 +776,20 @@ class PoloniexSocketed(Poloniex):
             if not self.key or not self.secret:
                 raise PoloniexError(
                     "self.key and self.secret needed for 'account' channel"
-                    )
+                )
             payload = {'nonce': self.nonce}
+            payload_encoded = _urlencode(payload)
             sign = _new(
                 self.secret.encode('utf-8'),
-                _urlencode(payload).encode('utf-8'),
+                payload_encoded.encode('utf-8'),
                 _sha512)
-            self.socket.send(_dumps({'command': 'subscribe',
-                                  'channel': chan,
-                                  'sign': sign.hexdigest(),
-                                  'key': self.key,
-                                  'payload': payload}))
+
+            self.socket.send(_dumps({
+                'command': 'subscribe',
+                'channel': chan,
+                'sign': sign.hexdigest(),
+                'key': self.key,
+                'payload': payload_encoded}))
         else:
             self.socket.send(_dumps({'command': 'subscribe', 'channel': chan}))
 
@@ -798,16 +801,20 @@ class PoloniexSocketed(Poloniex):
             if not self.key or not self.secret:
                 raise PoloniexError(
                     "self.key and self.secret needed for 'account' channel"
-                    )
+                )
             payload = {'nonce': self.nonce}
-            sign = _new(self.secret.encode('utf-8'),
-                        _urlencode(payload).encode('utf-8'),
-                        _sha512)
-            self.socket.send(_dumps({'command': 'unsubscribe',
-                                  'channel': chan,
-                                  'sign': sign.hexdigest(),
-                                  'key': self.key,
-                                  'payload': payload}))
+            payload_encoded = _urlencode(payload)
+            sign = _new(
+                self.secret.encode('utf-8'),
+                payload_encoded.encode('utf-8'),
+                _sha512)
+
+            self.socket.send(_dumps({
+                'command': 'unsubscribe',
+                'channel': chan,
+                'sign': sign.hexdigest(),
+                'key': self.key,
+                'payload': payload_encoded}))
         else:
             self.socket.send(_dumps({'command': 'unsubscribe', 'channel': chan}))
 
