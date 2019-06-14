@@ -492,6 +492,18 @@ class Poloniex(PoloniexBase):
         parameter is "orderNumber". """
         return self.__call__('cancelOrder', {'orderNumber': str(orderNumber)})
 
+    def cancelAllOrders(self, currencyPair=None):
+        """ Cancels all open orders in a given market or, if no market is
+        provided, all open orders in all markets. Optional POST parameter is
+        "currencyPair". If successful, the method will return a success of 1
+        along with a json array of orderNumbers representing the orders that
+        were canceled. Please note that cancelAllOrders can only be called 1
+        time per 2 minutes. """
+        if not currencyPair:
+            return self.__call__('cancelAllOrders')
+        return self.__call__('cancelAllOrders',
+            {'currencyPair': str(currencyPair).upper()})
+
     def moveOrder(self, orderNumber, rate, amount=False, orderType=False):
         """ Cancels an order and places a new one of the same type in a single
         atomic transaction, meaning either both operations will succeed or both
