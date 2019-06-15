@@ -1,5 +1,6 @@
 [![python](https://img.shields.io/badge/python-2.7%20%26%203-blue.svg)![licence](https://img.shields.io/badge/licence-GPL%20v2-blue.svg)](https://github.com/s4w3d0ff/python-poloniex/blob/master/LICENSE) [![release](https://img.shields.io/github/release/s4w3d0ff/python-poloniex.svg)![release build](https://travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=v0.5.6)](https://github.com/s4w3d0ff/python-poloniex/releases)  
 [![master](https://img.shields.io/badge/branch-master-blue.svg)![master build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=master)](https://github.com/s4w3d0ff/python-poloniex/tree/master) [![dev](https://img.shields.io/badge/branch-dev-blue.svg)![dev build](https://api.travis-ci.org/s4w3d0ff/python-poloniex.svg?branch=dev)](https://github.com/s4w3d0ff/python-poloniex/tree/dev)  
+
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'  
 > I (s4w3d0ff) am not affiliated with, nor paid by [Poloniex](https://poloniex.com). If you wish to contribute to the repository please read [CONTRIBUTING.md](https://github.com/s4w3d0ff/python-poloniex/blob/master/CONTRIBUTING.md). All and any help is appreciated.
 #### Features:
@@ -24,8 +25,10 @@ All api calls are done through an instance of `poloniex.Poloniex`. You can use t
 ```python
 # import this package
 from poloniex import Poloniex
+
 # make an instance of poloniex.Poloniex
 polo = Poloniex()
+
 # show the ticker
 print(polo('returnTicker'))
 ```
@@ -46,13 +49,16 @@ To use the private api commands you first need an api key and secret (supplied b
 ```python
 import poloniex
 polo = poloniex.Poloniex(key='your-Api-Key-Here-xxxx', secret='yourSecretKeyHere123456789')
+
 # or this works
 polo.key = 'your-Api-Key-Here-xxxx'
 polo.secret = 'yourSecretKeyHere123456789'
+
 # get your balances
 balance = polo.returnBalances()
 print("I have %s ETH!" % balance['ETH'])
-# or
+
+# or use '__call__'
 balance = polo('returnBalances')
 print("I have %s BTC!" % balance['BTC'])
 ```
@@ -68,7 +74,7 @@ print(polo.marketTradeHist('BTC_ETH'))
 print(polo.returnTradeHistory('BTC_ETH'))
 ```
 
-You can also not use the 'helper' methods at all and use `poloniex.PoloniexBase` which only has `returnMarketHist`, `__call__` to make rest api calls.
+You can also not use the 'helper' methods at all and use `poloniex.PoloniexBase` which only has `returnMarketHist` and `__call__` to make rest api calls.
 
 #### Websocket Usage:
 To connect to the websocket api just create a child class of `PoloniexSocketed` like so:
