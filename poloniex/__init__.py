@@ -86,6 +86,7 @@ PRIVATE_COMMANDS = [
     'buy',
     'sell',
     'cancelOrder',
+    'cancelAllOrders',
     'moveOrder',
     'withdraw',
     'returnFeeInfo',
