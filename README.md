@@ -74,7 +74,7 @@ print(polo.marketTradeHist('BTC_ETH'))
 print(polo.returnTradeHistory('BTC_ETH'))
 ```
 
-You can also not use the 'helper' methods at all and use `poloniex.PoloniexBase` which only has `returnMarketHist`, `__call__` to make rest api calls.
+You can also not use the 'helper' methods at all and use `poloniex.PoloniexBase` which only has `returnMarketHist` and `__call__` to make rest api calls.
 
 #### Websocket Usage:
 To connect to the websocket api just create a child class of `PoloniexSocketed` like so:
