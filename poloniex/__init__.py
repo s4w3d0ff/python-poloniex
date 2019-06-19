@@ -682,6 +682,12 @@ class Poloniex(PoloniexBase):
 class PoloniexSocketed(Poloniex):
     """ Child class of Poloniex with support for the websocket api """
     def __init__(self, *args, **kwargs):
+        subscribe = False
+        start = False
+        if 'subscribe' in kwargs:
+            subscribe = kwargs.pop('subscribe')
+        if 'startws' in kwargs:
+            start = kwargs.pop('startws')
         super(PoloniexSocketed, self).__init__(*args, **kwargs)
         self.socket = WebSocketApp(url="wss://api2.poloniex.com/",
                                    on_open=self.on_open,
@@ -713,6 +719,13 @@ class PoloniexSocketed(Poloniex):
                 'sub': False,
                 'callback': self.on_market
             }
+        if subscribe:
+            for chan in self.channels:
+                if self.channels[chan]['name'] in subscribe or chan in subscribe:
+                    self.channels[chan]['sub'] = True
+        if start:
+            self.startws()
+
 
     def _handle_sub(self, message):
         """ Handles websocket un/subscribe messages """
