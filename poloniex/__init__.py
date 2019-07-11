@@ -530,7 +530,7 @@ class Poloniex(PoloniexBase):
 
         return self.__call__('moveOrder', args)
 
-    def withdraw(self, currency, amount, address, paymentId=False):
+    def withdraw(self, currency, amount, address, paymentId=False, currencyToWithdrawAs=False ):
         """ Immediately places a withdrawal for a given currency, with no email
         confirmation. In order to use this method, the withdrawal privilege
         must be enabled for your API key. Required parameters are
@@ -543,6 +543,8 @@ class Poloniex(PoloniexBase):
         }
         if paymentId:
             args['paymentId'] = str(paymentId)
+        if currencyToWithdrawAs:
+            args['currencyToWithdrawAs'] = str(currencyToWithdrawAs)
         return self.__call__('withdraw', args)
 
     def returnFeeInfo(self):
