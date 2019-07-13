@@ -9,7 +9,7 @@ class StopPoloniex(poloniex.PoloniexSocketed):
     def on_ticker(self, msg):
         data = [float(dat) for dat in msg]
         # check stop orders
-        mkt = self.channels[str(int(data[0]))]['name']
+        mkt = self._getChannelName(str(int(data[0])))
         la = data[2]
         hb = data[3]
         for id in self.stopOrders:
@@ -98,6 +98,6 @@ if __name__ == '__main__':
                       callback=callbk,
                       # remove or set 'test' to false to place real orders
                       test=True)
-    test.startws(['ticker'])
+    test.startws({'ticker': test.on_ticker})
     poloniex.sleep(120)
     test.stopws(3)

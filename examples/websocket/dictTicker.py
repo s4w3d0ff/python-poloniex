@@ -45,7 +45,7 @@ if __name__ == '__main__':
     polo = TickPolo()
     poloniex.logging.basicConfig()
     polo.logger.setLevel(poloniex.logging.DEBUG)
-    polo.startws(['ticker'])
+    polo.startws({'ticker': polo.on_ticker})
     for i in range(3):
         pprint(polo.ticker('BTC_LTC'))
         poloniex.sleep(10)
