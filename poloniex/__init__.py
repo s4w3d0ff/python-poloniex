@@ -700,7 +700,8 @@ class PoloniexSocketed(Poloniex):
                           'callback': self.on_heartbeat},
             }
         # add each market to channels list by id
-        for market in self.returnTicker():
+        tick = self.returnTicker()
+        for market in tick:
             self.channels[market] = {'id': str(tick[market]['id'])}
         # handle init subscribes
         if subscribe:
