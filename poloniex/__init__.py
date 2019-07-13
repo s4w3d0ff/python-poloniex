@@ -716,7 +716,7 @@ class PoloniexSocketed(Poloniex):
 
     def on_open(self, *ws):
         for chan in self.channels:
-            if self.channels[chan]['sub']:
+            if 'sub' in self.channels[chan] and self.channels[chan]['sub']:
                 self.subscribe(chan)
 
     def on_message(self, data):
@@ -855,7 +855,7 @@ class PoloniexSocketed(Poloniex):
         self._running = False
         # unsubscribe from subs
         for chan in self.channels:
-            if 'sub' in self.channels[chan] and self.channels[chan]['sub'] == True:
+            if 'sub' in self.channels[chan] and self.channels[chan]['sub']:
                 self.unsubscribe(chan)
         sleep(wait)
         try:
