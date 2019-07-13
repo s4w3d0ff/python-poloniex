@@ -77,60 +77,31 @@ print(polo.returnTradeHistory('BTC_ETH'))
 You can also not use the 'helper' methods at all and use `poloniex.PoloniexBase` which only has `returnMarketHist` and `__call__` to make rest api calls.
 
 #### Websocket Usage:
-To connect to the websocket api just create a child class of `PoloniexSocketed` like so:
+To connect to the websocket api use the `PoloniexSocketed` class like so:
 ```python
 import poloniex
 import logging
+from time import sleep
 
-logging.basicConfig()
-
-class MySocket(poloniex.PoloniexSocketed):
-
-    def on_heartbeat(self, msg):
-        """
-        Triggers whenever we get a heartbeat message
-        """
-        print(msg)
-
-    def on_volume(self, msg):
-        """
-        Triggers whenever we get a 24hvolume message
-        """
-        print(msg)
-
-    def on_ticker(self, msg):
-        """
-        Triggers whenever we get a ticker message
-        """
-        print(msg)
-
-    def on_market(self, msg):
-        """
-        Triggers whenever we get a market ('currencyPair') message
-        """
-        print(msg)
-
-    def on_account(self, msg):
-        """
-        Triggers whenever we get an account message
-        """
-        print(msg)
-
-sock = MySocket()
 # helps show what is going on
-sock.logger.setLevel(logging.DEBUG)
-# start the websocket thread and subscribe to '24hvolume'
-sock.startws(subscribe=['24hvolume'])
+logging.basicConfig()
+poloniex.logger.setLevel(logging.DEBUG)
+
+def on_volume(data):
+    print(data)
+# make instance
+sock = poloniex.PoloniexSocketed()
+# start the websocket thread and subscribe to '24hvolume' setting the callback to 'on_volume'
+sock.startws(subscribe={'24hvolume': on_volume})
 # give the socket some time to init
-poloniex.sleep(5)
-# this won't work:
-#sock.subscribe('ticker')
-# use channel id to un/sub
-sock.subscribe('1002')
-poloniex.sleep(1)
-# unsub from ticker
-sock.unsubscribe('1002')
-poloniex.sleep(4)
+sleep(5)
+# use the channel name str or id int to subscribe/unsubscribe
+sock.subscribe(chan='ticker', callback=print)
+sleep(1)
+# unsub from ticker using id (str name can be use as well)
+sock.unsubscribe(1002)
+sleep(4)
+# stop websocket
 sock.stopws()
 
 ```
@@ -152,5 +123,12 @@ DEBUG:poloniex:Unsubscribed to ticker
 DEBUG:poloniex:Websocket Closed
 INFO:poloniex:Websocket thread stopped/joined
 ```
+You can also subscribe and start the websocket thread when creating an instance of `PoloniexSocketed` by using the `subscribe` and `start` args:
+```python
+
+sock = poloniex.PoloniexSocketed(subscribe={'24hvolume': print}, start=True)
+
+```
+
 
 **More examples of how to use websocket push API can be found [here](https://github.com/s4w3d0ff/python-poloniex/tree/master/examples).**
