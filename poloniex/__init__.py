@@ -802,7 +802,7 @@ class PoloniexSocketed(Poloniex):
         else:
             self.channels[chan]['sub'] = True
             if callback:
-                self.channels[sub]['callback'] = callback
+                self.channels[chan]['callback'] = callback
             self.socket.send(_dumps({'command': 'subscribe',
                                      'channel': self.channels[chan]['id']}))
 
@@ -855,7 +855,7 @@ class PoloniexSocketed(Poloniex):
         self._running = False
         # unsubscribe from subs
         for chan in self.channels:
-            if self.channels[chan]['sub'] == True:
+            if 'sub' in self.channels[chan] and self.channels[chan]['sub'] == True:
                 self.unsubscribe(chan)
         sleep(wait)
         try:
