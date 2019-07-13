@@ -683,7 +683,7 @@ class Poloniex(PoloniexBase):
 
 class PoloniexSocketed(Poloniex):
     """ Child class of Poloniex with support for the websocket api """
-    def __init__(self, key, secret, subscribe={}, start=False, *args, **kwargs):
+    def __init__(self, key=None, secret=None, subscribe={}, start=False, *args, **kwargs):
         super(PoloniexSocketed, self).__init__(key, secret, *args, **kwargs)
         self.socket = WebSocketApp(url="wss://api2.poloniex.com/",
                                    on_open=self.on_open,
