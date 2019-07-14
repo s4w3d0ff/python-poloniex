@@ -745,8 +745,15 @@ class PoloniexSocketed(Poloniex):
                 return False
         if 'callback' in self.channels[chan]:
             # activate chan callback
-            if not chan in ['account', 'heartbeat']:
+            if chan == 'heartbeat':
+                # show whole heartbeat
+                self.socket._callback(self.channels[chan]['callback'], message)
+            elif chan in ['ticker', '24hvolume']:
+                # ticker and 24hvolume dont need seq id
                 message = message[2]
+            else:
+                # show seq id for everything else
+                message = message[1]
             self.socket._callback(self.channels[chan]['callback'], message)
 
     def on_error(self, error):
