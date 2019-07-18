@@ -750,10 +750,10 @@ class PoloniexSocketed(Poloniex):
                 self.socket._callback(self.channels[chan]['callback'], message)
             elif chan in ['ticker', '24hvolume']:
                 # ticker and 24hvolume dont need seq id
-                message = message[2]
+                message = message[2:]
             else:
                 # show seq id for everything else
-                message = message[1]
+                message = message[1:]
             self.socket._callback(self.channels[chan]['callback'], message)
 
     def on_error(self, error):
