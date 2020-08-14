@@ -4,7 +4,7 @@
 Inspired by [this](http://pastebin.com/8fBVpjaj) wrapper written by 'oipminer'  
 > I (s4w3d0ff) am not affiliated with, nor paid by [Poloniex](https://poloniex.com). If you wish to contribute to the repository please read [CONTRIBUTING.md](https://github.com/s4w3d0ff/python-poloniex/blob/master/CONTRIBUTING.md). All and any help is appreciated.
 #### Features:
-- [x] Python 2.7 and 3.5+
+- [x] Python 2.7 and 3+
 - [x] Pypi
 - [x] Travis
 - [x] Websocket api support
