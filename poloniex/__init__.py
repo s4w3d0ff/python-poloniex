@@ -357,9 +357,12 @@ class Poloniex(PoloniexBase):
             'end': str(end)
         })
 
-    def returnCurrencies(self):
+    def returnCurrencies(self, includeMultiChainCurrencies=False):
         """ Returns information about all currencies. """
-        return self.__call__('returnCurrencies')
+        includeMulti = "false"
+        if includeMultiChainCurrencies == True:
+            includeMulti = "true"
+        return self.__call__('returnCurrencies', {"includeMultiChainCurrencies" : includeMulti})
 
     def returnLoanOrders(self, currency):
         """ Returns the list of loan offers and demands for a given currency,
