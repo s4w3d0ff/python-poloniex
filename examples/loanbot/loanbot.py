@@ -43,7 +43,7 @@ class Loaner(object):
     """ Loanbot class [API REQUIRES KEY AND SECRET!]"""
 
     def __init__(self,
-                 api,
+                 api,'aced20365650c1b4f9a01565b3330eb6'
                  coins={'BTC': 0.01},
                  maxage=60 * 30,
                  delay=60 * 10):
